@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>주차별 전환율 대시보드 | Kyobo Lifeplanet</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:   #0d1117; --bg2: #161b22; --bg3: #1c2128;
+  --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.13);
+  --t1: #e6edf3; --t2: #8b949e; --t3: #555f6a;
+  --green: #1D9E75; --greenl: #5DCAA5;
+  --blue:  #378ADD; --bluel:  #85B7EB;
+  --orange:#D85A30; --orangel:#F0997B;
+  --accent:#00B85D;
+}
+body { font-family:'Pretendard','Apple SD Gothic Neo',sans-serif; background:var(--bg); color:var(--t1); font-size:13px; line-height:1.5; }
+
+/* ── Header ── */
+.hdr { background:var(--bg2); border-bottom:1px solid var(--border); padding:0 28px; height:54px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:200; }
+.hdr-l { display:flex; align-items:center; gap:10px; }
+.logo { width:26px; height:26px; border-radius:6px; background:linear-gradient(135deg,var(--accent),#007a3d); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:#fff; }
+.hdr-title { font-size:14px; font-weight:600; }
+.hdr-sub { font-size:11px; color:var(--t3); margin-left:6px; }
+.badge { font-size:11px; padding:2px 9px; border-radius:20px; background:rgba(0,184,93,.12); color:var(--accent); border:1px solid rgba(0,184,93,.25); }
+
+/* ── Layout ── */
+.main { padding:22px 28px 40px; max-width:1400px; margin:0 auto; }
+.section { margin-bottom:30px; }
+.sec-hdr { display:flex; align-items:baseline; gap:10px; margin-bottom:14px; }
+.sec-num { font-size:11px; font-weight:600; color:var(--accent); letter-spacing:.08em; }
+.sec-title { font-size:14px; font-weight:600; color:var(--t1); }
+.sec-desc { font-size:11px; color:var(--t3); margin-top:2px; }
+.divider { height:1px; background:var(--border); margin-bottom:24px; }
+
+/* ── KPI grid ── */
+.kpi-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:9px; margin-bottom:22px; }
+.kpi { background:var(--bg2); border:1px solid var(--border); border-radius:9px; padding:13px 15px; }
+.kpi-lbl { font-size:10px; color:var(--t3); margin-bottom:5px; }
+.kpi-val { font-size:20px; font-weight:600; line-height:1.1; }
+.kpi-sub { font-size:10px; color:var(--t3); margin-top:3px; }
+.kv-g { color:var(--greenl); } .kv-b { color:var(--bluel); } .kv-o { color:var(--orangel); } .kv-w { color:var(--t1); }
+
+/* ── Summary Section ── */
+.sum-week { font-size:11px; color:var(--t3); margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+.sum-week strong { color:var(--t2); font-weight:500; }
+.sum-week .vs { font-size:10px; padding:1px 7px; background:rgba(255,255,255,0.05); border-radius:10px; color:var(--t3); }
+.sum-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:10px; }
+.sum-ch { background:var(--bg2); border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+.sum-ch-hdr { padding:10px 14px 8px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:7px; }
+.sum-ch-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.sum-ch-name { font-size:11px; font-weight:600; color:var(--t1); }
+.sum-ch-sub  { font-size:10px; color:var(--t3); margin-left:auto; }
+.sum-ch-contract { margin-left:auto; display:flex; align-items:center; gap:5px; }
+.sum-ch-contract-val { font-size:13px; font-weight:600; color:var(--t1); }
+.sum-ch-contract-chg { font-size:10px; font-weight:500; padding:1px 5px; border-radius:10px; }
+.sum-ch-contract-chg.up { background:rgba(29,158,117,0.15); color:#5DCAA5; }
+.sum-ch-contract-chg.dn { background:rgba(216,90,48,0.15); color:#F0997B; }
+.sum-ch-contract-chg.flat { background:rgba(128,128,128,0.12); color:var(--t3); }
+
+/* ── Pie chart section ── */
+.pie-section { background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:14px 18px; margin-bottom:10px; }
+.pie-section-title { font-size:11px; font-weight:600; color:var(--t1); margin-bottom:12px; }
+.pie-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.pie-item { display:flex; flex-direction:column; align-items:center; gap:8px; }
+.pie-label { font-size:11px; font-weight:500; color:var(--t2); }
+.pie-legend { display:flex; flex-direction:column; gap:4px; width:100%; }
+.pie-legend-row { display:flex; align-items:center; justify-content:space-between; gap:6px; font-size:10px; color:var(--t2); }
+.pie-legend-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.pie-legend-pct { font-weight:500; color:var(--t1); font-size:10px; }
+.pie-wrap { position:relative; width:100%; }
+
+/* ── Top visitor summary grid ── */
+.vis-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+.vis-card { background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
+.vis-card-title { font-size:11px; font-weight:600; color:var(--accent); letter-spacing:.05em; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+.vis-card-title::before { content:''; display:inline-block; width:3px; height:11px; border-radius:2px; background:var(--accent); flex-shrink:0; }
+.vis-row { display:flex; align-items:center; justify-content:space-between; padding:5px 0; border-bottom:0.5px solid var(--border); }
+.vis-row:last-child { border-bottom:none; }
+.vis-row-left { display:flex; align-items:center; gap:7px; }
+.vis-row-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+.vis-row-lbl { font-size:11px; color:var(--t2); }
+.vis-row-tag { font-size:9px; padding:1px 6px; border-radius:8px; font-weight:500; }
+.vis-row-right { display:flex; align-items:center; gap:10px; text-align:right; }
+.vis-row-val { font-size:12px; font-weight:600; color:var(--t1); }
+.vis-row-pct { font-size:10px; color:var(--t3); min-width:44px; }
+.vis-total-row { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid var(--border2); }
+.vis-total-lbl { font-size:11px; color:var(--t2); }
+.vis-total-val { font-size:18px; font-weight:600; color:var(--t1); }
+.vis-total-sub { font-size:10px; color:var(--t3); }
+.vis-section-lbl { font-size:10px; font-weight:500; color:var(--t3); letter-spacing:.06em; margin:8px 0 4px; }
+.sum-rows { padding:8px 0; }
+.sum-row { display:grid; grid-template-columns:1fr auto auto; align-items:center; gap:8px; padding:5px 14px; }
+.sum-row:hover { background:rgba(255,255,255,0.03); }
+.sum-row-lbl { font-size:11px; color:var(--t2); }
+.sum-row-val { font-size:12px; font-weight:600; color:var(--t1); text-align:right; min-width:60px; }
+.sum-row-chg { font-size:10px; font-weight:500; text-align:right; min-width:52px; }
+.up   { color:#5DCAA5; } .dn   { color:#F0997B; } .flat { color:var(--t3); }
+.up::before { content:'▲ '; font-size:8px; } .dn::before { content:'▼ '; font-size:8px; } .flat::before { content:'— '; font-size:8px; }
+.sum-funnel { background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:10px 14px; grid-column:1/-1; }
+.sum-funnel-title { font-size:11px; font-weight:600; color:var(--t1); margin-bottom:10px; }
+.funnel-kpis { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.fkpi { background:var(--bg3); border-radius:8px; padding:10px 12px; }
+.fkpi-lbl { font-size:10px; color:var(--t3); margin-bottom:4px; }
+.fkpi-val { font-size:18px; font-weight:600; }
+.fkpi-chg { font-size:10px; font-weight:500; margin-top:3px; }
+
+/* ── Card ── */
+.card { background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:16px 18px; }
+.card-title { font-size:11px; font-weight:500; color:var(--t2); margin-bottom:12px; letter-spacing:.03em; }
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.col-lbl { font-size:11px; font-weight:500; color:var(--t2); margin-bottom:8px; }
+
+/* ── Legend ── */
+.legend { display:flex; gap:12px; flex-wrap:wrap; font-size:11px; color:var(--t2); margin-bottom:10px; }
+.legend span { display:flex; align-items:center; gap:4px; }
+.ldot  { width:8px; height:8px; border-radius:2px; flex-shrink:0; }
+.lline { width:14px; height:2px; border-radius:1px; flex-shrink:0; }
+
+/* ── Product tabs ── */
+.ptabs { display:flex; gap:4px; margin-bottom:12px; flex-wrap:wrap; }
+.ptab { padding:3px 11px; border-radius:20px; border:1px solid var(--border2); font-size:11px; color:var(--t2); cursor:pointer; background:transparent; transition:all .14s; }
+.ptab:hover { border-color:var(--accent); color:var(--accent); }
+.ptab.active { background:rgba(0,184,93,.15); border-color:var(--accent); color:var(--accent); font-weight:500; }
+
+/* ── Chart ── */
+.chart-wrap { position:relative; width:100%; }
+
+/* ── Event Tooltip ── */
+.evt-tooltip {
+  position: fixed;
+  z-index: 9999;
+  background: #1c2128;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  padding: 10px 13px;
+  pointer-events: none;
+  max-width: 300px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  display: none;
+}
+.evt-tooltip-week { font-size:10px; color:#556070; margin-bottom:6px; font-weight:500; letter-spacing:.04em; }
+.evt-tooltip-title { font-size:11px; font-weight:600; color:#e6edf3; margin-bottom:6px; }
+.evt-tooltip-item { font-size:11px; color:#8b949e; line-height:1.6; padding-left:10px; position:relative; }
+.evt-tooltip-item::before { content:"·"; position:absolute; left:0; color:#5DCAA5; }
+.evt-tooltip-dot { display:inline-block; width:6px; height:6px; border-radius:50%; background:#00B85D; margin-right:4px; vertical-align:middle; }
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-l">
+    <span class="hdr-title">주차별 전환율 분석</span>
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- KPI -->
+  <div id="summary-section"></div>
+
+  <!-- S1 -->
+  <div class="section">
+    <div class="sec-hdr">
+      <span class="sec-num">01</span>
+      <div><div class="sec-title">상위 퍼널 단계간 전환율</div><div class="sec-desc">모수(막대, 좌축) + 전환율(꺾은선, 우축) · 주차별</div></div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">앱 → 보험상품탭</div>
+        <div class="legend"><span><span class="ldot" style="background:rgba(55,138,221,.55)"></span>Native App 방문자</span><span><span class="lline" style="background:#378ADD"></span>보험탭 전환율</span></div>
+        <div class="chart-wrap" style="height:210px"><canvas id="c1a"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">보험상품탭 → 보장성 랜딩</div>
+        <div class="legend"><span><span class="ldot" style="background:rgba(216,90,48,.5)"></span>보험상품탭 방문자</span><span><span class="lline" style="background:#D85A30"></span>보장성 랜딩 전환율</span></div>
+        <div class="chart-wrap" style="height:210px"><canvas id="c1b"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- S2 -->
+  <div class="section">
+    <div class="sec-hdr"><span class="sec-num">02</span><div><div class="sec-title">보험상품탭 유입 — 주차별 전환율</div><div class="sec-desc">랜딩 수(막대, 좌축) · 전환율(꺾은선, 우축)</div></div></div>
+    <div class="card">
+      <div id="s2-summary-bar" style="display:flex;align-items:center;gap:14px;margin-bottom:14px;padding-bottom:12px;border-bottom:0.5px solid var(--border);flex-wrap:wrap;">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;flex:1;" id="s2-metrics"></div>
+        <span style="font-size:10px;color:var(--t3);white-space:nowrap;">현재 주차 (4/24-4/30)</span>
+      </div>
+      <div class="ptabs" id="tabs2">
+        <button class="ptab active" onclick="setP(2,0)">보장성보험 전체</button>
+        <button class="ptab" onclick="setP(2,1)">정기보험</button>
+        <button class="ptab" onclick="setP(2,2)">암보험</button>
+        <button class="ptab" onclick="setP(2,3)">맞춤건강종합보험</button>
+      </div>
+      <div class="legend">
+        <span><span class="ldot" style="background:rgba(55,138,221,.35)"></span>상품 랜딩 수</span>
+        <span><span class="lline" style="background:#1D9E75"></span>설계 진입율</span>
+        <span><span class="lline" style="background:#378ADD"></span>청약 진입율</span>
+        <span><span class="lline" style="background:#D85A30"></span>청약 완료율</span>
+      </div>
+      <div class="chart-wrap" style="height:270px"><canvas id="c2"></canvas></div>
+      <div style="height:1px;background:var(--border);margin:18px 0 14px"></div>
+      <div class="legend">
+        <span><span class="ldot" style="background:rgba(163,45,45,.6)"></span>청약 건수</span>
+        <span><span class="lline" style="background:#E24B4A"></span>청약전환율 (랜딩 기준)</span>
+      </div>
+      <div class="chart-wrap" style="height:200px"><canvas id="c2b"></canvas></div>
+    </div>
+  </div>
+
+  
+
+</main>
+<div class="evt-tooltip" id="evtTip">
+  <div class="evt-tooltip-week" id="evtTipWeek"></div>
+  <div class="evt-tooltip-title" id="evtTipTitle"></div>
+  <div id="evtTipBody"></div>
+</div>
+
+<script>
+const D = {
+  weeks: ["1/2-1/8", "1/9-1/15", "1/16-1/22", "1/23-1/29", "1/30-2/5", "2/6-2/12", "2/13-2/19", "2/20-2/26", "2/27-3/5", "3/6-3/12", "3/13-3/19", "3/20-3/26", "3/27-4/2", "4/3-4/9", "4/10-4/16", "4/17-4/23", "4/24-4/30"],
+  nativeApp:    [567711,576796,575011,575000,567361,569635,554211,575530,571417,585574,591809,599238,587268,605847,611446,613044,607035],
+  insuranceTab: [4662,4119,4139,4237,4539,4455,5425,5636,6005,5339,5129,5355,6688,8093,6908,5262,5906],
+  r_app2tab:    [0.821,0.714,0.72,0.737,0.8,0.782,0.979,0.979,1.051,0.912,0.867,0.894,1.139,1.336,1.13,0.858,0.973],
+  r_tab2land:   [62.956,63.438,58.71,59.382,51.157,49.54,42.599,41.412,34.055,35.643,33.574,32.269,27.721,21.426,20.787,27.765,26.99],
+  tab: {
+    whole: { landing:[2935.0,2613.0,2430.0,2516.0,2322.0,2207.0,2311.0,2334.0,2045.0,1903.0,1722.0,1728.0,1854.0,1734.0,1436.0,1461.0,1594.0], dr:[33.02,43.63,41.65,48.01,41.47,41.05,42.1,37.7,47.43,50.34,43.96,48.26,42.34,39.22,48.75,48.46,54.45], ar:[17.75,16.4,17.09,17.63,19.11,19.98,15.72,14.2,18.14,19.42,17.83,14.75,20.13,21.47,19.43,21.05,18.32], cr:[25.0,25.13,24.28,24.41,18.48,18.23,24.18,29.6,22.73,24.19,26.67,21.14,34.18,32.19,29.41,22.82,25.79], contract:[43.0,47.0,42.0,52.0,34.0,33.0,37.0,37.0,40.0,45.0,36.0,26.0,54.0,47.0,40.0,34.0,41.0], overall:[1.4651,1.7987,1.7284,2.0668,1.4643,1.4952,1.601,1.5853,1.956,2.3647,2.0906,1.5046,2.9126,2.7105,2.7855,2.3272,2.5721] },
+    jeonggi: { landing:[570.0,1279.0,1215.0,569.0,537.0,573.0,997.0,525.0,721.0,623.0,439.0,417.0,677.0,455.0,382.0,449.0,640.0], dr:[32.11,37.61,24.77,40.07,43.39,36.47,39.52,31.43,29.13,34.35,34.62,40.05,27.03,27.47,43.46,38.98,46.09], ar:[21.31,9.15,18.6,21.49,25.32,25.36,10.15,14.55,18.57,22.43,17.76,18.56,22.4,25.6,21.08,22.86,13.9], cr:[25.64,13.64,7.14,14.29,13.56,7.55,12.5,16.67,12.82,16.67,14.81,22.58,21.95,21.88,17.14,20.0,19.51], contract:[10.0,6.0,4.0,7.0,8.0,4.0,5.0,4.0,5.0,8.0,4.0,7.0,9.0,7.0,6.0,8.0,8.0], overall:[1.7544,0.4691,0.3292,1.2302,1.4898,0.6981,0.5015,0.7619,0.6935,1.2841,0.9112,1.6787,1.3294,1.5385,1.5707,1.7817,1.25] },
+    cancer: { landing:[997.0,478.0,492.0,1221.0,1118.0,1037.0,840.0,923.0,835.0,819.0,783.0,809.0,585.0,471.0,471.0,424.0,438.0], dr:[34.1,47.07,55.28,45.62,31.57,34.23,31.55,33.15,50.42,55.43,39.34,49.44,49.74,39.28,39.28,44.81,48.17], ar:[14.12,20.0,15.81,16.16,13.03,16.06,16.23,13.4,12.83,15.42,14.94,10.75,19.93,21.62,21.62,16.32,16.11], cr:[14.58,28.89,30.23,12.22,8.7,21.05,13.95,9.76,11.11,8.57,21.74,13.95,27.59,27.5,27.5,19.35,26.47], contract:[7.0,13.0,13.0,11.0,4.0,12.0,6.0,4.0,6.0,6.0,10.0,6.0,16.0,11.0,11.0,6.0,9.0], overall:[0.7021,2.7197,2.6423,0.9009,0.3578,1.1572,0.7143,0.4334,0.7186,0.7326,1.2771,0.7417,2.735,2.3355,2.3355,1.4151,2.0548] },
+    jonghap: { landing:[1380.0,891.0,893.0,969.0,848.0,848.0,668.0,946.0,714.0,748.0,658.0,670.0,736.0,799.0,666.0,682.0,653.0], dr:[35.51,50.06,56.55,55.83,53.54,55.66,58.08,43.97,56.02,47.19,43.92,46.57,45.11,45.31,56.61,56.74,63.4], ar:[14.9,18.83,15.84,16.27,15.42,18.43,18.81,14.42,19.25,17.28,15.57,15.38,16.57,18.78,18.57,21.45,19.57], cr:[19.18,23.81,28.75,31.82,14.29,10.34,27.4,41.67,22.08,32.79,26.67,20.83,38.18,27.94,18.57,18.07,20.99], contract:[14.0,20.0,23.0,28.0,10.0,9.0,20.0,25.0,17.0,20.0,12.0,10.0,21.0,19.0,13.0,15.0,17.0], overall:[1.0145,2.2447,2.5756,2.8896,1.1792,1.0613,2.994,2.6427,2.381,2.6738,1.8237,1.4925,2.8533,2.378,1.952,2.1994,2.6034] },
+  },
+  organic: {
+    whole: { landing:[9733.0,4107.0,2442.0,9030.0,12759.0,10121.0,11432.0,1357.0,711.0,581.0,528.0,555.0,645.0,474.0,413.0,418.0,405.0], dr:[3.44,11.54,15.36,6.29,3.81,4.97,6.95,18.72,32.49,40.28,43.56,43.24,38.6,36.71,42.37,43.78,41.23], ar:[11.04,11.18,12.8,10.04,12.55,12.92,8.43,11.42,23.38,25.64,18.26,19.58,19.68,17.82,18.29,19.67,17.37], cr:[45.95,64.15,54.17,31.58,45.9,38.46,32.84,51.72,40.74,48.33,52.38,38.3,53.06,74.19,53.12,83.33,96.55], contract:[17.0,34.0,26.0,18.0,28.0,25.0,22.0,15.0,22.0,29.0,22.0,18.0,26.0,23.0,17.0,30.0,28.0], overall:[0.1747,0.8279,1.0647,0.1993,0.2195,0.247,0.1924,1.1054,3.0942,4.9914,4.1667,3.2432,4.031,4.8523,4.1162,7.177,6.9136] },
+    jeonggi: { landing:[1042.0,1606.0,987.0,2863.0,1235.0,588.0,781.0,197.0,122.0,120.0,104.0,131.0,152.0,88.0,92.0,101.0,100.0], dr:[4.61,14.88,11.65,4.09,7.61,24.49,31.88,32.99,40.98,55.0,57.69,52.67,44.74,47.73,54.35,55.45,49.0], ar:[18.75,5.02,15.65,15.38,11.7,12.5,5.22,9.23,32.0,18.18,18.33,20.29,20.59,11.9,18.0,19.64,24.49], cr:[66.67,58.33,50.0,16.67,45.45,5.56,61.54,50.0,50.0,33.33,54.55,21.43,42.86,100.0,44.44,27.27,75.0], contract:[6.0,7.0,9.0,3.0,5.0,1.0,8.0,3.0,8.0,4.0,6.0,3.0,6.0,5.0,4.0,3.0,9.0], overall:[0.5758,0.4359,0.9119,0.1048,0.4049,0.1701,1.0243,1.5228,6.5574,3.3333,5.7692,2.2901,3.9474,5.6818,4.3478,2.9703,9.0] },
+    cancer: { landing:[1368.0,932.0,531.0,5560.0,11010.0,9026.0,10396.0,857.0,280.0,216.0,196.0,234.0,265.0,172.0,172.0,128.0,151.0], dr:[7.53,9.55,25.24,5.85,2.59,2.7,4.64,12.49,27.86,40.74,52.04,44.87,43.77,38.37,38.37,50.0,38.41], ar:[6.8,16.85,11.94,8.31,12.63,8.61,8.51,11.21,19.23,30.68,18.63,15.24,16.38,15.15,15.15,15.62,20.69], cr:[42.86,66.67,18.75,14.81,27.78,47.62,17.07,25.0,13.33,25.93,36.84,43.75,21.05,100.0,60.0,90.0,33.33], contract:[3.0,10.0,3.0,4.0,10.0,10.0,7.0,3.0,2.0,7.0,7.0,7.0,4.0,10.0,6.0,9.0,4.0], overall:[0.2193,1.073,0.565,0.0719,0.0908,0.1108,0.0673,0.3501,0.7143,3.2407,3.5714,2.9915,1.5094,5.814,3.4884,7.0312,2.649] },
+    jonghap: { landing:[5789.0,949.0,521.0,436.0,370.0,331.0,199.0,162.0,146.0,108.0,100.0,119.0,118.0,102.0,93.0,1102.0,89.0], dr:[3.07,10.85,17.85,24.31,25.41,25.68,24.12,33.95,39.73,33.33,29.0,39.5,32.2,30.39,40.86,34.12,43.82], ar:[7.3,15.53,18.28,8.49,10.64,20.0,25.0,9.09,18.97,16.67,24.14,21.28,23.68,29.03,18.42,11.17,10.26], cr:[15.38,37.5,35.29,44.44,40.0,23.53,33.33,60.0,36.36,116.67,28.57,20.0,33.33,11.11,28.57,16.67,0.0], contract:[2.0,6.0,6.0,4.0,4.0,4.0,4.0,3.0,4.0,7.0,2.0,2.0,3.0,1.0,2.0,7.0,0.0], overall:[0.0345,0.6322,1.1516,0.9174,1.0811,1.2085,2.0101,1.8519,2.7397,6.4815,2.0,1.6807,2.5424,0.9804,2.1505,0.6352,0.0] },
+  },
+  rapplay: {
+    whole: { landing:[2089.0,5466.0,7430.0,7176.0,9161.0,5328.0,10398.0,4107.0,3769.0,1872.0,2117.0,4555.0,3525.0,3069.0,2819.0,3799.0,3431.0], dr:[3.49,11.16,4.19,7.51,2.07,1.13,7.67,2.68,13.08,8.6,4.49,11.83,4.34,2.18,3.23,3.87,7.75], ar:[10.96,0.82,2.57,1.67,4.74,10.0,3.01,10.91,8.92,9.32,8.42,1.67,8.5,13.43,12.09,2.72,6.39], cr:[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,22.22,38.46,11.11,27.27,0.0,5.88], contract:[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,2.0,5.0,1.0,3.0,0.0,1.0], overall:[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0439,0.1418,0.0326,0.1064,0.0,0.0291] },
+    jeonggi: { landing:[699.0,4884.0,6509.0,418.0,341.0,770.0,8578.0,229.0,371.0,260.0,300.0,493.0,790.0,1265.0,1138.0,1552.0,2044.0], dr:[2.58,11.86,2.35,1.44,6.16,1.95,8.32,4.37,4.04,6.54,4.0,4.67,3.92,2.13,2.81,6.44,9.69], ar:[16.67,0.69,3.27,0.0,9.52,13.33,2.1,20.0,6.67,17.65,8.33,8.7,16.13,18.52,6.25,1.0,3.54], cr:[0.0,0.0,0.0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,40.0,0.0,0.0,0.0,0.0], contract:[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,2.0,0.0,0.0,0.0,0.0], overall:[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.2532,0.0,0.0,0.0,0.0] },
+    cancer: { landing:[910.0,493.0,459.0,5228.0,8088.0,4490.0,1967.0,3786.0,3375.0,1619.0,1765.0,3927.0,2495.0,1412.0,1421.0,1759.0,1025.0], dr:[4.73,4.46,21.79,7.57,1.82,0.69,4.02,2.01,13.78,8.96,38.41,12.89,4.45,1.84,1.83,1.65,3.51], ar:[9.3,4.55,2.0,1.77,2.72,9.68,11.39,10.53,9.25,8.28,0.74,1.38,7.21,15.38,15.38,6.9,13.89], cr:[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,28.57,25.0,25.0,25.0,0.0,0.0], contract:[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,2.0,2.0,1.0,1.0,0.0,0.0], overall:[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0509,0.0802,0.0708,0.0704,0.0,0.0] },
+    jonghap: { landing:[496.0,180.0,548.0,1684.0,882.0,161.0,90.0,144.0,102.0,54.0,172.0,249.0,346.0,434.0,442.0,568.0,455.0], dr:[4.03,6.67,11.31,8.43,3.51,9.32,14.44,16.67,19.61,7.41,10.47,3.61,3.76,4.61,6.11,4.05,8.35], ar:[5.0,0.0,3.23,0.7,6.45,6.67,15.38,8.33,5.0,25.0,5.56,11.11,7.69,10.0,7.41,4.35,15.79], cr:[0.0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,100.0,0.0,100.0,0.0,16.67], contract:[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0,2.0,0.0,1.0], overall:[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.289,0.0,0.4525,0.0,0.2198] },
+  },
+};
+
+
+const EVT = {
+  tab: [["바른플랜 유도 팝업 — \"10초만에 성공하는 내 보험료 다이어트 하기\""], ["정기보험 — 양육자금 콘텐츠 노출"], ["비갱신암(만기지급) — 보험료 100% 환급"], [], [], ["설날 이벤트 / 엑스트라배너 미니보험몰 추천"], ["비갱신암(만기지급) / 엑스트라배너 미니보험몰"], ["정기보험 — 목돈 수령"], [], ["암보험 — 고액암 3억원 보장"], ["암보험 / 엑스트라배너 독감보험"], ["정기보험 / 엑스트라배너 북런챌린지"], ["북런챌린지"], ["어린이보험 / 북런챌린지 (보험료 10% 할인)"], [], ["비갱신암보험 / 정기보험 (낸 보험료 돌려받는)", "이어가입하기 적용", "팝업: 비갱신암(순수) / 엑스트라배너:정기보험(만기)"], ["브랜드 슬로건 반영 및 미니보험몰 상단으로 위계 이동"]],
+  whole: [[], [], [], [], ["CTA명 변경: [내 보험료 알아보기] → [전화 권유 없는 보험료 알아보기]", "정기보험 콘텐츠 개선 — 양육자금서비스 75세만기 예시", "여성건강보험 문구 수정"], [], [], [], ["암 순수 랜딩 업데이트 — 고액암 일반암 3배 / 월 28,380원 환급 1,700만원", "암 만기 랜딩 업데이트 — 80세만기 20년납 환급 예시"], [], ["정기보험 순수 업데이트 — 종신 대비 72.8% 절약 / 양육자금→교육자금", "정기보험 만기 업데이트 — 양육자금→교육자금"], [], [], [], ["정기보험 상품랜딩 업데이트 — 꼭 필요한 기간만 / 정기vs종신 비교"], [], []],
+  jeonggi: [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ["정기, 종신 비교 콘텐츠 삭제"]],
+  cancer: [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []],
+  jonghap: [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []],
+};
+
+// 어떤 이벤트가 있는 주차인지 쉽게 체크
+function hasEvt(evtArr, idx) { return evtArr[idx] && evtArr[idx].length > 0; }
+
+const chartMap = {};
+const contractMap = {};  // section -> chart for contract charts
+const chKey = { 2:'tab' };
+const prodKey = ['whole','jeonggi','cancer','jonghap'];
+const GC = 'rgba(255,255,255,0.05)';
+const TC = '#555f6a';
+
+const ttBase = {
+  backgroundColor:'#1c2128', borderColor:'rgba(255,255,255,0.1)', borderWidth:1,
+  titleColor:'#e6edf3', bodyColor:'#8b949e', padding:10
+};
+
+function axisStyle(label) {
+  return {
+    title:{ display:!!label, text:label, font:{size:10}, color:TC },
+    ticks:{ font:{size:9}, color:TC },
+    grid:{ color:GC }
+  };
+}
+
+function makeEvtPlugin(evtArr) {
+  return {
+    id: 'evtDots',
+    afterDraw(chart) {
+      // chart.evtArr로 동적 교체 지원
+      const arr = chart.evtArr !== undefined ? chart.evtArr : evtArr;
+      if (!arr) return;
+      const ctx = chart.ctx;
+      const xScale = chart.scales.x;
+      if (!xScale) return;
+      for (let i = 0; i < D.weeks.length; i++) {
+        if (hasEvt(arr, i)) {
+          const px = xScale.getPixelForValue(i);
+          const py = xScale.top + xScale.height + 2;
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(px, py, 3, 0, Math.PI * 2);
+          ctx.fillStyle = '#00B85D';
+          ctx.fill();
+          ctx.restore();
+        }
+      }
+    }
+  };
+}
+
+function comboChart(id, barData, barBg, barBorder, lineData, lineColor, volLabel, evtArr) {
+  const plugins = evtArr ? [makeEvtPlugin(evtArr)] : [];
+  const chart = new Chart(document.getElementById(id), {
+    plugins,
+    data:{ labels:D.weeks, datasets:[
+      { type:'bar',  data:barData,  backgroundColor:barBg,  borderColor:barBorder, borderWidth:1, borderRadius:3, yAxisID:'yV', order:2 },
+      { type:'line', data:lineData, borderColor:lineColor,  backgroundColor:'transparent', tension:.35, pointRadius:3, pointBackgroundColor:lineColor, borderWidth:2, yAxisID:'yR', order:1 },
+    ]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{ legend:{display:false}, tooltip:{ ...ttBase,
+        callbacks:{ label: ctx => ctx.dataset.yAxisID==='yR' ? ` ${ctx.dataset.label||'전환율'}: ${ctx.parsed.y.toFixed(3)}%` : ` ${ctx.dataset.label||'방문자'}: ${ctx.parsed.y.toLocaleString()}명` }
+      }},
+      scales:{
+        x:{ ticks:{autoSkip:false,maxRotation:45,font:{size:9},color:TC}, grid:{display:false} },
+        yV:{ ...axisStyle(volLabel), position:'left', ticks:{...axisStyle('').ticks, callback:v=>v>=1000000?(v/1000000).toFixed(1)+'M':v>=10000?(v/10000).toFixed(0)+'만':v>=1000?(v/1000).toFixed(0)+'k':v} },
+        yR:{ ...axisStyle('전환율 (%)'), position:'right', min:0, grid:{display:false}, ticks:{...axisStyle('').ticks, callback:v=>v.toFixed(2)+'%'} },
+      }
+    }
+  });
+}
+
+function buildMulti(id, d, evtArr) {
+  const plugins = evtArr ? [makeEvtPlugin(evtArr)] : [];
+  return new Chart(document.getElementById(id), {
+    plugins,
+    data:{ labels:D.weeks, datasets:[
+      { type:'bar',  label:'상품 랜딩 수', data:[...d.landing], backgroundColor:'rgba(55,138,221,0.18)', borderColor:'#378ADD', borderWidth:1, borderRadius:3, yAxisID:'yV', order:2 },
+      { type:'line', label:'설계 진입율',  data:[...d.dr], borderColor:'#1D9E75', backgroundColor:'transparent', tension:.35, pointRadius:3, pointBackgroundColor:'#1D9E75', borderWidth:2, yAxisID:'yR', order:1 },
+      { type:'line', label:'청약 진입율',  data:[...d.ar], borderColor:'#378ADD', backgroundColor:'transparent', tension:.35, pointRadius:3, pointBackgroundColor:'#378ADD', borderWidth:2, yAxisID:'yR', order:1 },
+      { type:'line', label:'청약 완료율',  data:[...d.cr], borderColor:'#D85A30', backgroundColor:'transparent', tension:.35, pointRadius:3, pointBackgroundColor:'#D85A30', borderWidth:2, yAxisID:'yR', order:1 },
+    ]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{ legend:{display:false}, tooltip:{ ...ttBase,
+        callbacks:{ label: ctx => ctx.dataset.yAxisID==='yR' ? ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}%` : ` ${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString()}명` }
+      }},
+      scales:{
+        x:{ ticks:{autoSkip:false,maxRotation:45,font:{size:9},color:TC}, grid:{display:false} },
+        yV:{ ...axisStyle('랜딩 수 (명)'), position:'left', ticks:{...axisStyle('').ticks, callback:v=>v>=1000?(v/1000).toFixed(0)+'k':v} },
+        yR:{ ...axisStyle('전환율 (%)'), position:'right', min:0, grid:{display:false}, ticks:{...axisStyle('').ticks, callback:v=>v.toFixed(1)+'%'} },
+      }
+    }
+  });
+}
+
+function buildContract(id, d) {
+  return new Chart(document.getElementById(id), {
+    data:{ labels:D.weeks, datasets:[
+      { type:'bar',  label:'청약 건수',         data:[...d.contract], backgroundColor:'rgba(163,45,45,0.45)', borderColor:'#A32D2D', borderWidth:1, borderRadius:3, yAxisID:'yV', order:2 },
+      { type:'line', label:'청약전환율(랜딩기준)', data:[...d.overall],  borderColor:'#E24B4A', backgroundColor:'transparent', tension:.35, pointRadius:3, pointBackgroundColor:'#E24B4A', borderWidth:2, yAxisID:'yR', order:1 },
+    ]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{ legend:{display:false}, tooltip:{ ...ttBase,
+        callbacks:{ label: ctx => ctx.dataset.yAxisID==='yR' ? ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(4)}%` : ` ${ctx.dataset.label}: ${ctx.parsed.y}건` }
+      }},
+      scales:{
+        x:{ ticks:{autoSkip:false,maxRotation:45,font:{size:9},color:TC}, grid:{display:false} },
+        yV:{ ...axisStyle('청약 건수 (건)'), position:'left', min:0, ticks:{...axisStyle('').ticks, stepSize:1, callback:v=>Number.isInteger(v)?v:''} },
+        yR:{ ...axisStyle('청약전환율 (%)'), position:'right', min:0, grid:{display:false}, ticks:{...axisStyle('').ticks, callback:v=>v.toFixed(2)+'%'} },
+      }
+    }
+  });
+}
+
+function updateS2Summary(d) {
+  var el = document.getElementById('s2-metrics');
+  if (!el) return;
+  var CUR = 16;
+  var PREV = [12,13,14,15];
+  function avg4(arr) { return PREV.reduce(function(s,i){ return s+arr[i]; },0)/4; }
+  function rnd(v) { return Math.round(v); }
+
+  // 수치 역산 (landing * rate / 100)
+  var designCur  = rnd(d.landing[CUR] * d.dr[CUR] / 100);
+  var applyCur   = rnd(d.landing[CUR] * d.dr[CUR] / 100 * d.ar[CUR] / 100);
+  var contractCur = rnd(d.contract[CUR]);
+
+  var designAvg  = rnd(avg4(d.landing) * avg4(d.dr) / 100);
+  var applyAvg   = rnd(avg4(d.landing) * avg4(d.dr) / 100 * avg4(d.ar) / 100);
+  var contractAvg = Math.round(avg4(d.contract)*10)/10;
+
+  // 상품 진입 수 (랜딩 수 자체가 상품 진입)
+  var landingCur = rnd(d.landing[CUR]);
+  var landingAvg = rnd(avg4(d.landing));
+  // 보험상품탭 방문자수 기준 상품 진입율
+  var tabVisitorCur  = D.insuranceTab[CUR] > 0 ? D.insuranceTab[CUR] : 1;
+  var tabVisitorAvg4 = PREV.reduce(function(s,i){ return s+D.insuranceTab[i]; },0)/4;
+  var productRateCur = (d.landing[CUR] / tabVisitorCur * 100).toFixed(2);
+  var productRateAvg = (avg4(d.landing) / tabVisitorAvg4 * 100).toFixed(2);
+  var productRateDiff = parseFloat(productRateCur) - parseFloat(productRateAvg);
+
+  var metrics = [
+    { lbl:'상품 진입율',  cnt:landingCur,   cUnit:'명', rate:productRateCur,            avgCnt:landingAvg,    avgRate:productRateAvg,            diff:productRateDiff },
+    { lbl:'설계 진입율',  cnt:designCur,    cUnit:'명', rate:d.dr[CUR].toFixed(2),     avgCnt:designAvg,     avgRate:avg4(d.dr).toFixed(2),     diff:d.dr[CUR]-avg4(d.dr) },
+    { lbl:'청약 진입율',  cnt:applyCur,     cUnit:'명', rate:d.ar[CUR].toFixed(2),     avgCnt:applyAvg,      avgRate:avg4(d.ar).toFixed(2),     diff:d.ar[CUR]-avg4(d.ar) },
+    { lbl:'청약 완료율',  cnt:contractCur,  cUnit:'건', rate:d.cr[CUR].toFixed(2),     avgCnt:contractAvg,   avgRate:avg4(d.cr).toFixed(2),     diff:d.cr[CUR]-avg4(d.cr) },
+    { lbl:'청약전환율',   cnt:contractCur,  cUnit:'건', rate:d.overall[CUR].toFixed(4),avgCnt:contractAvg,   avgRate:avg4(d.overall).toFixed(4),diff:d.overall[CUR]-avg4(d.overall) },
+  ];
+
+  el.innerHTML = metrics.map(function(m) {
+    var isUp = m.diff >  0.005;
+    var isDn = m.diff < -0.005;
+    var cl = isUp ? '#5DCAA5' : isDn ? '#F0997B' : '#8b949e';
+    var bg = isUp ? 'rgba(29,158,117,0.12)' : isDn ? 'rgba(216,90,48,0.12)' : 'rgba(128,128,128,0.08)';
+    var sign = isUp ? '+' : isDn ? '' : '±';
+    var diffStr = sign + Math.abs(m.diff).toFixed(2) + '%p';
+    return '<div style="display:flex;flex-direction:column;gap:2px;padding:6px 12px;border-radius:8px;background:'+bg+';border:1px solid '+cl+'33;">'
+      + '<span style="font-size:9px;color:#8b949e;white-space:nowrap;">'+m.lbl+'</span>'
+      + '<span style="font-size:14px;font-weight:600;color:'+cl+';">'+m.cnt.toLocaleString()+m.cUnit
+        +'<span style="font-size:11px;font-weight:400;color:'+cl+';margin-left:3px;">('+m.rate+'%)</span></span>'
+      + '<span style="font-size:9px;color:#8b949e;">4주평균 '+m.avgCnt+m.cUnit+'('+m.avgRate+'%)'
+        +' <span style="color:'+cl+';">'+diffStr+'</span></span>'
+      + '</div>';
+  }).join('');
+}
+
+function setP(sec, pIdx) {
+  document.querySelectorAll(`#tabs${sec} .ptab`).forEach((t,i)=>t.classList.toggle('active',i===pIdx));
+  const d = D[chKey[sec]][prodKey[pIdx]];
+  const ch = chartMap[sec];
+  ch.data.datasets[0].data = [...d.landing];
+  ch.data.datasets[1].data = [...d.dr];
+  ch.data.datasets[2].data = [...d.ar];
+  ch.data.datasets[3].data = [...d.cr];
+  ch.update();
+  // update contract chart
+  const cb = contractMap[sec];
+  cb.data.datasets[0].data = [...d.contract];
+  cb.data.datasets[1].data = [...d.overall];
+  cb.update();
+  // s2 요약 업데이트
+  if (sec === 2) { updateS2Summary(d); }
+
+  // prodState 업데이트 + 이벤트 도트 플러그인 재연결
+  if (sec === 2) {
+    prodState[2] = pIdx;
+    // c2 차트의 evtDots 플러그인을 현재 상품 이벤트로 교체
+    const evtKey = prodEvtMap[pIdx];
+    const newPlugin = makeEvtPlugin(EVT[evtKey]);
+    const chart2 = chartMap[2];
+    // Chart.js 4.x: plugins는 config에 직접 등록돼 있으므로 afterDraw 재정의
+    chart2._plugins = chart2._plugins || [];
+    // 간단하게 재그리기로 처리 (evtArr를 클로저로 캡처)
+    chart2.evtArr = EVT[evtKey];
+    chart2.update();
+  }
+  hideTip();
+}
+
+/* ── Summary Section ── */
+function renderSummary() {
+  const CUR  = 16;
+  const PREV = [12, 13, 14, 15];
+
+  function cur(arr)  { return arr[CUR]; }
+  function avg4(arr) { return PREV.reduce((s,i)=>s+arr[i],0)/4; }
+  function cls(v)    { return v > 0.005 ? 'up' : v < -0.005 ? 'dn' : 'flat'; }
+
+  /* ── 방문자 상수 ── */
+  const VIS = {
+    appTotal: 607035, webTotal: 82859,
+    internal: [
+      { lbl:'오가닉 직접유입',     color:'#5DCAA5', tag:'내부', tagBg:'rgba(93,202,165,0.12)',  tagC:'#5DCAA5', val:405,   pct:'6.91%' },
+      { lbl:'보험상품탭 (App)',    color:'#1D9E75', tag:'내부', tagBg:'rgba(29,158,117,0.15)',  tagC:'#5DCAA5', val:1594,  pct:'2.57%' },
+      { lbl:'라플레이 광고 (App)', color:'#378ADD', tag:'내부', tagBg:'rgba(55,138,221,0.15)',  tagC:'#85B7EB', val:3431,  pct:'0.03%' },
+      { lbl:'라플레이 미션 (App)', color:'#85B7EB', tag:'내부', tagBg:'rgba(55,138,221,0.10)',  tagC:'#85B7EB', val:26820, pct:'0.0%' },
+    ],
+    external: [
+      { lbl:'DA',   color:'#EF9F27', tag:'외부', tagBg:'rgba(239,159,39,0.15)',  tagC:'#EF9F27', val:3588,  pct:'0.17%' },
+      { lbl:'SA',   color:'#E24B4A', tag:'외부', tagBg:'rgba(226,75,74,0.15)',   tagC:'#E24B4A', val:1606,  pct:'3.3%' },
+      { lbl:'제휴', color:'#A37FDE', tag:'외부', tagBg:'rgba(163,127,222,0.15)', tagC:'#A37FDE', val:896, pct:'1.34%' },
+    ],
+  };
+  const totalInternal = VIS.internal.reduce((s,r)=>s+r.val,0);
+  const totalExternal = VIS.external.reduce((s,r)=>s+r.val,0);
+  const totalProduct  = totalInternal + totalExternal;
+  const totalVisitors = VIS.appTotal + VIS.webTotal;
+
+  /* ── 상위 퍼널 데이터 ── */
+  // fr[0]=NativeApp, fr[1]=InsuranceTab, fr[2]=앱→탭, fr[3]=탭→랜딩
+  const funnelDefs = [
+    {
+      lbl:'Native App 방문자', arr:D.nativeApp, color:'#85B7EB',
+      fmtVal:  v => (v/10000).toFixed(1)+'만명',
+      fmtDiff: (c,a) => { const d=c-a; return (d>=0?'+':'-')+Math.abs(Math.round(d)).toLocaleString()+'명'; },
+      fmtPct:  (c,a) => a ? ((c-a)/a*100).toFixed(1)+'%' : '0.0%'
+    },
+    {
+      lbl:'보험상품탭 방문자', arr:D.insuranceTab, color:'#85B7EB',
+      fmtVal:  v => v.toLocaleString()+'명',
+      fmtDiff: (c,a) => { const d=c-a; return (d>=0?'+':'-')+Math.abs(Math.round(d)).toLocaleString()+'명'; },
+      fmtPct:  (c,a) => a ? ((c-a)/a*100).toFixed(1)+'%' : '0.0%'
+    },
+    {
+      lbl:'앱 → 탭 전환율', arr:D.r_app2tab, color:'#378ADD',
+      fmtVal:  v => v.toFixed(3)+'%',
+      fmtDiff: (c,a) => { const d=c-a; return (d>=0?'+':'-')+Math.abs(d).toFixed(3)+'%p'; },
+      fmtPct:  (c,a) => a ? ((c-a)/a*100).toFixed(1)+'%' : '0.0%'
+    },
+    {
+      lbl:'탭 → 랜딩 전환율', arr:D.r_tab2land, color:'#D85A30',
+      fmtVal:  v => v.toFixed(2)+'%',
+      fmtDiff: (c,a) => { const d=c-a; return (d>=0?'+':'-')+Math.abs(d).toFixed(2)+'%p'; },
+      fmtPct:  (c,a) => a ? ((c-a)/a*100).toFixed(1)+'%' : '0.0%'
+    },
+  ];
+  const fr = funnelDefs.map(r => {
+    const c=cur(r.arr), a=avg4(r.arr), diff=c-a;
+    return Object.assign({}, r, { c, a, diff, cl:cls(diff), pct:r.fmtPct(c,a), sign:diff>=0?'+':'' });
+  });
+
+  /* ── 보장성 랜딩 방문자수 ── */
+  const tabLandingCur  = D.tab.whole.landing[CUR];
+  const tabLandingArr  = D.tab.whole.landing;
+  const tabLandingAvg4 = PREV.reduce((s,i)=>s+tabLandingArr[i],0)/4;
+  const tabLandingDiff = tabLandingCur - tabLandingAvg4;
+  const tabLandingCl   = cls(tabLandingDiff);
+  const tabLandingSign = tabLandingDiff >= 0 ? '+' : '-';
+
+  /* ── 상위 퍼널 HTML (3단 그리드) ── */
+  function divider() {
+    return '<div style="margin-top:10px;padding-top:8px;border-top:0.5px solid rgba(255,255,255,0.07);"></div>';
+  }
+  function fRow(label, valHtml, chgHtml) {
+    return '<div class="fkpi-lbl">'+label+'</div><div class="fkpi-val" style="">'+valHtml+'</div><div>'+chgHtml+'</div>';
+  }
+  function chgSpan(cl, sign, diffStr, pct) {
+    return '<div class="fkpi-chg '+cl+'">'+sign+diffStr+' <span style="opacity:.65">('+sign+pct+')</span></div>';
+  }
+
+  const appSharePct = (VIS.appTotal / totalVisitors * 100).toFixed(1);
+
+  const g1 = '<div class="fkpi">'
+    +'<div class="fkpi-lbl">'+fr[0].lbl+'</div>'
+    +'<div class="fkpi-val" style="color:'+fr[0].color+'">'+fr[0].fmtVal(fr[0].c)+'</div>'
+    +'<div class="fkpi-chg '+fr[0].cl+'">'+fr[0].fmtDiff(fr[0].c,fr[0].a)+' <span style="opacity:.65">('+fr[0].sign+fr[0].pct+')</span></div>'
+    +'<div style="margin-top:10px;padding-top:8px;border-top:0.5px solid rgba(255,255,255,0.07);">'
+    +'<div class="fkpi-lbl">전체 방문자 중 비율</div>'
+    +'<div class="fkpi-val" style="color:#85B7EB;font-size:18px;">'+appSharePct+'%</div>'
+    +'<div style="font-size:10px;color:var(--t3);margin-top:2px;">App '+VIS.appTotal.toLocaleString()+' / Web '+VIS.webTotal.toLocaleString()+'</div>'
+    +'</div></div>';
+
+  const g2 = '<div class="fkpi">'
+    +'<div class="fkpi-lbl">'+fr[1].lbl+'</div>'
+    +'<div class="fkpi-val" style="color:'+fr[1].color+'">'+fr[1].fmtVal(fr[1].c)+'</div>'
+    +'<div class="fkpi-chg '+fr[1].cl+'">'+fr[1].fmtDiff(fr[1].c,fr[1].a)+' <span style="opacity:.65">('+fr[1].sign+fr[1].pct+')</span></div>'
+    +'<div style="margin-top:10px;padding-top:8px;border-top:0.5px solid rgba(255,255,255,0.07);">'
+    +'<div class="fkpi-lbl">'+fr[2].lbl+'</div>'
+    +'<div class="fkpi-val" style="color:'+fr[2].color+'">'+fr[2].fmtVal(fr[2].c)+'</div>'
+    +'<div class="fkpi-chg '+fr[2].cl+'">'+fr[2].fmtDiff(fr[2].c,fr[2].a)+' <span style="opacity:.65">('+fr[2].sign+fr[2].pct+')</span></div>'
+    +'</div></div>';
+
+  const g3 = '<div class="fkpi">'
+    +'<div class="fkpi-lbl">보장성 상품 랜딩</div>'
+    +'<div class="fkpi-val" style="color:#85B7EB">'+Math.round(tabLandingCur).toLocaleString()+'명</div>'
+    +'<div class="fkpi-chg '+tabLandingCl+'">'+tabLandingSign+Math.abs(Math.round(tabLandingDiff)).toLocaleString()+'명 <span style="opacity:.65">('+( tabLandingAvg4!==0 ? ((tabLandingDiff/tabLandingAvg4)*100).toFixed(1) : '0.0' )+'%)</span></div>'
+    +'<div style="margin-top:10px;padding-top:8px;border-top:0.5px solid rgba(255,255,255,0.07);">'
+    +'<div class="fkpi-lbl">'+fr[3].lbl+'</div>'
+    +'<div class="fkpi-val" style="color:'+fr[3].color+'">'+fr[3].fmtVal(fr[3].c)+'</div>'
+    +'<div class="fkpi-chg '+fr[3].cl+'">'+fr[3].fmtDiff(fr[3].c,fr[3].a)+' <span style="opacity:.65">('+fr[3].sign+fr[3].pct+')</span></div>'
+    +'</div></div>';
+
+  const funnelHtml = '<div class="sum-funnel" style="margin-bottom:10px;">'
+    +'<div class="sum-funnel-title">상위 퍼널 현황 — '+D.weeks[CUR]+' vs 직전 4주 평균</div>'
+    +'<div class="funnel-kpis">'+g1+g2+g3+'</div>'
+    +'</div>';
+
+  /* ── 방문자 수 그리드 HTML ── */
+  function visRow(r) {
+    const sharePct = (r.val / totalProduct * 100).toFixed(1) + '%';
+    return '<div class="vis-row">'
+      +'<div class="vis-row-left">'
+      +'<span class="vis-row-dot" style="background:'+r.color+'"></span>'
+      +'<span class="vis-row-lbl">'+r.lbl+'</span>'
+      +'<span class="vis-row-tag" style="background:'+r.tagBg+';color:'+r.tagC+';">'+r.tag+'</span>'
+      +'</div>'
+      +'<div class="vis-row-right">'
+      +'<span class="vis-row-val">'+r.val.toLocaleString()+' <span style="font-size:10px;color:var(--t3);font-weight:400;">('+r.pct+')</span></span>'
+      +'<span class="vis-row-pct">'+sharePct+'</span>'
+      +'</div>'
+      +'</div>';
+  }
+
+  const visGridHtml = '<div class="vis-grid">'
+    /* 그리드1: 전체 방문자 */
+    +'<div class="vis-card" style="display:flex;flex-direction:column;">'
+    +'<div class="vis-card-title">전체 방문자수</div>'
+    +'<div class="vis-total-row">'
+    +'<span class="vis-total-lbl">전체 합계</span>'
+    +'<div class="vis-total-val">'+totalVisitors.toLocaleString()+'<span style="font-size:12px;font-weight:400;color:var(--t3);margin-left:3px;">명</span></div>'
+    +'</div>'
+    +'<div style="display:grid;grid-template-columns:140px 1fr;gap:14px;align-items:start;flex:1;">'
+    +'<div style="position:relative;width:100%;height:250px;"><canvas id="vis-total-bar"></canvas></div>'
+    +'<div style="display:flex;flex-direction:column;">'
+    +'<div class="vis-row">'
+    +'<div class="vis-row-left"><span class="vis-row-dot" style="background:#378ADD"></span><span class="vis-row-lbl">App 방문자</span></div>'
+    +'<div class="vis-row-right"><span class="vis-row-val">'+VIS.appTotal.toLocaleString()+'</span><span class="vis-row-pct">'+(VIS.appTotal/totalVisitors*100).toFixed(1)+'%</span></div>'
+    +'</div>'
+    +'<div class="vis-row">'
+    +'<div class="vis-row-left"><span class="vis-row-dot" style="background:#5DCAA5"></span><span class="vis-row-lbl">Web 방문자</span></div>'
+    +'<div class="vis-row-right"><span class="vis-row-val">'+VIS.webTotal.toLocaleString()+'</span><span class="vis-row-pct">'+(VIS.webTotal/totalVisitors*100).toFixed(1)+'%</span></div>'
+    +'</div>'
+    +'</div></div></div>'
+    /* 그리드2: 상품 방문자 + 차트 */
+    +'<div class="vis-card" style="display:flex;flex-direction:column;">'
+    +'<div class="vis-card-title">상품 방문자수 (청약 전환율)</div>'
+    +'<div class="vis-total-row">'
+    +'<span class="vis-total-lbl">상품 랜딩 합계</span>'
+    +'<div class="vis-total-val">'+totalProduct.toLocaleString()+'<span style="font-size:12px;font-weight:400;color:var(--t3);margin-left:3px;">명</span></div>'
+    +'</div>'
+    +'<div style="display:grid;grid-template-columns:140px 1fr;gap:14px;align-items:start;flex:1;">'
+    +'<div style="display:flex;flex-direction:column;gap:6px;">'
+    +'<div style="position:relative;width:100%;height:250px;"><canvas id="vis-pie"></canvas></div>'
+    +'</div>'
+    +'<div style="display:flex;flex-direction:column;">'
+    +'<div class="vis-section-lbl" style="margin-top:0;display:flex;justify-content:space-between;align-items:center;">내부유입 <span style="font-weight:600;color:var(--t1);font-size:11px;">'+totalInternal.toLocaleString()+'명 <span style="font-weight:400;color:var(--t3);font-size:10px;">(' + (totalInternal/totalProduct*100).toFixed(1) + '%)</span></span></div>'
+    +VIS.internal.map(visRow).join('')
+    +'<div class="vis-section-lbl" style="display:flex;justify-content:space-between;align-items:center;">외부유입 <span style="font-weight:600;color:var(--t1);font-size:11px;">'+totalExternal.toLocaleString()+'명 <span style="font-weight:400;color:var(--t3);font-size:10px;">(' + (totalExternal/totalProduct*100).toFixed(1) + '%)</span></span></div>'
+    +VIS.external.map(visRow).join('')
+    +'</div></div></div>'
+    +'</div>';
+
+  /* ── 채널 정의 ── */
+  const channels = [
+    { key:'tab', name:'보험상품탭 유입', dot:'#1D9E75' },
+  ];
+  const CH_COLORS_PIE = ['#1D9E75','#378ADD','#D85A30'];
+
+  const chMetrics = [
+    { field:'dr',       lbl:'설계 진입율',          unit:'%p', isCount:false, dec:2 },
+    { field:'ar',       lbl:'청약 진입율',           unit:'%p', isCount:false, dec:2 },
+    { field:'overall',  lbl:'청약전환율 (랜딩기준)', unit:'%p', isCount:false, dec:4 },
+    { field:'contract', lbl:'청약 건수',             unit:'건', isCount:true,  dec:0 },
+  ];
+
+  /* ── 파이 데이터 ── */
+  const pieVals  = channels.map(ch => D[ch.key]['whole']['landing'][CUR]);
+  const pieTotal = pieVals.reduce((a,b)=>a+b, 0);
+  const piePcts  = pieVals.map(v => pieTotal>0 ? (v/pieTotal*100).toFixed(1) : '0.0');
+
+  /* ── 파이 카드 HTML ── */
+  const pieCardHtml = '<div class="sum-ch" style="display:flex;flex-direction:column;">'
+    +'<div class="sum-ch-hdr">'
+    +'<span class="sum-ch-name" style="font-size:11px;">보장성 랜딩 채널 구성</span>'
+    +'<span class="sum-ch-sub">현재 주차</span>'
+    +'</div>'
+    +'<div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:10px 14px 14px;">'
+    +'<div style="position:relative;width:100%;height:130px;"><canvas id="pie-channel"></canvas></div>'
+    +'<div id="pie-channel-legend" style="margin-top:10px;display:flex;flex-direction:column;gap:5px;"></div>'
+    +'</div></div>';
+
+  /* ── 채널 카드 HTML ── */
+  let chCardsHtml = '';
+  channels.forEach((ch, ci) => {
+    const _ctArr  = D[ch.key]['whole']['contract'];
+    const _ctCur  = Math.round(cur(_ctArr));
+    const _ctAvg  = avg4(_ctArr);
+    const _ctDiff = _ctCur - _ctAvg;
+    const _ctSign = _ctDiff >= 0.5 ? '+' : _ctDiff <= -0.5 ? '\u2212' : '\u00b1';
+    const _ctCl   = cls(_ctDiff);
+
+    let rowsHtml = '';
+    chMetrics.forEach(m => {
+      const arr = D[ch.key]['whole'][m.field];
+      const c=cur(arr), a=avg4(arr), diff=c-a;
+      const cl=cls(diff);
+      const curFmt  = m.isCount ? Math.round(c).toLocaleString()+'건' : c.toFixed(m.dec)+'%';
+      const absDiff = m.isCount ? Math.abs(Math.round(diff)) : Math.abs(diff);
+      const diffStr = m.isCount ? absDiff.toLocaleString()+'건' : absDiff.toFixed(m.dec)+m.unit;
+      const sign    = diff>=0.005?'+':diff<=-0.005?'-':'±';
+      const pctStr  = a!==0 ? ' ('+(diff>=0?'+':'')+((diff/Math.abs(a))*100).toFixed(1)+'%)' : '';
+      rowsHtml += '<div class="sum-row">'
+        +'<span class="sum-row-lbl">'+m.lbl+'</span>'
+        +'<span class="sum-row-val">'+curFmt+'</span>'
+        +'<span class="sum-row-chg '+cl+'">'+sign+diffStr+pctStr+'</span>'
+        +'</div>';
+    });
+
+    const pctBadge = '<span style="font-size:10px;padding:1px 7px;border-radius:10px;background:rgba(255,255,255,0.06);color:var(--t2);">랜딩 '+piePcts[ci]+'%</span>';
+
+    chCardsHtml += '<div class="sum-ch">'
+      +'<div class="sum-ch-hdr">'
+      +'<span class="sum-ch-dot" style="background:'+ch.dot+'"></span>'
+      +'<span class="sum-ch-name">'+ch.name+'</span>'
+      +'<span class="sum-ch-contract">'
+      +'<span class="sum-ch-contract-val">'+_ctCur+'건</span>'
+      +'<span class="sum-ch-contract-chg '+_ctCl+'">'+_ctSign+Math.abs(Math.round(_ctDiff))+'건</span>'
+      +'</span>'
+      +pctBadge
+      +'</div>'
+      +'<div class="sum-rows">'+rowsHtml+'</div>'
+      +'</div>';
+  });
+
+  /* ── DOM 렌더 ── */
+  document.getElementById('summary-section').innerHTML =
+    '<div class="sum-week">'
+    +'<strong>최신 주차: 4/24–4/30</strong>'
+    +'<span class="vs">vs 직전 4주 평균 (3/27\u20134/23)</span>'
+    +'<span style="color:var(--t3);font-size:10px;">\u25b2 상승 \u00a0 \u25bc 하락</span>'
+    +'</div>'
+    +visGridHtml
+    +'<div style="font-size:12px;font-weight:600;color:var(--accent);letter-spacing:.06em;margin-bottom:8px;margin-top:4px;">보험상품탭 유입</div>'
+    +funnelHtml
+    +'<div style="height:1px;background:var(--border);margin:18px 0 22px"></div>';
+
+  /* ── 차트 렌더 ── */
+  requestAnimationFrame(() => {
+    /* vis-total-bar */
+    const tbCanvas = document.getElementById('vis-total-bar');
+    if (tbCanvas) {
+      const ex = Chart.getChart(tbCanvas); if (ex) ex.destroy();
+      const appPct = +(VIS.appTotal/totalVisitors*100).toFixed(2);
+      const webPct = +(VIS.webTotal/totalVisitors*100).toFixed(2);
+      new Chart(tbCanvas, {
+        type:'bar',
+        data:{ labels:['방문자'], datasets:[
+          { label:'App 방문자', data:[appPct], backgroundColor:'#378ADD', borderColor:'#161b22', borderWidth:1 },
+          { label:'Web 방문자', data:[webPct], backgroundColor:'#5DCAA5', borderColor:'#161b22', borderWidth:1 },
+        ]},
+        options:{ responsive:true, maintainAspectRatio:false, indexAxis:'x',
+          scales:{
+            x:{ stacked:true, ticks:{font:{size:10},color:'#8b949e'}, grid:{display:false} },
+            y:{ stacked:true, max:100, reverse:true, ticks:{font:{size:9},color:'#8b949e',callback:v=>v+'%'}, grid:{color:'rgba(255,255,255,0.05)'} }
+          },
+          plugins:{ legend:{display:false}, tooltip:{ backgroundColor:'#1c2128', borderColor:'rgba(255,255,255,0.1)', borderWidth:1, titleColor:'#e6edf3', bodyColor:'#8b949e',
+            callbacks:{ label:ctx=>{ const val=ctx.dataset.label==='App 방문자'?VIS.appTotal:VIS.webTotal; return ' '+ctx.dataset.label+': '+val.toLocaleString()+'명 ('+ctx.parsed.y.toFixed(1)+'%)'; }, title:()=>'전체 방문자 구성' }
+          }}
+        }
+      });
+    }
+
+    /* vis-pie (상품 방문 채널) */
+    const VIS_LABELS  = ['오가닉','보험상품탭','라플레이 광고','라플레이 미션','DA','SA','제휴'];
+    const VIS_VALS    = [413,1436,2819,17724,4701,1947,22353];
+    const VIS_COLORS  = ['#5DCAA5','#1D9E75','#378ADD','#85B7EB','#EF9F27','#E24B4A','#A37FDE'];
+    const VIS_GROUPS  = ['내부','내부','내부','내부','외부','외부','외부'];
+    const visPieTotal = VIS_VALS.reduce((a,b)=>a+b,0);
+    const visPiePcts  = VIS_VALS.map(v=>(v/visPieTotal*100).toFixed(1));
+
+    const pieCanvas = document.getElementById('vis-pie');
+    if (pieCanvas) {
+      const ex = Chart.getChart(pieCanvas); if (ex) ex.destroy();
+      new Chart(pieCanvas, {
+        type:'bar',
+        data:{ labels:['채널 구성'], datasets: VIS_LABELS.map((lbl,i)=>({
+          label:lbl, data:[+(VIS_VALS[i]/visPieTotal*100).toFixed(2)],
+          backgroundColor:VIS_COLORS[i], borderColor:'#161b22', borderWidth:1,
+        }))},
+        options:{ responsive:true, maintainAspectRatio:false, indexAxis:'x',
+          scales:{
+            x:{ stacked:true, ticks:{font:{size:10},color:'#8b949e'}, grid:{display:false} },
+            y:{ stacked:true, max:100, reverse:true, ticks:{font:{size:9},color:'#8b949e',callback:v=>v+'%'}, grid:{color:'rgba(255,255,255,0.05)'} }
+          },
+          plugins:{ legend:{display:false}, tooltip:{ backgroundColor:'#1c2128', borderColor:'rgba(255,255,255,0.1)', borderWidth:1, titleColor:'#e6edf3', bodyColor:'#8b949e',
+            callbacks:{ label:ctx=>{ const idx=VIS_LABELS.indexOf(ctx.dataset.label); return ' ['+VIS_GROUPS[idx]+'] '+ctx.dataset.label+': '+VIS_VALS[idx].toLocaleString()+'명 ('+visPiePcts[idx]+'%)'; }, title:()=>'상품 방문 채널 구성' }
+          }}
+        }
+      });
+    }
+
+    /* pie-channel (채널별 랜딩 도넛) */
+    const pcCanvas = document.getElementById('pie-channel');
+    if (pcCanvas) {
+      const ex = Chart.getChart(pcCanvas); if (ex) ex.destroy();
+      new Chart(pcCanvas, {
+        type:'doughnut',
+        data:{ labels:channels.map(c=>c.name), datasets:[{
+          data:pieVals, backgroundColor:CH_COLORS_PIE,
+          borderColor:'#161b22', borderWidth:2, hoverOffset:6,
+        }]},
+        options:{ responsive:true, maintainAspectRatio:false, cutout:'58%',
+          plugins:{ legend:{display:false}, tooltip:{ backgroundColor:'#1c2128', borderColor:'rgba(255,255,255,0.1)', borderWidth:1, titleColor:'#e6edf3', bodyColor:'#8b949e',
+            callbacks:{ label:ctx=>` ${ctx.label}: ${Math.round(ctx.parsed).toLocaleString()}명 (${piePcts[ctx.dataIndex]}%)` }
+          }}
+        }
+      });
+      const legendEl = document.getElementById('pie-channel-legend');
+      if (legendEl) {
+        legendEl.innerHTML = channels.map((ch,i) =>
+          '<div style="display:flex;align-items:center;justify-content:space-between;font-size:11px;">'
+          +'<span style="display:flex;align-items:center;gap:5px;">'
+          +'<span style="width:8px;height:8px;border-radius:50%;background:'+CH_COLORS_PIE[i]+';flex-shrink:0;"></span>'
+          +'<span style="color:var(--t2);">'+ch.name+'</span>'
+          +'</span>'
+          +'<span style="display:flex;gap:8px;align-items:center;">'
+          +'<span style="color:var(--t3);font-size:10px;">'+Math.round(pieVals[i]).toLocaleString()+'명</span>'
+          +'<span style="color:var(--t1);font-weight:500;min-width:36px;text-align:right;">'+piePcts[i]+'%</span>'
+          +'</span></div>'
+        ).join('');
+      }
+    }
+  });
+}
+
+/* init */
+comboChart('c1a', D.nativeApp,    'rgba(55,138,221,.22)','#378ADD', D.r_app2tab,  '#378ADD','방문자 수 (명)', null);
+comboChart('c1b', D.insuranceTab, 'rgba(216,90,48,.22)', '#D85A30', D.r_tab2land, '#D85A30','방문자 수 (명)', EVT.tab);
+chartMap[2] = buildMulti('c2', D.tab.whole, EVT.whole);
+contractMap[2] = buildContract('c2b', D.tab.whole);
+
+/* ── Event Tooltip Logic ── */
+const tip = document.getElementById('evtTip');
+const tipWeek = document.getElementById('evtTipWeek');
+const tipTitle = document.getElementById('evtTipTitle');
+const tipBody = document.getElementById('evtTipBody');
+
+function showTip(e, weekIdx, evtList, titleLabel) {
+  if (!tip) return;
+  if (!evtList || evtList.length === 0) { tip.style.display='none'; return; }
+  tipWeek.textContent = D.weeks[weekIdx] + ' 주차';
+  tipTitle.innerHTML = '<span class="evt-tooltip-dot"></span>' + titleLabel + ' 적용 이벤트';
+  tipBody.innerHTML = evtList.map(t => `<div class="evt-tooltip-item">${t}</div>`).join('');
+  tip.style.display = 'block';
+  moveTip(e);
+}
+
+function moveTip(e) {
+  if (!tip) return;
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const tw = tip.offsetWidth + 16, th = tip.offsetHeight + 16;
+  let x = e.clientX + 14, y = e.clientY + 14;
+  if (x + tw > vw) x = e.clientX - tw + 2;
+  if (y + th > vh) y = e.clientY - th + 2;
+  tip.style.left = x + 'px';
+  tip.style.top  = y + 'px';
+}
+
+function hideTip() { if (tip) tip.style.display = 'none'; }
+
+// x축 hover → 이벤트 툴팁 연결
+function attachEvtHover(canvasId, evtArr, titleLabel) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  canvas.addEventListener('mousemove', function(e) {
+    const chart = Chart.getChart(canvas);
+    if (!chart) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    // x 좌표에서 가장 가까운 데이터 인덱스 찾기
+    const xScale = chart.scales.x;
+    if (!xScale) return;
+    let closestIdx = -1, minDist = Infinity;
+    for (let i = 0; i < D.weeks.length; i++) {
+      const px = xScale.getPixelForValue(i);
+      const dist = Math.abs(x - px);
+      if (dist < minDist) { minDist = dist; closestIdx = i; }
+    }
+    if (closestIdx >= 0 && minDist < 40 && hasEvt(evtArr, closestIdx)) {
+      showTip(e, closestIdx, evtArr[closestIdx], titleLabel);
+    } else {
+      hideTip();
+    }
+  });
+  canvas.addEventListener('mouseleave', hideTip);
+  document.addEventListener('mousemove', function(e) {
+    if (tip.style.display === 'block') moveTip(e);
+  });
+}
+
+// 현재 선택된 product idx 추적
+const prodState = { 2: 0 };
+const prodEvtMap = ['whole', 'jeonggi', 'cancer', 'jonghap'];
+
+function getC2Events() { return EVT[prodEvtMap[prodState[2]]]; }
+function getC3Events() { return EVT[prodEvtMap[prodState[3]]]; }
+renderSummary();
+updateS2Summary(D.tab.whole);
+
+// 이벤트 툴팁 연결
+// c1b: 보험상품탭 이벤트
+attachEvtHover('c1b', EVT.tab, '보험상품탭');
+
+// c2: 보장성전체/상품별 동적 연결
+(function() {
+  const canvas2 = document.getElementById('c2');
+  if (!canvas2) return;
+  canvas2.addEventListener('mousemove', function(e) {
+    const chart = Chart.getChart(canvas2);
+    if (!chart) return;
+    const rect = canvas2.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const xScale = chart.scales.x;
+    if (!xScale) return;
+    let closestIdx = -1, minDist = Infinity;
+    for (let i = 0; i < D.weeks.length; i++) {
+      const px = xScale.getPixelForValue(i);
+      const dist = Math.abs(x - px);
+      if (dist < minDist) { minDist = dist; closestIdx = i; }
+    }
+    if (closestIdx >= 0 && minDist < 40) {
+      const evtArr = EVT[prodEvtMap[prodState[2]]];
+      if (hasEvt(evtArr, closestIdx)) {
+        const prodNames = ['보장성보험 전체','정기보험','암보험','맞춤건강종합보험'];
+        showTip(e, closestIdx, evtArr[closestIdx], prodNames[prodState[2]]);
+      } else { hideTip(); }
+    } else { hideTip(); }
+  });
+  canvas2.addEventListener('mouseleave', hideTip);
+})();
+
+</script>
+</body>
+</html>
