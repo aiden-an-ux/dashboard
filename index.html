@@ -176,7 +176,7 @@ body { font-family:'Pretendard','Apple SD Gothic Neo',sans-serif; background:var
       </div>
       <div class="card">
         <div class="card-title">보험상품탭 → 보장성 랜딩</div>
-        <div class="legend"><span><span class="ldot" style="background:rgba(216,90,48,.5)"></span>보험상품탭 방문자</span><span><span class="lline" style="background:#D85A30"></span>보장성 랜딩 전환율</span></div>
+        <div class="legend"><span><span class="ldot" style="background:rgba(216,90,48,.5)"></span>보험상품탭 방문자</span><span><span class="lline" style="background:#D85A30"></span>보장성 랜딩 전환율</span><span><span class="lline" style="background:#A37FDE"></span>미니보험 랜딩 전환율</span></div>
         <div class="chart-wrap" style="height:210px"><canvas id="c1b"></canvas></div>
       </div>
     </div>
@@ -230,6 +230,7 @@ const D = {
   insuranceTab: [4662,4119,4139,4237,4539,4455,5425,5636,6005,5339,5129,5355,6688,8093,6908,5262,5906,6206],
   r_app2tab:    [0.821,0.714,0.72,0.737,0.8,0.782,0.979,0.979,1.051,0.912,0.867,0.894,1.139,1.336,1.13,0.858,0.973,1.045],
   r_tab2land:   [62.956,63.438,58.71,59.382,51.157,49.54,42.599,41.412,34.055,35.643,33.574,32.269,27.721,21.426,20.787,27.765,26.99,21.076],
+  r_tab2mini:   [30.438,25.225,20.536,22.846,23.507,20.696,15.594,18.843,14.122,13.13,16.046,15.07,11.319,9.91,8.903,13.398,13.444,14.647],
   tab: {
     whole: { landing:[2935.0,2613.0,2430.0,2516.0,2322.0,2207.0,2311.0,2334.0,2045.0,1903.0,1722.0,1728.0,1854.0,1734.0,1436.0,1461.0,1594.0,1308.0], dr:[33.02,43.63,41.65,48.01,41.47,41.05,42.1,37.7,47.43,50.34,43.96,48.26,42.34,39.22,48.75,48.46,54.45,54.82], ar:[17.75,16.4,17.09,17.63,19.11,19.98,15.72,14.2,18.14,19.42,17.83,14.75,20.13,21.47,19.43,21.05,18.32,21.06], cr:[25.0,25.13,24.28,24.41,18.48,18.23,24.18,29.6,22.73,24.19,26.67,21.14,34.18,32.19,29.41,22.82,25.79,31.79], contract:[43.0,47.0,42.0,52.0,34.0,33.0,37.0,37.0,40.0,45.0,36.0,26.0,54.0,47.0,40.0,34.0,41.0,48.0], overall:[1.4651,1.7987,1.7284,2.0668,1.4643,1.4952,1.601,1.5853,1.956,2.3647,2.0906,1.5046,2.9126,2.7105,2.7855,2.3272,2.5721,3.6697] },
     jeonggi: { landing:[570.0,1279.0,1215.0,569.0,537.0,573.0,997.0,525.0,721.0,623.0,439.0,417.0,677.0,455.0,382.0,449.0,640.0,454.0], dr:[32.11,37.61,24.77,40.07,43.39,36.47,39.52,31.43,29.13,34.35,34.62,40.05,27.03,27.47,43.46,38.98,46.09,46.48], ar:[21.31,9.15,18.6,21.49,25.32,25.36,10.15,14.55,18.57,22.43,17.76,18.56,22.4,25.6,21.08,22.86,13.9,25.59], cr:[25.64,13.64,7.14,14.29,13.56,7.55,12.5,16.67,12.82,16.67,14.81,22.58,21.95,21.88,17.14,20.0,19.51,12.96], contract:[10.0,6.0,4.0,7.0,8.0,4.0,5.0,4.0,5.0,8.0,4.0,7.0,9.0,7.0,6.0,8.0,8.0,7.0], overall:[1.7544,0.4691,0.3292,1.2302,1.4898,0.6981,0.5015,0.7619,0.6935,1.2841,0.9112,1.6787,1.3294,1.5385,1.5707,1.7817,1.25,1.5419] },
@@ -810,7 +811,28 @@ function renderSummary() {
 
 /* init */
 comboChart('c1a', D.nativeApp,    'rgba(55,138,221,.22)','#378ADD', D.r_app2tab,  '#378ADD','방문자 수 (명)', null);
-comboChart('c1b', D.insuranceTab, 'rgba(216,90,48,.22)', '#D85A30', D.r_tab2land, '#D85A30','방문자 수 (명)', EVT.tab);
+
+// c1b: 보험상품탭 → 보장성 랜딩 (보장성 + 미니보험 2개 라인)
+new Chart(document.getElementById('c1b'), {
+  plugins: [makeEvtPlugin(EVT.tab)],
+  data: { labels: D.weeks, datasets: [
+    { type:'bar',  label:'보험상품탭 방문자', data: D.insuranceTab, backgroundColor:'rgba(216,90,48,.22)', borderColor:'#D85A30', borderWidth:1, borderRadius:3, yAxisID:'yV', order:3 },
+    { type:'line', label:'보장성 랜딩 전환율', data: D.r_tab2land, borderColor:'#D85A30', backgroundColor:'transparent', tension:.35, pointRadius:3, pointBackgroundColor:'#D85A30', borderWidth:2, yAxisID:'yR', order:1 },
+    { type:'line', label:'미니보험 랜딩 전환율', data: D.r_tab2mini, borderColor:'#A37FDE', backgroundColor:'transparent', tension:.35, pointRadius:3, pointBackgroundColor:'#A37FDE', borderWidth:2, yAxisID:'yR', order:2 },
+  ]},
+  options: {
+    responsive:true, maintainAspectRatio:false,
+    interaction:{ mode:'index', intersect:false },
+    plugins:{ legend:{display:false}, tooltip:{ ...ttBase,
+      callbacks:{ label: ctx => ctx.dataset.yAxisID==='yR' ? ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}%` : ` ${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString()}명` }
+    }},
+    scales:{
+      x:{ ticks:{autoSkip:false,maxRotation:45,font:{size:9},color:TC}, grid:{display:false} },
+      yV:{ ...axisStyle('방문자 수 (명)'), position:'left', ticks:{...axisStyle('').ticks, callback:v=>v>=1000?(v/1000).toFixed(0)+'k':v} },
+      yR:{ ...axisStyle('전환율 (%)'), position:'right', min:0, grid:{display:false}, ticks:{...axisStyle('').ticks, callback:v=>v.toFixed(1)+'%'} },
+    }
+  }
+});
 chartMap[2] = buildMulti('c2', D.tab.whole, EVT.whole);
 contractMap[2] = buildContract('c2b', D.tab.whole);
 
