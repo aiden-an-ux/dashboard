@@ -290,7 +290,7 @@
     <p>App 방문 → 위플레이 → 행동 전환 퍼널 분석 대시보드</p>
   </div>
   <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
-    <span class="date-badge">기준: 2026.04.26 – 05.02</span>
+    <span class="date-badge">기준: 2026.05.03 – 05.09</span>
     <div class="toggle-wrap" id="toggleWrap">
       <button class="toggle-btn active" onclick="setMode('both')">수치+비율</button>
       <button class="toggle-btn" onclick="setMode('val')">수치만</button>
@@ -304,43 +304,43 @@
 </div>
 
 <script>
-const WEEKS = ['3.29-4.4','4.05-4.11','4.12-4.18','4.19-4.25','4.26-5.2'];
-const W_SHORT = ['W1','W2','W3','W4','W5'];
+const WEEKS = ['3.29-4.4','4.05-4.11','4.12-4.18','4.19-4.25','4.26-5.2','5.3-5.9'];
+const W_SHORT = ['W1','W2','W3','W4','W5','W6'];
 
 const RAW = {
   g1: {
     title: 'App 방문자 중 위플레이 방문자',
     metrics: [
-      { name: 'App 방문자수', vals: [575810,598982,607362,607425,595231], color: '#5b8def' },
-      { name: '위플레이 방문자수', vals: [16116,35925,42355,47057,50543], color: '#4ecdc4' },
+      { name: 'App 방문자수',    vals: [575810,598982,607362,607425,595231,608820], color: '#5b8def' },
+      { name: '위플레이 방문자수', vals: [16116,35925,42355,47057,50543,54276], color: '#4ecdc4' },
     ],
-    ratioOf: [1, 0] // index1 / index0
+    ratioOf: [1, 0]
   },
   g2: {
     title: '위플레이 랜딩 비율',
     metrics: [
-      { name: '소개 페이지', vals: [7917,6392,3212,2297,1870], color: '#f7b731' },
-      { name: '그룹 페이지', vals: [10122,30769,39570,45067,48929], color: '#4ecdc4' },
+      { name: '소개 페이지', vals: [7917,6392,3212,2297,1870,1773], color: '#f7b731' },
+      { name: '그룹 페이지', vals: [10122,30769,39570,45067,48929,52707], color: '#4ecdc4' },
     ],
     ratioOf: null
   },
   g3: {
     title: '소개 페이지 행동 비율',
     metrics: [
-      { name: '그룹 만들기', vals: [4514,3266,1610,1107,896], color: '#f7b731' },
-      { name: '그룹 참여하기', vals: [3222,2726,1515,1059,821], color: '#ffb8b8' },
+      { name: '그룹 만들기',  vals: [4514,3266,1610,1107,896,776], color: '#f7b731' },
+      { name: '그룹 참여하기', vals: [3222,2726,1515,1059,821,721], color: '#ffb8b8' },
     ],
     ratioOf: null
   },
   g4: {
     title: '그룹 페이지 행동 비율',
     metrics: [
-      { name: '그룹설정',   vals: [2468,2910,1870,1443,1180], color: '#a29bfe' },
-      { name: '멤버초대하기',vals: [0,674,1215,1181,1232], color: '#fd79a8' },
-      { name: '게시판',     vals: [954,2079,2115,1560,1155], color: '#55efc4' },
-      { name: '응원하기',   vals: [4502,8116,7651,7201,6381], color: '#f7b731' },
-      { name: '포인트선물', vals: [1907,2672,2519,1963,1807], color: '#74b9ff' },
-      { name: '출석체크',   vals: [6919,25381,35452,41826,46192], color: '#e17055' },
+      { name: '그룹설정',    vals: [2468,2910,1870,1443,1180,1014], color: '#a29bfe' },
+      { name: '멤버초대하기', vals: [0,674,1215,1181,1232,1203], color: '#fd79a8' },
+      { name: '게시판',      vals: [954,2079,2115,1560,1155,981], color: '#55efc4' },
+      { name: '응원하기',    vals: [4502,8116,7651,7201,6381,6103], color: '#f7b731' },
+      { name: '포인트선물',  vals: [1907,2672,2519,1963,1807,1584], color: '#74b9ff' },
+      { name: '출석체크',    vals: [6919,25381,35452,41826,46192,50136], color: '#e17055' },
     ],
     ratioOf: null
   }
@@ -389,7 +389,7 @@ function renderAll() {
     hdr.innerHTML = `
       <div class="group-num">${GROUP_LABELS[gi]}</div>
       <div class="group-title">${G.title}</div>
-      <div class="group-subtitle">${WEEKS[WEEKS.length-1]} 기준 최신 5주</div>
+      <div class="group-subtitle">${WEEKS[WEEKS.length-1]} 기준 최신 6주</div>
     `;
     card.appendChild(hdr);
 
@@ -399,18 +399,18 @@ function renderAll() {
     // LEFT: latest week stats
     const left = document.createElement('div');
     left.className = 'left-panel';
-    left.innerHTML = `<div class="panel-label">최근 1주 현황 (${WEEKS[4]})</div>`;
+    left.innerHTML = `<div class="panel-label">최근 1주 현황 (${WEEKS[5]})</div>`;
 
-    const total = G.metrics.reduce((s,m)=>s+m.vals[4],0);
+    const total = G.metrics.reduce((s,m)=>s+m.vals[5],0);
 
     G.metrics.forEach(m => {
-      const v = m.vals[4];
-      const vPrev = m.vals[3];
+      const v = m.vals[5];
+      const vPrev = m.vals[4];
       const d = delta(v, vPrev);
       const ratio = G.ratioOf !== null
-        ? pctOf(G.metrics[G.ratioOf[0]].vals[4], G.metrics[G.ratioOf[1]].vals[4]) // special
+        ? pctOf(G.metrics[G.ratioOf[0]].vals[5], G.metrics[G.ratioOf[1]].vals[5])
         : pctOf(v, total);
-      const barPct = Math.round((v/Math.max(...G.metrics.map(x=>x.vals[4])))*100);
+      const barPct = Math.round((v/Math.max(...G.metrics.map(x=>x.vals[5])))*100);
 
       let html = `<div class="stat-row">
         <div class="stat-name">${m.name}</div>
@@ -421,7 +421,7 @@ function renderAll() {
       }
       if (displayMode !== 'val') {
         if (G.ratioOf && m === G.metrics[1]) {
-          const r = pctOf(G.metrics[1].vals[4], G.metrics[0].vals[4]);
+          const r = pctOf(G.metrics[1].vals[5], G.metrics[0].vals[5]);
           html += `<span class="stat-pct" style="color:${m.color};background:${m.color}22">${r} (앱 대비)</span>`;
         } else {
           html += `<span class="stat-pct">${ratio} of total</span>`;
@@ -437,8 +437,8 @@ function renderAll() {
 
     // special summary for g1
     if (gk === 'g1') {
-      const app = RAW.g1.metrics[0].vals[4];
-      const wp = RAW.g1.metrics[1].vals[4];
+      const app = RAW.g1.metrics[0].vals[5];
+      const wp = RAW.g1.metrics[1].vals[5];
       left.innerHTML += `<div style="margin-top:12px;padding:10px 12px;border-radius:8px;background:rgba(91,141,239,0.1);border:1px solid rgba(91,141,239,0.25)">
         <div style="font-size:11px;color:#7a8099;margin-bottom:4px">위플레이 전환율</div>
         <div style="font-size:22px;font-weight:800;font-family:'DM Mono',monospace;color:#5b8def">${pctOf(wp,app)}</div>
@@ -451,7 +451,7 @@ function renderAll() {
     // RIGHT: trend chart
     const right = document.createElement('div');
     right.className = 'right-panel';
-    right.innerHTML = `<div class="panel-label">추이 (5주)</div>`;
+    right.innerHTML = `<div class="panel-label">추이 (6주)</div>`;
 
     const chartWrap = document.createElement('div');
     chartWrap.className = 'chart-wrap';
