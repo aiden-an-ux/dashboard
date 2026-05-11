@@ -581,6 +581,79 @@ function renderSummary() {
     +'<div class="funnel-kpis">'+g1+g2+g3+'</div>'
     +'</div>';
 
+  /* ── 6단계 퍼널 도식 (가로 흐름) ── */
+  // 단계 정의: App → 보험상품탭 → 상품진입(랜딩) → 설계진입 → 청약진입 → 청약완료
+  const stages = [
+    { lbl:'App 방문자',   cnt:D.nativeApp[CUR],                  prevCnt:avg4(D.nativeApp) },
+    { lbl:'보험상품탭',    cnt:D.insuranceTab[CUR],               prevCnt:avg4(D.insuranceTab) },
+    { lbl:'상품 진입',     cnt:D.tab.whole.landing[CUR],          prevCnt:avg4(D.tab.whole.landing) },
+    { lbl:'설계 진입',     cnt:D.tab.whole.design ? D.tab.whole.design[CUR] : Math.round(D.tab.whole.landing[CUR]*D.tab.whole.dr[CUR]/100), prevCnt:0 },
+    { lbl:'청약 진입',     cnt:0, prevCnt:0 },
+    { lbl:'청약 완료',     cnt:D.tab.whole.contract[CUR],         prevCnt:avg4(D.tab.whole.contract) },
+  ];
+  // 설계/청약 진입 역산
+  const _landing = D.tab.whole.landing[CUR];
+  const _design  = Math.round(_landing * D.tab.whole.dr[CUR]/100);
+  const _apply   = Math.round(_design * D.tab.whole.ar[CUR]/100);
+  stages[3].cnt = _design;
+  stages[4].cnt = _apply;
+  // 직전 4주 평균
+  const _land_a = avg4(D.tab.whole.landing);
+  const _des_a  = _land_a * avg4(D.tab.whole.dr)/100;
+  const _app_a  = _des_a * avg4(D.tab.whole.ar)/100;
+  stages[3].prevCnt = _des_a;
+  stages[4].prevCnt = _app_a;
+  stages[2].prevCnt = _land_a;
+
+  // 5개 전환율: 단계 i+1 / 단계 i
+  const stageRates = [];
+  for (let i=0; i<stages.length-1; i++) {
+    const r = stages[i+1].cnt / stages[i].cnt * 100;
+    const ra = stages[i+1].prevCnt / stages[i].prevCnt * 100;
+    stageRates.push({ rate:r, prev:ra, diff:r-ra });
+  }
+  const rateLabels = ['앱→탭','탭→진입','진입→설계','설계→청약','청약전환'];
+
+  function fmtCnt(v) {
+    if (v >= 100000) return (v/10000).toFixed(1)+'만';
+    if (v >= 10000) return (v/10000).toFixed(1)+'만';
+    if (v >= 1000) return (v/1000).toFixed(1)+'k';
+    return Math.round(v).toLocaleString();
+  }
+
+  let stageHtml = '';
+  stages.forEach((s, i) => {
+    stageHtml += '<div style="display:flex;flex-direction:column;align-items:center;flex:1;min-width:0;">'
+      + '<div style="font-size:10px;color:var(--t3);margin-bottom:6px;font-weight:500;letter-spacing:.04em;white-space:nowrap;">'+s.lbl+'</div>'
+      + '<div style="background:#1c2128;border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:14px 8px;width:100%;text-align:center;">'
+      + '<div style="font-size:22px;font-weight:700;color:#e6edf3;line-height:1;">'+fmtCnt(s.cnt)+'</div>'
+      + '<div style="font-size:9px;color:var(--t3);margin-top:4px;">'+(i===stages.length-1?'건':'명')+'</div>'
+      + '</div>'
+      + '</div>';
+    // 화살표 + 전환율
+    if (i < stages.length-1) {
+      const sr = stageRates[i];
+      const cl = sr.diff > 0.05 ? '#5DCAA5' : sr.diff < -0.05 ? '#F0997B' : 'var(--t3)';
+      const sign = sr.diff>=0 ? '+' : '';
+      const diffStr = sign + sr.diff.toFixed(2) + '%p';
+      stageHtml += '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 6px;min-width:90px;">'
+        + '<div style="font-size:14px;color:#00B85D;margin-bottom:3px;font-weight:500;">'+rateLabels[i]+'</div>'
+        + '<div style="background:linear-gradient(135deg,rgba(0,184,93,0.18),rgba(0,184,93,0.05));border:1px solid rgba(0,184,93,0.4);border-radius:14px;padding:6px 12px;text-align:center;min-width:80px;">'
+        + '<div style="font-size:18px;font-weight:700;color:#00B85D;line-height:1;">'+sr.rate.toFixed(2)+'%</div>'
+        + '</div>'
+        + '<div style="font-size:9px;color:'+cl+';margin-top:4px;font-weight:500;">'+diffStr+'</div>'
+        + '</div>';
+    }
+  });
+
+  const stageFunnelHtml = '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:10px;">'
+    + '<div style="font-size:11px;font-weight:600;color:var(--t1);margin-bottom:14px;display:flex;align-items:center;gap:8px;">'
+    + '단계별 전환 흐름'
+    + '<span style="font-size:10px;color:var(--t3);font-weight:400;">— '+D.weeks[CUR]+' (보장성 기준) · 큰 수치는 전환율, 박스는 모수</span>'
+    + '</div>'
+    + '<div style="display:flex;align-items:stretch;gap:0;">'+stageHtml+'</div>'
+    + '</div>';
+
   /* ── 방문자 수 그리드 HTML ── */
   function visRow(r) {
     const sharePct = (r.val / totalProduct * 100).toFixed(1) + '%';
@@ -717,6 +790,7 @@ function renderSummary() {
     +'</div>'
     +visGridHtml
     +'<div style="font-size:12px;font-weight:600;color:var(--accent);letter-spacing:.06em;margin-bottom:8px;margin-top:4px;">보험상품탭 유입</div>'
+    +stageFunnelHtml
     +funnelHtml
     +'<div style="height:1px;background:var(--border);margin:18px 0 22px"></div>';
 
