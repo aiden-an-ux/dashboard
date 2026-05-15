@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Release Schedule 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+  background: #F4F5F8;
+  color: #1A1A2E;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+::-webkit-scrollbar { height: 6px; width: 6px; }
+::-webkit-scrollbar-track { background: #EEEEEE; }
+::-webkit-scrollbar-thumb { background: #CCCCDD; border-radius: 4px; }
+
+/* ── 헤더 ── */
+#header {
+  padding: 16px 36px 12px;
+  background: #FFFFFF;
+  border-bottom: 2px solid #E8E8F0;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+#header-left h1 { font-size: 22px; font-weight: 800; color: #111122; letter-spacing: -0.5px; }
+#header-left h1 span { color: #E8453C; }
+#header-left p { font-size: 12px; color: #9999BB; margin-top: 2px; font-weight: 500; }
+#header-right { display: flex; align-items: center; gap: 16px; }
+#progress-box { text-align: right; }
+#progress-box .label { font-size: 11px; color: #9999BB; font-weight: 600; margin-bottom: 3px; }
+#progress-box .counts { display: flex; align-items: center; gap: 6px; }
+#done-count { font-size: 20px; font-weight: 800; color: #16A34A; }
+#total-count { font-size: 15px; font-weight: 700; color: #666688; }
+#progress-bar-wrap { width: 72px; height: 8px; background: #EBEBF4; border-radius: 4px; overflow: hidden; }
+#progress-bar-fill { height: 100%; background: #16A34A; border-radius: 4px; transition: width 0.3s; }
+
+/* ── 버튼 공통 ── */
+.btn {
+  border: none; border-radius: 8px;
+  padding: 8px 14px; font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: filter 0.15s; white-space: nowrap;
+  font-family: inherit;
+}
+.btn:hover { filter: brightness(0.93); }
+.btn-red { background: #E8453C; color: #fff; border: 1.5px solid #E8453C; }
+.btn-ghost { background: #F4F4F8; color: #555577; border: 1.5px solid #E4E4EE; }
+.btn-green { background: #DCFCE7; color: #15803D; border: 1.5px solid #86EFAC; }
+.btn-yellow { background: #FEF3C7; color: #B45309; border: 1.5px solid #FCD34D; }
+
+/* ── 카테고리 필터 ── */
+#cat-bar {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  padding: 8px 36px;
+  background: #FFF;
+  border-bottom: 1px solid #EEEEF4;
+  flex-shrink: 0;
+}
+.cat-pill {
+  border-radius: 20px; padding: 5px 13px;
+  font-size: 12px; font-weight: 600;
+  cursor: pointer; border: 1.5px solid #E4E4EE;
+  background: #F4F4F8; color: #555577;
+  transition: all 0.15s; font-family: inherit;
+}
+.cat-pill:hover { filter: brightness(0.93); }
+.cat-pill.active { color: #FFF; }
+
+/* ── 간트 메인 ── */
+#gantt-wrap {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: auto;
+  background: #FFF;
+  margin-top: 10px;
+}
+#gantt-inner { min-width: calc(653px + 2400px); }
+
+/* 타임라인 헤더 */
+#timeline-header {
+  display: flex;
+  position: sticky; top: 0; z-index: 30;
+  background: #F8F8FC;
+  border-bottom: 2px solid #DDDDED;
+}
+#tl-left-cell {
+  width: 653px; flex-shrink: 0;
+  position: sticky; left: 0; z-index: 31;
+  background: #F8F8FC;
+  border-right: 2px solid #DDDDED;
+  padding: 0 16px; height: 46px;
+  display: flex; align-items: center;
+  font-size: 11px; font-weight: 700; color: #AAAACC; letter-spacing: 1px;
+  box-shadow: 3px 0 8px rgba(0,0,0,0.07);
+}
+#tl-right {
+  flex: 1; position: relative; height: 46px;
+  min-width: 2400px;
+}
+
+/* 행 */
+.gantt-group-header { display: flex; }
+.gantt-group-left {
+  width: 653px; flex-shrink: 0;
+  position: sticky; left: 0; z-index: 20;
+  border-right: 2px solid #DDDDED;
+  padding: 7px 16px;
+  display: flex; align-items: center; gap: 8px;
+  box-shadow: 3px 0 6px rgba(0,0,0,0.05);
+}
+.gantt-group-right { flex: 1; min-width: 2400px; }
+.gantt-row { display: flex; flex-direction: column; }
+.gantt-row:hover .row-left,
+.gantt-row:hover .row-right { background: #F0F0FC !important; }
+.row-main { display: flex; }
+.row-left {
+  width: 653px; flex-shrink: 0;
+  position: sticky; left: 0; z-index: 20;
+  display: flex; align-items: center;
+  border-bottom: 1px solid #EEEEF4;
+  min-height: 46px;
+  box-shadow: 3px 0 6px rgba(0,0,0,0.06);
+  transition: background 0.1s;
+}
+.row-right {
+  flex: 1; min-width: 2400px;
+  position: relative; height: 46px;
+  display: flex; align-items: center;
+  border-bottom: 1px solid #EEEEF4;
+  transition: background 0.1s;
+}
+.toggle-icon { width: 28px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; cursor: pointer; }
+.row-content { flex: 1; padding: 10px 10px 10px 0; display: flex; align-items: center; gap: 8px; overflow: hidden; }
+.cat-badge {
+  font-size: 10px; border-radius: 5px; padding: 3px 7px;
+  font-weight: 700; flex-shrink: 0; white-space: nowrap; border-width: 1px; border-style: solid;
+}
+.row-title {
+  font-size: 13px; font-weight: 500;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  transition: color 0.12s;
+}
+.row-title.done { text-decoration: line-through; color: #6BAA7A !important; font-weight: 400; }
+.owner-badge {
+  font-size: 10px; font-weight: 800; flex-shrink: 0;
+  padding: 2px 7px; border-radius: 20px; white-space: nowrap; border-width: 1px; border-style: solid;
+}
+.row-actions { display: flex; gap: 3px; flex-shrink: 0; margin-left: auto; padding-right: 8px; }
+.action-btn {
+  width: 26px; height: 26px; border-radius: 5px;
+  border-width: 1px; border-style: solid;
+  cursor: pointer; font-size: 11px;
+  display: flex; align-items: center; justify-content: center;
+  transition: filter 0.1s; font-family: inherit;
+}
+.action-btn:hover { filter: brightness(0.9); }
+
+/* 상세 패널 */
+.detail-panel {
+  overflow: hidden;
+  transition: max-height 0.28s ease, opacity 0.2s ease;
+  max-height: 0; opacity: 0;
+  border-left-width: 4px; border-left-style: solid;
+}
+.detail-panel.open { opacity: 1; }
+.detail-fields { display: flex; flex-wrap: wrap; gap: 12px 28px; padding: 12px 20px 14px 42px; }
+.detail-field { min-width: 180px; flex: 1 1 200px; }
+.detail-label { font-size: 10px; font-weight: 800; letter-spacing: 0.8px; margin-bottom: 4px; }
+.detail-value { font-size: 13px; color: #2A2A4E; line-height: 1.75; }
+
+/* 타임라인 요소 */
+.tl-month-label {
+  position: absolute; top: 2px;
+  font-size: 11px; font-weight: 800; color: #5555AA;
+  white-space: nowrap; letter-spacing: 0.5px;
+  border-left: 2px solid #CCCCEE; padding-left: 5px;
+}
+.tl-week-label {
+  position: absolute; bottom: 3px;
+  transform: translateX(-50%);
+  font-size: 9px; white-space: nowrap;
+}
+.tl-today-header {
+  position: absolute; top: 0; bottom: 0; width: 2px; background: #E8453C; z-index: 5;
+}
+.tl-today-label {
+  position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%);
+  font-size: 9px; font-weight: 800; color: #FFF;
+  background: #E8453C; padding: 1px 5px; border-radius: 4px; white-space: nowrap;
+}
+.tl-grid-line { position: absolute; top: 0; bottom: 0; }
+.tl-tail { position: absolute; left: 0; height: 2px; }
+.tl-dot {
+  position: absolute; width: 14px; height: 14px; border-radius: 50%;
+  border: 2.5px solid #FFF;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.12);
+  z-index: 3;
+}
+.tl-date-label {
+  position: absolute; font-size: 11px; font-weight: 600;
+  border-radius: 5px; padding: 2px 8px;
+  white-space: nowrap; z-index: 1; border-width: 1px; border-style: solid;
+}
+.tl-tbd-label {
+  position: absolute; left: 12px;
+  font-size: 11px; font-weight: 700; color: #64748B;
+  background: #F1F5F9; border: 1.5px dashed #CBD5E1;
+  border-radius: 6px; padding: 3px 10px;
+  white-space: nowrap; z-index: 1; letter-spacing: 0.5px;
+}
+.tl-today-line { position: absolute; top: 0; bottom: 0; width: 2px; background: #E8453C22; z-index: 2; }
+
+/* ── 모달 ── */
+.modal-bg {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+}
+.modal-box {
+  background: #FFF; border-radius: 16px; padding: 28px;
+  width: 520px; max-width: 95vw; max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.18);
+}
+.modal-title { font-size: 17px; font-weight: 800; color: #1A1A2E; margin-bottom: 20px; }
+.form-label { display: block; font-size: 11px; font-weight: 700; color: #888; letter-spacing: 0.5px; margin-bottom: 6px; }
+.form-input {
+  width: 100%; background: #F8FAFC; border: 1.5px solid #E4E4EE;
+  border-radius: 8px; padding: 9px 12px; font-size: 13px; color: #1A1A2E;
+  margin-bottom: 14px; font-family: inherit; outline: none;
+  transition: border-color 0.15s;
+}
+.form-input:focus { border-color: #E8453C; }
+textarea.form-input { resize: vertical; min-height: 72px; line-height: 1.6; }
+.form-row { display: flex; gap: 8px; margin-bottom: 14px; }
+.pill-group { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.pill-opt {
+  border-radius: 20px; padding: 4px 12px;
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  border: 1.5px solid #E4E4EE; background: #F4F5F8; color: #555;
+  font-family: inherit; transition: all 0.12s;
+}
+.modal-btns { display: flex; gap: 10px; margin-top: 4px; }
+.modal-btn {
+  flex: 1; border-radius: 10px; padding: 12px;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+  border: none; font-family: inherit;
+}
+
+/* 삭제 확인 모달 */
+.delete-modal { text-align: center; width: 360px; }
+.delete-modal .icon { font-size: 32px; margin-bottom: 12px; }
+.delete-modal .msg { font-size: 16px; font-weight: 800; color: #1A1A2E; margin-bottom: 8px; }
+.delete-modal .sub { font-size: 13px; color: #888; margin-bottom: 24px; line-height: 1.6; }
+
+/* 내보내기 모달 */
+.export-modal { width: 600px; display: flex; flex-direction: column; max-height: 80vh; }
+.export-modal .sub { font-size: 12px; color: #888; margin-bottom: 12px; }
+.export-textarea {
+  flex: 1; min-height: 300px; background: #F8FAFC;
+  border: 1.5px solid #E4E4EE; border-radius: 8px;
+  padding: 10px 12px; font-size: 11px; font-family: monospace;
+  color: #1A1A2E; resize: none; line-height: 1.5; outline: none;
+}
+
+@keyframes fadeSlide { from { opacity:0; transform: translateY(5px); } to { opacity:1; transform: translateY(0); } }
+.fade-in { animation: fadeSlide 0.25s ease both; }
+</style>
+</head>
+<body>
+
+<!-- 헤더 -->
+<div id="header">
+  <div id="header-left">
+    <h1>Release <span>Schedule</span></h1>
+    <p>2026년 3월 — 배포 일정</p>
+  </div>
+  <div id="header-right">
+    <div id="progress-box">
+      <div class="label">배포 완료</div>
+      <div class="counts">
+        <span id="done-count">0</span>
+        <span style="font-size:13px;color:#CCCCDD">/</span>
+        <span id="total-count">0</span>
+        <div id="progress-bar-wrap"><div id="progress-bar-fill"></div></div>
+      </div>
+    </div>
+    <button class="btn btn-ghost" id="btn-toggle-all">▼ 전체 펼치기</button>
+    <button class="btn btn-red" id="btn-add">＋ 일정 등록</button>
+    <button class="btn btn-ghost" id="btn-show-done">✓ 완료 보이기</button>
+    <button class="btn btn-yellow" id="btn-export">📋 데이터 내보내기</button>
+  </div>
+</div>
+
+<!-- 카테고리 필터 -->
+<div id="cat-bar"></div>
+
+<!-- 간트 -->
+<div id="gantt-wrap">
+  <div id="gantt-inner">
+    <!-- 타임라인 헤더 -->
+    <div id="timeline-header">
+      <div id="tl-left-cell">항목</div>
+      <div id="tl-right"></div>
+    </div>
+    <!-- 데이터 행 -->
+    <div id="gantt-rows"></div>
+  </div>
+</div>
+
+<!-- 등록/수정 모달 -->
+<div class="modal-bg" id="modal-form" style="display:none">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-form-title">＋ 일정 등록</div>
+    <label class="form-label">제목 *</label>
+    <input class="form-input" id="f-title" placeholder="일정 제목을 입력하세요">
+    <label class="form-label">날짜</label>
+    <div class="form-row">
+      <input type="date" class="form-input" id="f-date" style="flex:1;margin-bottom:0">
+      <button class="btn btn-ghost" id="f-tbd-btn" style="flex-shrink:0">미정</button>
+    </div>
+    <label class="form-label">카테고리</label>
+    <div class="pill-group" id="f-cat-group"></div>
+    <label class="form-label">담당자</label>
+    <div class="pill-group" id="f-owner-group"></div>
+    <label class="form-label">상세내용</label>
+    <textarea class="form-input" id="f-detail" placeholder="상세 내용을 입력하세요 (선택)"></textarea>
+    <label class="form-label">출시 목적 / 메모</label>
+    <textarea class="form-input" id="f-purpose" style="min-height:56px" placeholder="출시 목적 또는 메모 (선택)"></textarea>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+      <button class="btn btn-ghost" id="f-done-btn">○ 미완료</button>
+      <span style="font-size:12px;color:#AAA">완료 상태 설정</span>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn" style="background:#F4F5F8;color:#888" id="btn-form-cancel">취소</button>
+      <button class="modal-btn" style="background:#E8453C;color:#fff" id="btn-form-save">등록</button>
+    </div>
+  </div>
+</div>
+
+<!-- 삭제 확인 모달 -->
+<div class="modal-bg" id="modal-delete" style="display:none">
+  <div class="modal-box delete-modal">
+    <div class="icon">🗑️</div>
+    <div class="msg">항목을 삭제할까요?</div>
+    <div class="sub" id="delete-title-text"></div>
+    <div class="modal-btns">
+      <button class="modal-btn" style="background:#F4F5F8;color:#888" id="btn-del-cancel">취소</button>
+      <button class="modal-btn" style="background:#E8453C;color:#fff" id="btn-del-confirm">삭제</button>
+    </div>
+  </div>
+</div>
+
+<!-- 내보내기 모달 -->
+<div class="modal-bg" id="modal-export" style="display:none">
+  <div class="modal-box export-modal">
+    <div class="modal-title">📋 데이터 내보내기</div>
+    <div class="sub">아래 전체 텍스트를 선택(Ctrl+A)하고 복사(Ctrl+C)한 뒤 Claude에게 붙여넣어 주세요.</div>
+    <textarea class="export-textarea" id="export-textarea" readonly></textarea>
+    <div class="modal-btns" style="margin-top:12px">
+      <button class="modal-btn" style="background:#F4F5F8;color:#888" id="btn-export-close">닫기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+// 상수
+// ─────────────────────────────────────────────
+const STORAGE_KEY = "gantt-events-v1";
+const LEFT_W = 653;
+const TIMELINE_W = 2400;
+const START_DATE = new Date("2026-03-07");
+const END_DATE = new Date("2026-12-31");
+const TOTAL_DAYS = Math.round((END_DATE - START_DATE) / 86400000);
+
+const CATEGORY_COLORS = {
+  "보험상품":  { bar: "#E8453C", light: "#FDECEA", text: "#C0392B" },
+  "상품랜딩":  { bar: "#E67E22", light: "#FEF3E8", text: "#C0621A" },
+  "청약":      { bar: "#0D9488", light: "#E6F7F6", text: "#0A7A70" },
+  "미니보험몰":{ bar: "#0EA5E9", light: "#E6F4FD", text: "#0880BE" },
+  "라플레이":  { bar: "#7C3AED", light: "#F0EBFD", text: "#6327C8" },
+  "제휴":      { bar: "#B45309", light: "#FEF3C7", text: "#92400E" },
+  "콘텐츠":    { bar: "#059669", light: "#E6F7F1", text: "#047A56" },
+  "UX":        { bar: "#DB2777", light: "#FDE9F3", text: "#B01F61" },
+  "홈":        { bar: "#7C3AED", light: "#F0EBFD", text: "#6327C8" },
+  "마케팅":    { bar: "#F59E0B", light: "#FFFBEB", text: "#B45309" },
+};
+const DONE_COLOR = { bar: "#16A34A", light: "#DCFCE7", text: "#15803D" };
+const TBD_COLOR  = { bar: "#94A3B8", light: "#F1F5F9", text: "#64748B" };
+
+const MS_COLORS = {
+  "2026-03-09": { bg: "#FFFBEB", border: "#FDE68A", text: "#D97706" },
+  "2026-03-12": { bg: "#FEF2F2", border: "#FECACA", text: "#DC2626" },
+  "2026-03-16": { bg: "#FFF7ED", border: "#FED7AA", text: "#C2410C" },
+  "2026-03-19": { bg: "#F0FDF4", border: "#BBF7D0", text: "#15803D" },
+  "2026-04-01": { bg: "#FAF5FF", border: "#DDD6FE", text: "#6D28D9" },
+  "2026-04-09": { bg: "#FDF4FF", border: "#F5D0FE", text: "#9333EA" },
+  "2026-04-16": { bg: "#FFF0F6", border: "#FFADD2", text: "#C2185B" },
+  "2026-04-17": { bg: "#FFF7ED", border: "#FED7AA", text: "#C2410C" },
+  "2026-04-20": { bg: "#EFF6FF", border: "#BFDBFE", text: "#1D4ED8" },
+  "2026-04-23": { bg: "#F0FDF4", border: "#BBF7D0", text: "#15803D" },
+  "2026-04-29": { bg: "#FFF0F6", border: "#FFADD2", text: "#C2185B" },
+  "2026-04-30": { bg: "#FAF5FF", border: "#DDD6FE", text: "#6D28D9" },
+  "2026-05-04": { bg: "#EFF6FF", border: "#BFDBFE", text: "#1D4ED8" },
+  "2026-05-07": { bg: "#FFF7ED", border: "#FED7AA", text: "#C2410C" },
+  "2026-05-08": { bg: "#FDF4FF", border: "#F5D0FE", text: "#9333EA" },
+  "2026-05-11": { bg: "#F0FDF4", border: "#BBF7D0", text: "#15803D" },
+  "2026-05-14": { bg: "#F0FDF4", border: "#86EFAC", text: "#15803D" },
+  "2026-05-21": { bg: "#FFF7ED", border: "#FED7AA", text: "#C2410C" },
+  "2026-05-22": { bg: "#EFF6FF", border: "#BFDBFE", text: "#1D4ED8" },
+  "2026-05-28": { bg: "#FEF2F2", border: "#FECACA", text: "#DC2626" },
+  "2026-06-01": { bg: "#F0F9FF", border: "#BAE6FD", text: "#0369A1" },
+  "TBD":        { bg: "#F8FAFC", border: "#CBD5E1", text: "#64748B" },
+};
+
+const WEEK_MARKS = ["2026-03-09","2026-03-16","2026-03-23","2026-03-30","2026-04-06","2026-04-13","2026-04-20","2026-04-27","2026-05-04","2026-05-11","2026-05-18","2026-05-25","2026-06-01","2026-06-08","2026-06-15","2026-06-22","2026-06-29","2026-07-06","2026-07-13","2026-07-20","2026-07-27","2026-08-03","2026-08-10","2026-08-17","2026-08-24","2026-08-31","2026-09-07","2026-09-14","2026-09-21","2026-09-28","2026-10-05","2026-10-12","2026-10-19","2026-10-26","2026-11-02","2026-11-09","2026-11-16","2026-11-23","2026-11-30","2026-12-07","2026-12-14","2026-12-21","2026-12-28"];
+const MONTHS = ["2026-03-01","2026-04-01","2026-05-01","2026-06-01","2026-07-01","2026-08-01","2026-09-01","2026-10-01","2026-11-01","2026-12-01"];
+const DAYS_KO = ["일","월","화","수","목","금","토"];
+
+// ─────────────────────────────────────────────
+// 헬퍼
+// ─────────────────────────────────────────────
+function dayOffset(d) { return Math.round((new Date(d) - START_DATE) / 86400000); }
+function pct(d) { return (dayOffset(d) / TOTAL_DAYS) * 100; }
+function fmtMs(d) { const x = new Date(d); return `${x.getMonth()+1}/${x.getDate()}`; }
+function fullDate(d) { const x = new Date(d); return `${x.getMonth()+1}월 ${x.getDate()}일 (${DAYS_KO[x.getDay()]})`; }
+function hasDetail(ev) {
+  return !!(ev.detail || ev.productName || ev.coverage || ev.purpose || ev.target || ev.benefit);
+}
+function getFields(ev) {
+  return [
+    ev.productName && { label: "정식 상품명", value: ev.productName },
+    ev.target      && { label: "대상 고객",   value: ev.target },
+    ev.benefit     && { label: "혜택",         value: ev.benefit },
+    ev.coverage    && { label: "보장 내용",    value: ev.coverage },
+    ev.purpose     && { label: "출시 목적",    value: ev.purpose },
+    ev.detail && !ev.productName && !ev.coverage && !ev.purpose
+               && { label: "상세 내용",        value: ev.detail },
+  ].filter(Boolean);
+}
+
+// ─────────────────────────────────────────────
+// 상태
+// ─────────────────────────────────────────────
+let events = [];
+let openIds = new Set();
+let selectedCat = "전체";
+let showDone = false;
+let editId = null;
+let deleteId = null;
+let formDone = false;
+let formDate = "TBD";
+let formCat = "보험상품";
+let formOwner = "";
+
+// ─────────────────────────────────────────────
+// localStorage
+// ─────────────────────────────────────────────
+function loadEvents() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) { const arr = JSON.parse(saved); if (arr?.length) return arr; }
+  } catch(e) {}
+  return null;
+}
+function saveEvents() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(events)); } catch(e) {}
+}
+
+// ─────────────────────────────────────────────
+// 초기 데이터 (최신 storage 데이터)
+// ─────────────────────────────────────────────
+const INITIAL_EVENTS = [{"id":1,"title":"상품랜딩 비교견적 서비스 A/B테스트","date":"2026-03-09","category":"상품랜딩","done":true},{"id":24,"title":"로딩스피너 적용","date":"2026-03-09","category":"UX","done":true},{"id":2,"title":"라플레이 전용 실속보험","date":"2026-03-12","category":"보험상품","done":true,"productName":"라플레이(무)교보라플 실속보험","detail":"라플레이 회원가입 완료 페이지에서 상품 소개 및 포인트 가입 유도 목적이었으나, 심의 과정에서 대납 이슈로 회원가입 완료 페이지 노출 없이 신상품으로 출시"},{"id":3,"title":"의사보험 (정기순수)","date":"2026-03-12","category":"보험상품","done":true,"detail":"랜딩 - 각 타겟 특성에 맞게 메인카드 수정. 가입내용/보장내용/보험료예시/해약환급금 예시 10억원 기준으로 수정.","purpose":"추천룰 - 전문직군 최대 가입한도인 10억원으로 추천"},{"id":4,"title":"변호사보험 (정기순수)","date":"2026-03-12","category":"보험상품","done":true,"detail":"랜딩 - 각 타겟 특성에 맞게 메인카드 수정. 가입내용/보장내용/보험료예시/해약환급금 예시 10억원 기준으로 수정.","purpose":"추천룰 - 전문직군 최대 가입한도인 10억원으로 추천"},{"id":5,"title":"회사소개 내 보도자료 적용","date":"2026-03-12","category":"콘텐츠","done":true},{"id":28,"title":"강력범죄피해보상 급부 관련 대응","date":"2026-03-16","category":"보험상품","done":true,"detail":"범죄안전 Z1, 핫플투어 Z3, 강력범죄 ZJ → 3/12 히든 처리 후 3/16 오픈. 라플레이 실속보험 수정 후 12일 오픈.","purpose":"강력범죄 급부는 1건만 가입할 수 있도록 제한"},{"id":26,"title":"EBM","date":"2026-03-16","category":"마케팅","done":true,"target":"정기/암/맞춤건강보험 대상 고객","detail":"1) App에서 해당 상품을 30일 내 본 이력이 있는 고객에게 팝업 노출. 2) 2차 마케팅에서 해당 상품 메시지를 받은 고객에게 상단 롤링배너(2번째) 노출"},{"id":8,"title":"우울실속보험","date":"2026-03-16","category":"보험상품","done":true,"productName":"우울증(무)교보라플 실속보험","coverage":"우울에피소드 진단 보장","purpose":"신규 급부 출시에 따른 상품 추가"},{"id":9,"title":"공황장애실속보험","date":"2026-03-16","category":"보험상품","done":true,"productName":"공황장애(무)교보라플 실속보험","coverage":"공황장애 진단 보장","purpose":"신규 급부 출시에 따른 상품 추가"},{"id":10,"title":"독감실속보험","date":"2026-03-16","category":"보험상품","done":true,"productName":"독감(무)교보라플 실속보험","coverage":"독감(인플루엔자) 치료 보장","purpose":"신규 급부 출시에 따른 상품 추가"},{"id":33,"title":"상품랜딩 - 상담유도팝업 전상품 노출","date":"2026-03-19","category":"상품랜딩","done":true,"detail":"전 상품 랜딩 페이지에 상담유도 팝업 노출.","purpose":"노출 조건: 페이지 진입 후 20초 이상 머무를 경우"},{"id":11,"title":"독서실속보험","date":"2026-03-19","category":"보험상품","done":true,"coverage":"VDT증후군 입원/수술보장, 특정안과질환 수술/입원보장","purpose":"라플레이 캠페인 연계 독서 관련 미니보험 출시"},{"id":13,"title":"정기보험 업데이트","date":"2026-03-19","category":"보험상품","done":true,"detail":"2월 5일 콘텐츠 업데이트 이후 전환율 감소에 따른 콘텐츠 수정.","purpose":"누구에게 왜 필요한지 의 방향성으로 수정"},{"id":14,"title":"미니보험몰 내 보장성보험 노출","date":"2026-03-19","category":"미니보험몰","done":true},{"id":7,"title":"청약 - 헤더변경 (상담포함)","date":"2026-03-19","category":"청약","done":true},{"id":16,"title":"결제취소/청약철회 상담 채널 적용","date":"2026-03-19","category":"청약","done":true},{"id":15,"title":"청약 - 신분증인증 스킵","date":"2026-03-19","category":"청약","done":true,"detail":"주민등록증 / 운전면허증 / 나중에 제출 세 가지 방식 지원. 신분증 인증 단계를 스킵할 수 있는 옵션 제공."},{"id":17,"title":"라플레이 그룹화서비스 (위플레이)","date":"2026-04-01","category":"라플레이","done":true},{"id":19,"title":"라플레이 소개 페이지 (위플레이)","date":"2026-04-01","category":"라플레이","done":true},{"id":22,"title":"청약완료 후 다중 상품 노출","date":"2026-04-09","category":"청약","done":true},{"id":34,"title":"일상안전 실속보험","date":"2026-04-09","category":"보험상품","done":true,"detail":"기존 범죄안전 실속보험을 일상안전 실속보험으로 수정."},{"id":35,"title":"아웃도어 실속보험","date":"2026-04-09","category":"보험상품","done":true,"detail":"기존 핫플투어 실속보험을 아웃도어 실속보험으로 변경."},{"id":36,"title":"상품설계 비교견적 A/B 테스트","date":"2026-04-09","category":"상품랜딩","done":true},{"id":47,"title":"회사소개 페이지 4월 수치 업데이트","date":"2026-04-09","category":"콘텐츠","done":true},{"id":49,"title":"홈(상품탭) 출산·육아휴직 할인 콘텐츠 적용","date":"2026-04-09","category":"홈","done":true},{"id":40,"title":"여성건강보험 → 여성암보험 IMC 전략 수정","date":"2026-04-09","category":"마케팅","done":true},{"id":41,"title":"GA 정기보험 최소 한도 5천만원 적용","date":"2026-04-09","category":"보험상품","done":true},{"id":42,"title":"설계 페이지 챗봇 상단으로 위치 조정","date":"2026-04-09","category":"UX","done":true},{"id":43,"title":"정기/종신 설계페이지 금액 조정에 최소 버튼 추가","date":"2026-04-09","category":"UX","done":true},{"id":37,"title":"홈(상품탭) 이어가입하기","date":"2026-04-16","category":"홈","done":true},{"id":70,"title":"청약 신분증인증 - 나중에제출하기 우선 노출","date":"2026-04-16","category":"청약","done":true},{"id":6,"title":"상품랜딩 이탈설문","date":"2026-05-07","category":"상품랜딩","detail":"어떤 상품에 적용할지 결정 필요.","purpose":"적용 대상 상품 미정 — 확인 필요"},{"id":38,"title":"토스 유료 실속보험 2종 출시","date":"2026-04-16","category":"제휴","done":true,"detail":"우울증 실속보험, 공황장애 실속보험 2종 출시."},{"id":39,"title":"바른플랜 보험료 줄이기 고도화 1차","date":"2026-04-16","category":"제휴","done":true},{"id":53,"title":"청약완료 후 다중 상품 추천 - 썸네일 수정","date":"2026-04-16","category":"청약","done":true},{"id":54,"title":"정기 순수/만기 콘텐츠 수정","date":"2026-04-17","category":"콘텐츠","done":true},{"id":64,"title":"H사 - 폐암/대장암/냉방병 피드 추가","date":"2026-04-20","category":"제휴","done":true},{"id":65,"title":"H사 - 스플래시 이미지","date":"2026-04-20","category":"제휴","done":true},{"id":66,"title":"H사 - 라플레이 소개 페이지","date":"2026-04-20","category":"라플레이","done":true},{"id":55,"title":"챗봇 내 미니보험 탑재","date":"2026-04-23","category":"미니보험몰","done":true,"detail":"독감 실속보험, 공황장애 실속보험, 바이러스 실속보험 3종 탑재."},{"id":69,"title":"청약완료 보장성상품 흡연 및 건강체 체크 로직 적용","date":"2026-04-23","category":"청약","done":true},{"id":84,"title":"간편·맞건종 10종 주계약 사망보험금 변경","date":"2026-04-29","category":"보험상품","done":true},{"id":85,"title":"홈페이지 브랜드 슬로건 반영 1차","date":"2026-04-29","category":"마케팅","done":true},{"id":86,"title":"미니보험몰 보장성 배너 추가","date":"2026-04-29","category":"미니보험몰","done":true},{"id":87,"title":"토스 2종 팝업","date":"2026-04-30","category":"제휴","done":true},{"id":89,"title":"푸터에 고객센터 번호 노출","date":"2026-04-30","category":"홈","done":true},{"id":90,"title":"미니보험몰 앱일 경우 일시납/월납 표기","date":"2026-04-30","category":"홈","done":true},{"id":91,"title":"이벤트 수정 (가입/마케팅동의), 이벤트 카드 수정(쑤)","date":"2026-04-30","category":"보험상품","done":true},{"id":77,"title":"위플레이 퍼널 설정 대시보드","date":"2026-05-04","category":"라플레이","done":true},{"id":71,"title":"(완)위플레이 멤버초대하기 버튼 겹치는 부분","date":"2026-05-07","category":"라플레이"},{"id":72,"title":"출석체크 보상 룰렛 이용권으로 변경","date":"2026-05-07","category":"라플레이"},{"id":80,"title":"(완)가입 및 주요내용·2년 이내 의료행위 문구 수정","date":"2026-05-07","category":"청약"},{"id":94,"title":"명함 - 브랜드 슬로건 적용","date":"2026-05-07","category":"콘텐츠","owner":"승"},{"id":96,"title":"토스여성제외 모든채널 2,000만원으로 조정 (토스는 5천 유지)","date":"2026-05-07","category":"상품랜딩"},{"id":73,"title":"슈퍼워크 포인트 전환","date":"2026-05-08","category":"라플레이"},{"id":76,"title":"업데이트 유도 버튼 화면 노출 방안","date":"2026-05-08","category":"라플레이","owner":"승"},{"id":61,"title":"상품랜딩 내 챗봇 노출 - 챗봇 캐릭터 일관성 수정","date":"2026-05-08","category":"UX","owner":"승"},{"id":95,"title":"앱 로고(슬로건) 변경안","date":"2026-05-08","category":"라플레이","owner":"승"},{"id":21,"title":"UX 리포트 공유","date":"2026-05-11","category":"UX","owner":"승"},{"id":67,"title":"라플레이 - 위플레이 다건 그룹 적용","date":"2026-05-14","category":"라플레이"},{"id":75,"title":"위플레이 Big5설문 적용 (닉네임 성형 플래그)","date":"2026-05-14","category":"라플레이"},{"id":63,"title":"토스를 통한 가입완료 시 토스인슈어런스 유도 팝업","date":"2026-05-14","category":"제휴","owner":"승"},{"id":68,"title":"브랜드 슬로건 적용 - 보험 설계사 없이 앱으로 쉽게 : 2차","date":"2026-05-14","category":"마케팅","owner":"승"},{"id":45,"title":"순수보장 상품랜딩에 만기환급 노출하여 만기환급 선택권 제공","date":"2026-05-14","category":"상품랜딩","owner":"쑤"},{"id":93,"title":"굿리치 - 수술비보험 콘텐츠","date":"2026-05-14","category":"제휴"},{"id":27,"title":"추가 한도 업셀링 (청약완료 후)","date":"2026-05-14","category":"청약","owner":"쑤","target":"정기/암 보험 대상 고객","detail":"청약 완료 후 남아 있는 고객 한도를 보여주고 추가 판매 유도. Sales lead 판매 극대화(티켓 사이즈) 목적.","purpose":"4월 계정계 개발 시작 → 4월말 완료 → 5월 중순 릴리즈. 3월 중 DX팀 프로세스 정의 완료 예정."},{"id":48,"title":"맞춤건강종합보험 - 제한된 설계 실험 2","date":"2026-05-21","category":"보험상품","owner":"쑤","detail":"카카오손보 등 플랫폼을 참고하여 급부 조정에 대한 선택권을 주지 않고 설계하게 했을 때의 반응 확인."},{"id":56,"title":"어린이보험 2종 콘텐츠 수정","date":"2026-05-28","category":"콘텐츠","owner":"쑤"},{"id":58,"title":"암보험 콘텐츠 수정","date":"2026-05-28","category":"콘텐츠","owner":"쑤"},{"id":97,"title":"정기보험 콘텐츠 수정","date":"2026-05-28","category":"콘텐츠","owner":"쑤"},{"id":92,"title":"보도자료, 라플피드, SNS 콘텐츠 제작 가이드","date":"2026-05-22","category":"콘텐츠","owner":"승"},{"id":46,"title":"롯데멤버스 신규 3종상품(상다구) 적용","date":"2026-06-01","category":"제휴"},{"id":74,"title":"위플레이 그룹 토너먼트/배팅 서비스 (이것만 할경우 5일)","date":"TBD","category":"라플레이"},{"id":78,"title":"브랜드 슬로건 로딩화면 적용 (DDUW 로딩 포함) - 재미요소 추가","date":"TBD","category":"마케팅","owner":"승"},{"id":79,"title":"납세의무 청약 3단계로 이동","date":"TBD","category":"청약"},{"id":81,"title":"병력고지 UI 수정","date":"TBD","category":"UX"},{"id":82,"title":"생년월일 입력 팝업 가입나이 불가일 경우 바로 메시지 안내 및 CTA 디세이블","date":"TBD","category":"UX"},{"id":83,"title":"상담예약 페이지 예약 선택 방법 개선","date":"TBD","category":"UX"},{"id":57,"title":"토스 여성건강보험 USP 콘텐츠 수정","date":"TBD","category":"콘텐츠","owner":"쑤"},{"id":59,"title":"치석케어 실속보험 출시","date":"TBD","category":"보험상품","owner":"쑤"},{"id":60,"title":"청약 프로세스 개선","date":"TBD","category":"청약"},{"id":62,"title":"상품랜딩 및 설계 대화형 UI 실험","date":"TBD","category":"UX","owner":"승"},{"id":23,"title":"포털형식 신규 홈","date":"TBD","category":"홈","owner":"승"},{"id":44,"title":"디지털 보험가입 어렵지 않아요 영상 제작","date":"TBD","category":"마케팅","owner":"승"},{"id":50,"title":"입원비/수술비 보험 DDUW UX 개선","date":"TBD","category":"UX"},{"id":51,"title":"치아보험 가입 프로세스 UX 개선 (나이)","date":"TBD","category":"UX","owner":"쑤"},{"id":52,"title":"유병자 보험 고지 UX 개선","date":"TBD","category":"UX"},{"id":20,"title":"다크패턴 - 상품설명서 확인방식 수정","date":"TBD","category":"UX","owner":"승"},{"id":12,"title":"제휴 - 롯데카드 교통안심 실속보험(작업완료)","date":"TBD","category":"제휴","owner":"쑤","target":"롯데카드 신규카드 발급 고객 중 교통카드 기능 선택 고객","benefit":"1년 무료 보험","coverage":"재해장해보장, 교통재해장해보장, 대중교통이용중 교통재해장해보장, 출퇴근시간대 교통재해장해보장","detail":"3월 19일 운영 반영. 롯데측 오픈은 제휴 일정에 따라 결정."},{"id":30,"title":"홈 - 카테고리 개인화 (EBM 활용)","date":"TBD","category":"홈","owner":"쑤","detail":"EBM 데이터를 활용한 홈 화면 카테고리 개인화. 일정 미정."},{"id":31,"title":"미니보험몰 - 묶음가입 or DIY 조합 구매","date":"TBD","category":"미니보험몰","owner":"쑤","detail":"미니보험몰 내 묶음가입 또는 DIY 조합 구매 기능 적용. 일정 미정."},{"id":32,"title":"청약 1단계 대화형 UI 적용","date":"TBD","category":"청약","owner":"승","detail":"청약 1단계를 대화형 UI로 개선. 일정 미정."},{"id":88,"title":"공통 팝업 모듈화 / 팝업 이미지 일관성 유지 방안","date":"TBD","category":"UX","detail":"현재 사용되고 있는 팝업 모듈 관리자화 필요 (Web/App)\n팝업에 사용되고 있는 이미지 및 텍스트 정렬 규칙등 가이드화 하여 일관성 유지 필요","purpose":"","owner":"승","done":false}];
+
+// ─────────────────────────────────────────────
+// 렌더링
+// ─────────────────────────────────────────────
+function updateHeader() {
+  const done = events.filter(e => e.done).length;
+  document.getElementById("done-count").textContent = done;
+  document.getElementById("total-count").textContent = events.length;
+  document.getElementById("progress-bar-fill").style.width = `${(done/events.length)*100}%`;
+}
+
+function renderCatBar() {
+  const bar = document.getElementById("cat-bar");
+  const cats = ["전체", "✓ 완료", ...Object.keys(CATEGORY_COLORS)];
+  bar.innerHTML = "";
+  cats.forEach(cat => {
+    const btn = document.createElement("button");
+    btn.className = "cat-pill" + (selectedCat === cat ? " active" : "");
+    btn.textContent = cat;
+    const c = CATEGORY_COLORS[cat];
+    const isDone = cat === "✓ 완료";
+    if (selectedCat === cat) {
+      const bg = isDone ? "#16A34A" : c ? c.bar : "#E8453C";
+      btn.style.background = bg;
+      btn.style.borderColor = bg;
+    }
+    btn.onclick = () => { selectedCat = cat; renderAll(); };
+    bar.appendChild(btn);
+  });
+}
+
+function renderTimeline() {
+  const tl = document.getElementById("tl-right");
+  tl.style.minWidth = TIMELINE_W + "px";
+  tl.innerHTML = "";
+  const todayOff = Math.round((new Date() - START_DATE) / 86400000);
+
+  // 월 레이블
+  MONTHS.forEach(m => {
+    const p = pct(m);
+    if (p < 0 || p > 100) return;
+    const el = document.createElement("div");
+    el.className = "tl-month-label";
+    el.style.left = p + "%";
+    el.textContent = parseInt(m.split("-")[1]) + "월";
+    tl.appendChild(el);
+  });
+
+  // 주 레이블
+  WEEK_MARKS.forEach(wm => {
+    const p = pct(wm);
+    if (p < 0 || p > 102) return;
+    const d = new Date(wm);
+    const isMS = d.getDate() <= 7;
+    const el = document.createElement("div");
+    el.className = "tl-week-label";
+    el.style.left = p + "%";
+    el.style.fontWeight = isMS ? "700" : "400";
+    el.style.color = isMS ? "#7766CC" : "#AAAACC";
+    el.textContent = `${d.getMonth()+1}/${d.getDate()}`;
+    tl.appendChild(el);
+  });
+
+  // TODAY
+  if (todayOff >= 0 && todayOff <= TOTAL_DAYS) {
+    const p = (todayOff / TOTAL_DAYS) * 100;
+    const line = document.createElement("div");
+    line.className = "tl-today-header";
+    line.style.left = p + "%";
+    const label = document.createElement("div");
+    label.className = "tl-today-label";
+    label.textContent = "TODAY";
+    line.appendChild(label);
+    tl.appendChild(line);
+  }
+}
+
+function getFiltered() {
+  let base = selectedCat === "전체" ? events
+    : selectedCat === "✓ 완료" ? events.filter(e => e.done)
+    : events.filter(e => e.category === selectedCat);
+  if (!showDone) base = base.filter(e => !e.done);
+  return [
+    ...base.filter(e => e.date !== "TBD").sort((a,b) => a.date.localeCompare(b.date)),
+    ...base.filter(e => e.date === "TBD"),
+  ];
+}
+
+function renderRows() {
+  const container = document.getElementById("gantt-rows");
+  container.innerHTML = "";
+  const todayOff = Math.round((new Date() - START_DATE) / 86400000);
+  const sorted = getFiltered();
+
+  // 그룹 헤더 삽입
+  const grouped = [];
+  let lastDate = null;
+  sorted.forEach((ev, i) => {
+    if (ev.date !== lastDate) {
+      grouped.push({ type: "header", date: ev.date });
+      lastDate = ev.date;
+    }
+    grouped.push({ type: "row", ev, idx: i });
+  });
+
+  grouped.forEach(item => {
+    if (item.type === "header") {
+      const mc = MS_COLORS[item.date] || { bg: "#F8F8FC", border: "#E0E0EC", text: "#444466" };
+      const isTBD = item.date === "TBD";
+      const cnt = events.filter(e => e.date === item.date).length;
+      const dn  = events.filter(e => e.date === item.date && e.done).length;
+
+      const wrap = document.createElement("div");
+      wrap.className = "gantt-group-header";
+
+      const left = document.createElement("div");
+      left.className = "gantt-group-left";
+      left.style.cssText = `background:${mc.bg};border-top:2px solid ${mc.border};border-bottom:1px solid ${mc.border};`;
+
+      const dateSpan = document.createElement("span");
+      dateSpan.style.cssText = `font-size:13px;font-weight:800;color:${mc.text};min-width:40px`;
+      dateSpan.textContent = isTBD ? "미정" : fmtMs(item.date);
+
+      const fullSpan = document.createElement("span");
+      fullSpan.style.cssText = `font-size:11px;color:${mc.text};opacity:0.75;font-weight:500`;
+      fullSpan.textContent = isTBD ? "일정 미정" : fullDate(item.date);
+
+      const cntSpan = document.createElement("span");
+      cntSpan.style.cssText = `font-size:11px;font-weight:700;background:${mc.border};color:${mc.text};border-radius:10px;padding:1px 7px;white-space:nowrap`;
+      cntSpan.textContent = cnt + "건" + (dn > 0 ? ` · ✓${dn}` : "");
+
+      const addBtn = document.createElement("button");
+      addBtn.style.cssText = `background:${mc.text};color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;padding:2px 10px;cursor:pointer`;
+      addBtn.textContent = "＋";
+      addBtn.onclick = () => openAddModal(isTBD ? "TBD" : item.date);
+
+      left.append(dateSpan, fullSpan, cntSpan, addBtn);
+
+      const right = document.createElement("div");
+      right.className = "gantt-group-right";
+      right.style.cssText = `background:${mc.bg};border-top:2px solid ${mc.border};border-bottom:1px solid ${mc.border};`;
+
+      wrap.append(left, right);
+      container.appendChild(wrap);
+      return;
+    }
+
+    const { ev } = item;
+    const isDone = ev.done === true;
+    const isTBD  = ev.date === "TBD";
+    const c = isDone ? DONE_COLOR : isTBD ? TBD_COLOR : (CATEGORY_COLORS[ev.category] || CATEGORY_COLORS["홈"]);
+    const p = isTBD ? 102 : pct(ev.date);
+    const info = hasDetail(ev);
+    const isOpen = openIds.has(ev.id);
+    const rowBg = isOpen ? c.light : isDone ? "#F8FFF8" : isTBD ? "#F8FAFC" : "#FFF";
+
+    const rowWrap = document.createElement("div");
+    rowWrap.className = "gantt-row fade-in";
+    rowWrap.id = "row-" + ev.id;
+
+    // ── 메인 행
+    const rowMain = document.createElement("div");
+    rowMain.className = "row-main";
+
+    // 왼쪽 고정
+    const rowLeft = document.createElement("div");
+    rowLeft.className = "row-left";
+    rowLeft.style.cssText = `background:${rowBg};border-left:4px solid ${isOpen ? c.bar : "transparent"};`;
+
+    const toggleIcon = document.createElement("div");
+    toggleIcon.className = "toggle-icon";
+    if (info) {
+      toggleIcon.innerHTML = `<span style="color:${c.bar};transform:rotate(${isOpen?90:0}deg);display:inline-block;transition:transform 0.2s">▶</span>`;
+      toggleIcon.onclick = () => {
+        if (openIds.has(ev.id)) openIds.delete(ev.id); else openIds.add(ev.id);
+        renderRows();
+      };
+    } else {
+      toggleIcon.innerHTML = `<span style="font-size:11px;color:#E0E0EE">—</span>`;
+    }
+
+    const rowContent = document.createElement("div");
+    rowContent.className = "row-content";
+
+    const badge = document.createElement("span");
+    badge.className = "cat-badge";
+    badge.style.cssText = `background:${c.light};color:${c.text};border-color:${c.bar}44`;
+    badge.textContent = isDone ? "✓완료" : ev.category;
+
+    const title = document.createElement("span");
+    title.className = "row-title" + (isDone ? " done" : "");
+    title.style.color = isOpen ? "#0A0A1E" : "#2A2A4E";
+    title.textContent = ev.title;
+
+    rowContent.append(badge, title);
+
+    if (ev.owner) {
+      const ob = document.createElement("span");
+      ob.className = "owner-badge";
+      const isSu = ev.owner === "쑤";
+      ob.style.cssText = `background:${isSu?"#FEF3C7":"#EDE9FE"};color:${isSu?"#B45309":"#6D28D9"};border-color:${isSu?"#FCD34D":"#C4B5FD"}`;
+      ob.textContent = ev.owner;
+      rowContent.appendChild(ob);
+    }
+
+    // 액션 버튼
+    const actions = document.createElement("div");
+    actions.className = "row-actions";
+
+    const doneBtn = document.createElement("button");
+    doneBtn.className = "action-btn";
+    doneBtn.title = isDone ? "완료 취소" : "완료 처리";
+    doneBtn.style.cssText = `background:${isDone?"#DCFCE7":"#F4F4F8"};border-color:${isDone?"#86EFAC":"#E4E4EE"}`;
+    doneBtn.textContent = isDone ? "↩" : "✓";
+    doneBtn.onclick = e => { e.stopPropagation(); toggleDone(ev.id); };
+
+    const editBtn = document.createElement("button");
+    editBtn.className = "action-btn";
+    editBtn.title = "수정";
+    editBtn.style.cssText = "background:#F0F4FF;border-color:#BFDBFE";
+    editBtn.textContent = "✏️";
+    editBtn.onclick = e => { e.stopPropagation(); openEditModal(ev); };
+
+    const delBtn = document.createElement("button");
+    delBtn.className = "action-btn";
+    delBtn.title = "삭제";
+    delBtn.style.cssText = "background:#FFF0F0;border-color:#FECACA";
+    delBtn.textContent = "🗑";
+    delBtn.onclick = e => { e.stopPropagation(); openDeleteModal(ev.id, ev.title); };
+
+    actions.append(doneBtn, editBtn, delBtn);
+    rowContent.appendChild(actions);
+    rowLeft.append(toggleIcon, rowContent);
+
+    // 오른쪽 타임라인
+    const rowRight = document.createElement("div");
+    rowRight.className = "row-right";
+    rowRight.style.background = rowBg;
+
+    // 주 그리드선
+    WEEK_MARKS.forEach(wm => {
+      const wp = pct(wm);
+      if (wp < 0 || wp > 102) return;
+      const d = new Date(wm);
+      const isMS = d.getDate() <= 7;
+      const line = document.createElement("div");
+      line.className = "tl-grid-line";
+      line.style.cssText = `left:${wp}%;width:${isMS?2:1}px;background:${isMS?"#DDDDEE":"#F0F0F8"}`;
+      rowRight.appendChild(line);
+    });
+
+    // TODAY 선
+    const todayOff2 = Math.round((new Date() - START_DATE) / 86400000);
+    if (todayOff2 >= 0 && todayOff2 <= TOTAL_DAYS) {
+      const tp = (todayOff2 / TOTAL_DAYS) * 100;
+      const tl = document.createElement("div");
+      tl.className = "tl-today-line";
+      tl.style.left = tp + "%";
+      rowRight.appendChild(tl);
+    }
+
+    if (!isTBD) {
+      // 테일 라인
+      const tail = document.createElement("div");
+      tail.className = "tl-tail";
+      tail.style.cssText = `width:${p}%;height:2px;background:linear-gradient(to right, transparent, ${c.bar}66)`;
+      rowRight.appendChild(tail);
+
+      // 도트
+      const dot = document.createElement("div");
+      dot.className = "tl-dot";
+      dot.style.cssText = `left:calc(${p}% - 7px);background:${c.bar};box-shadow:0 0 0 2.5px ${c.bar}55, 0 2px 5px rgba(0,0,0,0.12)`;
+      rowRight.appendChild(dot);
+
+      // 날짜 레이블
+      const dlabel = document.createElement("div");
+      dlabel.className = "tl-date-label";
+      dlabel.style.cssText = `left:calc(${p}% + 18px);background:${c.light};color:${c.text};border-color:${c.bar}44`;
+      dlabel.textContent = fullDate(ev.date);
+      rowRight.appendChild(dlabel);
+    } else {
+      const tbd = document.createElement("div");
+      tbd.className = "tl-tbd-label";
+      tbd.textContent = "📅 일정 미정";
+      rowRight.appendChild(tbd);
+    }
+
+    rowMain.append(rowLeft, rowRight);
+    rowWrap.appendChild(rowMain);
+
+    // ── 상세 패널
+    if (info) {
+      const panel = document.createElement("div");
+      panel.className = "detail-panel" + (isOpen ? " open" : "");
+      panel.style.cssText = `max-height:${isOpen?300:0}px;border-left-color:${c.bar};background:${c.light}`;
+
+      const fields = getFields(ev);
+      const fieldsDiv = document.createElement("div");
+      fieldsDiv.className = "detail-fields";
+      fields.forEach(f => {
+        const fd = document.createElement("div");
+        fd.className = "detail-field";
+        fd.innerHTML = `<div class="detail-label" style="color:${c.text}">${f.label}</div><div class="detail-value">${f.value}</div>`;
+        fieldsDiv.appendChild(fd);
+      });
+      panel.appendChild(fieldsDiv);
+      rowWrap.appendChild(panel);
+    }
+
+    container.appendChild(rowWrap);
+  });
+}
+
+function renderAll() {
+  updateHeader();
+  renderCatBar();
+  renderTimeline();
+  renderRows();
+  updateToggleAllBtn();
+  updateShowDoneBtn();
+}
+
+// ─────────────────────────────────────────────
+// 액션
+// ─────────────────────────────────────────────
+function toggleDone(id) {
+  events = events.map(e => e.id === id ? { ...e, done: !e.done } : e);
+  saveEvents();
+  renderAll();
+}
+
+function updateToggleAllBtn() {
+  const detailIds = events.filter(hasDetail).map(e => e.id);
+  const allOpen = detailIds.length > 0 && detailIds.every(id => openIds.has(id));
+  document.getElementById("btn-toggle-all").textContent = allOpen ? "▲ 전체 접기" : "▼ 전체 펼치기";
+}
+
+function updateShowDoneBtn() {
+  const btn = document.getElementById("btn-show-done");
+  btn.textContent = showDone ? "✓ 완료 숨기기" : "✓ 완료 보이기";
+  btn.className = showDone ? "btn btn-green" : "btn btn-ghost";
+}
+
+// ─────────────────────────────────────────────
+// 모달: 등록/수정
+// ─────────────────────────────────────────────
+function buildFormPills() {
+  // 카테고리 pills
+  const cg = document.getElementById("f-cat-group");
+  cg.innerHTML = "";
+  Object.keys(CATEGORY_COLORS).forEach(cat => {
+    const cc = CATEGORY_COLORS[cat];
+    const btn = document.createElement("button");
+    btn.className = "pill-opt";
+    btn.textContent = cat;
+    btn.dataset.cat = cat;
+    if (formCat === cat) { btn.style.background = cc.bar; btn.style.color = "#fff"; btn.style.borderColor = cc.bar; }
+    btn.onclick = () => { formCat = cat; buildFormPills(); };
+    cg.appendChild(btn);
+  });
+
+  // 담당자 pills
+  const og = document.getElementById("f-owner-group");
+  og.innerHTML = "";
+  ["", "쑤", "승"].forEach(o => {
+    const btn = document.createElement("button");
+    btn.className = "pill-opt";
+    btn.textContent = o || "없음";
+    btn.dataset.owner = o;
+    const isSu = o === "쑤", isSe = o === "승";
+    if (formOwner === o) {
+      btn.style.background = isSu ? "#FEF3C7" : isSe ? "#EDE9FE" : "#E4E4EE";
+      btn.style.color = isSu ? "#B45309" : isSe ? "#6D28D9" : "#555";
+      btn.style.borderColor = isSu ? "#FCD34D" : isSe ? "#C4B5FD" : "#CCC";
+    }
+    btn.onclick = () => { formOwner = o; buildFormPills(); };
+    og.appendChild(btn);
+  });
+
+  // 완료 버튼
+  const db = document.getElementById("f-done-btn");
+  db.textContent = formDone ? "✓ 완료됨" : "○ 미완료";
+  db.style.background = formDone ? "#DCFCE7" : "#F4F5F8";
+  db.style.color = formDone ? "#15803D" : "#888";
+  db.style.borderColor = formDone ? "#86EFAC" : "#E4E4EE";
+
+  // 미정 버튼
+  const tb = document.getElementById("f-tbd-btn");
+  tb.style.background = formDate === "TBD" ? "#E2E8F0" : "#F8FAFC";
+}
+
+function openAddModal(date) {
+  editId = null;
+  formDate = date || "TBD";
+  formCat = "보험상품";
+  formOwner = "";
+  formDone = false;
+  document.getElementById("modal-form-title").textContent = "＋ 일정 등록";
+  document.getElementById("btn-form-save").textContent = "등록";
+  document.getElementById("f-title").value = "";
+  document.getElementById("f-date").value = formDate !== "TBD" ? formDate : "";
+  document.getElementById("f-detail").value = "";
+  document.getElementById("f-purpose").value = "";
+  buildFormPills();
+  document.getElementById("modal-form").style.display = "flex";
+}
+
+function openEditModal(ev) {
+  editId = ev.id;
+  formDate = ev.date;
+  formCat = ev.category;
+  formOwner = ev.owner || "";
+  formDone = !!ev.done;
+  document.getElementById("modal-form-title").textContent = "✏️ 일정 수정";
+  document.getElementById("btn-form-save").textContent = "저장";
+  document.getElementById("f-title").value = ev.title;
+  document.getElementById("f-date").value = ev.date !== "TBD" ? ev.date : "";
+  document.getElementById("f-detail").value = ev.detail || "";
+  document.getElementById("f-purpose").value = ev.purpose || "";
+  buildFormPills();
+  document.getElementById("modal-form").style.display = "flex";
+}
+
+function saveForm() {
+  const title = document.getElementById("f-title").value.trim();
+  if (!title) return;
+  const dateVal = document.getElementById("f-date").value;
+  const date = formDate === "TBD" ? "TBD" : (dateVal || "TBD");
+  const detail = document.getElementById("f-detail").value.trim();
+  const purpose = document.getElementById("f-purpose").value.trim();
+
+  if (editId !== null) {
+    events = events.map(e => e.id === editId
+      ? { ...e, title, date, category: formCat, owner: formOwner, done: formDone, detail, purpose }
+      : e
+    );
+  } else {
+    const newId = Math.max(0, ...events.map(e => e.id || 0)) + 1;
+    events.push({ id: newId, title, date, category: formCat, owner: formOwner, done: formDone, detail, purpose });
+  }
+  saveEvents();
+  document.getElementById("modal-form").style.display = "none";
+  renderAll();
+}
+
+// ─────────────────────────────────────────────
+// 모달: 삭제
+// ─────────────────────────────────────────────
+function openDeleteModal(id, title) {
+  deleteId = id;
+  document.getElementById("delete-title-text").textContent = title;
+  document.getElementById("modal-delete").style.display = "flex";
+}
+
+function confirmDelete() {
+  events = events.filter(e => e.id !== deleteId);
+  saveEvents();
+  document.getElementById("modal-delete").style.display = "none";
+  renderAll();
+}
+
+// ─────────────────────────────────────────────
+// 이벤트 바인딩
+// ─────────────────────────────────────────────
+document.getElementById("btn-toggle-all").onclick = () => {
+  const detailIds = events.filter(hasDetail).map(e => e.id);
+  const allOpen = detailIds.every(id => openIds.has(id));
+  openIds = allOpen ? new Set() : new Set(detailIds);
+  renderAll();
+};
+
+document.getElementById("btn-add").onclick = () => openAddModal("TBD");
+
+document.getElementById("btn-show-done").onclick = () => {
+  showDone = !showDone;
+  renderAll();
+};
+
+document.getElementById("btn-export").onclick = () => {
+  const data = localStorage.getItem(STORAGE_KEY) || JSON.stringify(events);
+  const ta = document.getElementById("export-textarea");
+  ta.value = data;
+  document.getElementById("modal-export").style.display = "flex";
+  setTimeout(() => { ta.focus(); ta.select(); }, 100);
+};
+
+document.getElementById("f-tbd-btn").onclick = () => {
+  formDate = "TBD";
+  document.getElementById("f-date").value = "";
+  buildFormPills();
+};
+
+document.getElementById("f-date").oninput = function() {
+  if (this.value) formDate = this.value;
+  buildFormPills();
+};
+
+document.getElementById("f-done-btn").onclick = () => {
+  formDone = !formDone;
+  buildFormPills();
+};
+
+document.getElementById("btn-form-cancel").onclick = () => { document.getElementById("modal-form").style.display = "none"; };
+document.getElementById("btn-form-save").onclick = saveForm;
+document.getElementById("btn-del-cancel").onclick = () => { document.getElementById("modal-delete").style.display = "none"; };
+document.getElementById("btn-del-confirm").onclick = confirmDelete;
+document.getElementById("btn-export-close").onclick = () => { document.getElementById("modal-export").style.display = "none"; };
+
+// 모달 배경 클릭 닫기
+["modal-form","modal-delete","modal-export"].forEach(id => {
+  document.getElementById(id).onclick = function(e) {
+    if (e.target === this) this.style.display = "none";
+  };
+});
+
+// ─────────────────────────────────────────────
+// 초기화
+// ─────────────────────────────────────────────
+(function init() {
+  const saved = loadEvents();
+  events = saved || INITIAL_EVENTS;
+  if (!saved) saveEvents(); // 초기 데이터 저장
+  renderAll();
+})();
+</script>
+</body>
+</html>
