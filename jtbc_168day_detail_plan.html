@@ -1,348 +1,997 @@
-
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>JTBC 마라톤 · 훈련 플랜</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font-sans)}
-.root{padding:1rem 0}
-.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
-.phase-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
-.pnav{font-size:11px;padding:5px 12px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);cursor:pointer;background:transparent;color:var(--color-text-secondary);transition:all .15s}
-.pnav.active{background:var(--color-background-info);color:#0C447C;border-color:#378ADD;font-weight:500}
-.week-block{margin-bottom:18px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden}
-.week-hd{display:grid;grid-template-columns:110px 1fr 80px 70px;gap:0;padding:10px 14px;background:var(--color-background-secondary);border-bottom:0.5px solid var(--color-border-tertiary);align-items:center;cursor:pointer}
-.week-hd:hover{background:var(--color-background-tertiary)}
-.wk-num{font-size:12px;font-weight:500;color:var(--color-text-primary)}
-.wk-dates{font-size:11px;color:var(--color-text-secondary)}
-.wk-label{font-size:11px;color:var(--color-text-secondary)}
-.wk-km{font-size:13px;font-weight:500;color:var(--color-text-primary);text-align:right}
-.wk-chevron{font-size:14px;color:var(--color-text-secondary);text-align:right}
-.day-rows{display:none}
-.day-rows.open{display:block}
-.day-row{display:grid;grid-template-columns:54px 62px 1fr 90px;gap:0;padding:9px 14px;border-bottom:0.5px solid var(--color-border-tertiary);align-items:start}
-.day-row:last-child{border-bottom:none}
-.day-row.rest-row{opacity:.55}
-.d-dow{font-size:12px;font-weight:500;color:var(--color-text-secondary)}
-.d-date{font-size:11px;color:var(--color-text-secondary);margin-top:1px}
-.type-badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:3px;font-weight:500;white-space:nowrap}
-.tb-rest{background:#F1EFE8;color:#5F5E5A}
-.tb-easy{background:#E6F1FB;color:#185FA5}
-.tb-lsd{background:#E1F5EE;color:#0F6E56}
-.tb-tempo{background:#FAEEDA;color:#854F0B}
-.tb-interval{background:#FCEBEB;color:#A32D2D}
-.tb-mp{background:#EEEDFE;color:#534AB7}
-.tb-race{background:#FAEEDA;color:#633806;border:1px solid #EF9F27}
-.tb-recovery{background:#F1EFE8;color:#444441}
-.d-main{font-size:12px;color:var(--color-text-primary);line-height:1.5;padding:0 10px}
-.d-note{font-size:11px;color:var(--color-text-secondary);margin-top:2px;line-height:1.4}
-.d-metric{font-size:11px;color:var(--color-text-secondary);text-align:right;line-height:1.55}
-.d-metric strong{font-size:12px;font-weight:500;color:var(--color-text-primary);display:block}
-.phase-banner{padding:8px 14px;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase}
-.pb-rec{background:#F1EFE8;color:#5F5E5A}
-.pb-base{background:#E6F1FB;color:#185FA5}
-.pb-build{background:#E1F5EE;color:#0F6E56}
-.pb-peak{background:#FAEEDA;color:#854F0B}
-.pb-taper{background:#EEEDFE;color:#534AB7}
-.pb-race{background:#FCEBEB;color:#A32D2D}
-.summary-bar{display:flex;gap:16px;align-items:center;padding:6px 14px;background:var(--color-background-secondary);border-top:0.5px solid var(--color-border-tertiary);font-size:11px;color:var(--color-text-secondary)}
-.sb-val{font-weight:500;color:var(--color-text-primary)}
+:root {
+  --bg: #080a0f;
+  --s1: #0d1018;
+  --s2: #12151e;
+  --border: #1a1e2c;
+  --border2: #242836;
+  --text: #e0e4f2;
+  --muted: #424860;
+  --muted2: #6e7894;
+  --gold: #f0c040;
+  --cyan: #40c8f0;
+  --green: #40f090;
+  --red: #f04060;
+  --orange: #f08040;
+  --purple: #a070f0;
+  --safe: env(safe-area-inset-bottom, 0px);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans KR', sans-serif;
+  min-height: 100vh;
+  overscroll-behavior: none;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(8,10,15,.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 16px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.topbar-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: .08em;
+  color: var(--cyan);
+  line-height: 1;
+}
+.topbar-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--muted2);
+  letter-spacing: .1em;
+  margin-top: 3px;
+}
+.dday-badge {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  color: var(--gold);
+  line-height: 1;
+  text-align: right;
+}
+.dday-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--muted);
+  text-align: right;
+  margin-top: 2px;
+}
+
+/* ── TODAY CARD ── */
+.today-card {
+  margin: 12px 16px;
+  background: var(--s1);
+  border: 1px solid var(--border2);
+  border-top: 2px solid var(--cyan);
+  padding: 14px 16px;
+}
+.today-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--cyan);
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.today-main {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+.today-meta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.today-pill {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 3px 9px;
+  background: var(--s2);
+  border: 1px solid var(--border2);
+  color: var(--muted2);
+}
+.today-note {
+  font-size: 12px;
+  color: var(--muted2);
+  margin-top: 8px;
+  line-height: 1.6;
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+}
+
+/* ── PHASE FILTER ── */
+.phase-wrap {
+  padding: 10px 16px;
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.phase-wrap::-webkit-scrollbar { display: none; }
+.phase-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .06em;
+  padding: 6px 12px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--muted2);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .15s;
+  flex-shrink: 0;
+}
+.phase-btn.on { color: #000; font-weight: 700; }
+.phase-btn.p-rec.on   { background: var(--muted2); border-color: var(--muted2); }
+.phase-btn.p-base.on  { background: var(--cyan); border-color: var(--cyan); }
+.phase-btn.p-build.on { background: var(--green); border-color: var(--green); }
+.phase-btn.p-peak.on  { background: var(--orange); border-color: var(--orange); }
+.phase-btn.p-taper.on { background: var(--purple); border-color: var(--purple); }
+.phase-btn.p-race.on  { background: var(--gold); border-color: var(--gold); }
+.phase-btn.p-all.on   { background: var(--text); border-color: var(--text); }
+
+/* ── WEEK BLOCKS ── */
+.weeks-wrap { padding: 0 16px 100px; }
+
+.week-block { margin-bottom: 10px; }
+.week-block[data-hidden="true"] { display: none; }
+
+.week-hd {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: center;
+  padding: 11px 14px;
+  background: var(--s1);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: background .1s;
+}
+.week-hd:active { background: var(--s2); }
+.wk-left {}
+.wk-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted2);
+  letter-spacing: .08em;
+  margin-bottom: 3px;
+}
+.wk-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.3;
+}
+.wk-right {
+  text-align: right;
+  flex-shrink: 0;
+}
+.wk-km {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  line-height: 1;
+}
+.wk-chevron {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.phase-tag {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  padding: 2px 6px;
+  letter-spacing: .08em;
+  margin-top: 3px;
+}
+.tag-rec    { background: rgba(110,120,148,.15); color: var(--muted2); }
+.tag-base   { background: rgba(64,200,240,.12); color: var(--cyan); }
+.tag-build  { background: rgba(64,240,144,.12); color: var(--green); }
+.tag-peak   { background: rgba(240,128,64,.12); color: var(--orange); }
+.tag-taper  { background: rgba(160,112,240,.12); color: var(--purple); }
+.tag-race   { background: rgba(240,192,64,.15); color: var(--gold); }
+
+/* ── DAY ROWS ── */
+.day-rows { display: none; border: 1px solid var(--border); border-top: none; }
+.day-rows.open { display: block; }
+
+.day-row {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  gap: 10px;
+  align-items: start;
+}
+.day-row:last-child { border-bottom: none; }
+.day-row.is-rest { opacity: .45; }
+.day-row.is-today { background: rgba(64,200,240,.04); border-left: 2px solid var(--cyan); }
+.day-row.is-race-day { background: rgba(240,192,64,.05); border-left: 2px solid var(--gold); }
+
+.d-left {}
+.d-dow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text);
+}
+.d-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.today-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--cyan);
+  margin: 4px auto 0;
+}
+
+.d-right {}
+.d-type-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 5px;
+}
+.type-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  padding: 2px 7px;
+  letter-spacing: .06em;
+  flex-shrink: 0;
+}
+.tb-rest     { background: rgba(66,72,96,.25); color: var(--muted2); }
+.tb-easy     { background: rgba(64,200,240,.12); color: var(--cyan); }
+.tb-recovery { background: rgba(66,72,96,.2); color: var(--muted2); }
+.tb-lsd      { background: rgba(64,240,144,.12); color: var(--green); }
+.tb-tempo    { background: rgba(240,128,64,.12); color: var(--orange); }
+.tb-interval { background: rgba(240,64,96,.12); color: var(--red); }
+.tb-mp       { background: rgba(160,112,240,.12); color: var(--purple); }
+.tb-race     { background: rgba(240,192,64,.15); color: var(--gold); border: 1px solid rgba(240,192,64,.3); }
+
+.d-main {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.4;
+}
+.d-metrics {
+  display: flex;
+  gap: 8px;
+  margin-top: 5px;
+  flex-wrap: wrap;
+}
+.d-metric {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted2);
+  background: var(--s1);
+  padding: 2px 7px;
+  border: 1px solid var(--border);
+}
+.d-note {
+  font-size: 11px;
+  color: var(--muted2);
+  margin-top: 6px;
+  line-height: 1.6;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── PROGRESS BAR ── */
+.progress-section {
+  padding: 12px 16px 0;
+}
+.prog-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.prog-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: .1em;
+}
+.prog-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--muted2);
+}
+.prog-bar-outer {
+  height: 3px;
+  background: var(--border2);
+  margin-bottom: 12px;
+}
+.prog-bar-inner {
+  height: 100%;
+  background: var(--cyan);
+  transition: width .3s;
+}
+
+/* ── MILESTONE ── */
+.milestone-row {
+  margin: 4px 16px 0;
+  background: var(--s1);
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.ms-label { font-size: 12px; color: var(--muted2); }
+.ms-val { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text); font-weight: 500; }
+
+/* ── BOTTOM NAV ── */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0; right: 0;
+  background: rgba(8,10,15,.96);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border2);
+  display: flex;
+  padding-bottom: var(--safe);
+}
+.bnav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: opacity .15s;
+  gap: 4px;
+}
+.bnav-btn:active { opacity: .6; }
+.bnav-icon { font-size: 18px; line-height: 1; }
+.bnav-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .06em;
+  color: var(--muted);
+}
+.bnav-btn.active .bnav-label { color: var(--cyan); }
+.bnav-btn.active .bnav-icon { filter: brightness(1.5); }
+
+/* ── STRATEGY PAGE ── */
+.page { display: none; }
+.page.active { display: block; }
+
+.strat-card {
+  margin: 12px 16px 0;
+  background: var(--s1);
+  border: 1px solid var(--border2);
+  padding: 0;
+  overflow: hidden;
+}
+.strat-hd {
+  background: var(--s2);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--muted2);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.strat-body { padding: 14px; }
+
+.seg-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 8px;
+  margin: 12px 16px 0;
+}
+.seg-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  padding: 12px 10px;
+  text-align: center;
+  border-top: 2px solid;
+}
+.seg-km { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--muted2); margin-bottom: 6px; }
+.seg-pace { font-family: 'Bebas Neue', sans-serif; font-size: 26px; line-height: 1; margin-bottom: 4px; }
+.seg-note { font-size: 10px; color: var(--muted2); line-height: 1.5; }
+
+.check-list { padding: 0; }
+.check-item {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 10px;
+  align-items: start;
+}
+.check-item:last-child { border-bottom: none; }
+.check-dot {
+  width: 16px; height: 16px;
+  border: 1.5px solid var(--border2);
+  border-radius: 50%;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+.check-main { font-size: 13px; color: var(--text); line-height: 1.4; font-weight: 500; }
+.check-sub { font-size: 11px; color: var(--muted2); margin-top: 3px; line-height: 1.55; }
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 12px 16px 0;
+}
+.kpi-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  padding: 12px;
+  text-align: center;
+}
+.kpi-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--muted); letter-spacing: .08em; margin-bottom: 5px; }
+.kpi-val { font-family: 'Bebas Neue', sans-serif; font-size: 28px; line-height: 1; }
+.kpi-sub { font-size: 10px; color: var(--muted2); margin-top: 3px; }
+
+.page-title {
+  padding: 14px 16px 0;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: .06em;
+  color: var(--muted2);
+}
 </style>
+</head>
+<body>
 
-<h2 class="sr-only">JTBC 마라톤 168일 날짜별 훈련 플랜 — 2026.5.18 ~ 2026.11.1</h2>
-
-<div class="root">
-
-<div class="phase-nav" id="phaseNav">
-  <button class="pnav active" onclick="filterPhase('all')">전체 24주</button>
-  <button class="pnav" onclick="filterPhase('rec')">회복 W1~2</button>
-  <button class="pnav" onclick="filterPhase('base')">베이스 W3~10</button>
-  <button class="pnav" onclick="filterPhase('build')">빌드업 W11~14</button>
-  <button class="pnav" onclick="filterPhase('peak')">피크 W15~18</button>
-  <button class="pnav" onclick="filterPhase('taper')">테이퍼 W19~23</button>
-  <button class="pnav" onclick="filterPhase('race')">레이스위크 W24</button>
+<div class="topbar">
+  <div>
+    <div class="topbar-title">JTBC PLAN</div>
+    <div class="topbar-sub" id="topbarSub">2026.11.01 · 42.195K</div>
+  </div>
+  <div>
+    <div class="dday-badge" id="ddayBadge">D-167</div>
+    <div class="dday-sub" id="ddaySub">11월 1일까지</div>
+  </div>
 </div>
 
-<div id="weekContainer"></div>
+<!-- PAGE: 플랜 -->
+<div class="page active" id="page-plan">
 
+  <div class="progress-section">
+    <div class="prog-row">
+      <span class="prog-label">훈련 진행률</span>
+      <span class="prog-val" id="progVal">0%</span>
+    </div>
+    <div class="prog-bar-outer">
+      <div class="prog-bar-inner" id="progBar" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="today-card" id="todayCard" style="display:none">
+    <div class="today-label">▶ 오늘의 훈련</div>
+    <div class="today-main" id="todayMain"></div>
+    <div class="today-meta" id="todayMeta"></div>
+    <div class="today-note" id="todayNote"></div>
+  </div>
+
+  <div class="milestone-row">
+    <span class="ms-label">현재 PB (하프)</span>
+    <span class="ms-val">1:38:43</span>
+  </div>
+  <div class="milestone-row">
+    <span class="ms-label">목표 기록</span>
+    <span class="ms-val" style="color:var(--gold)">3:28:00 · 4:56/km</span>
+  </div>
+
+  <div class="phase-wrap" id="phaseWrap">
+    <button class="phase-btn p-all on" onclick="filterPhase('all',this)">전체</button>
+    <button class="phase-btn p-rec" onclick="filterPhase('rec',this)">회복</button>
+    <button class="phase-btn p-base" onclick="filterPhase('base',this)">베이스</button>
+    <button class="phase-btn p-build" onclick="filterPhase('build',this)">빌드업</button>
+    <button class="phase-btn p-peak" onclick="filterPhase('peak',this)">피크</button>
+    <button class="phase-btn p-taper" onclick="filterPhase('taper',this)">테이퍼</button>
+    <button class="phase-btn p-race" onclick="filterPhase('race',this)">레이스위크</button>
+  </div>
+
+  <div class="weeks-wrap" id="weeksWrap"></div>
+</div>
+
+<!-- PAGE: 전략 -->
+<div class="page" id="page-strategy">
+  <div class="page-title">레이스 전략</div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">목표 기록</div>
+      <div class="kpi-val" style="color:var(--gold)">3:28</div>
+      <div class="kpi-sub">보수 목표</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">km당 페이스</div>
+      <div class="kpi-val" style="color:var(--cyan)">4:56</div>
+      <div class="kpi-sub">균등 분배</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">전반 21K</div>
+      <div class="kpi-val" style="color:var(--muted2)">1:44</div>
+      <div class="kpi-sub">4:58/km · 억제</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">후반 21K</div>
+      <div class="kpi-val" style="color:var(--green)">1:44</div>
+      <div class="kpi-sub">4:54/km · 네거티브</div>
+    </div>
+  </div>
+
+  <div style="padding:12px 16px 0;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted2);letter-spacing:.12em;text-transform:uppercase;">구간별 페이스 플랜</div>
+  <div class="seg-grid">
+    <div class="seg-card" style="border-top-color:var(--muted2)">
+      <div class="seg-km">1~10km</div>
+      <div class="seg-pace" style="color:var(--muted2)">4:58</div>
+      <div class="seg-note">억제 구간<br>절대 빠르게 X</div>
+    </div>
+    <div class="seg-card" style="border-top-color:var(--cyan)">
+      <div class="seg-km">11~30km</div>
+      <div class="seg-pace" style="color:var(--cyan)">4:56</div>
+      <div class="seg-note">유지 구간<br>HR 155~160</div>
+    </div>
+    <div class="seg-card" style="border-top-color:var(--gold)">
+      <div class="seg-km">31~42K</div>
+      <div class="seg-pace" style="color:var(--gold)">4:52</div>
+      <div class="seg-note">스퍼트<br>잔여 전부 소진</div>
+    </div>
+  </div>
+
+  <div style="margin:12px 16px 0;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted2);letter-spacing:.12em;text-transform:uppercase;">구간 통과 시계 기준</div>
+  <div class="strat-card" style="margin-top:6px">
+    <div class="check-list" id="splitList"></div>
+  </div>
+
+  <div style="margin:12px 16px 0;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted2);letter-spacing:.12em;text-transform:uppercase;">당일 체크리스트</div>
+  <div class="strat-card" style="margin-top:6px;margin-bottom:6px;">
+    <div class="check-list">
+      <div class="check-item"><div class="check-dot"></div><div><div class="check-main">레이스 전 워밍업 2km</div><div class="check-sub">출발 30~40분 전 + 스트라이드 3×100m</div></div></div>
+      <div class="check-item"><div class="check-dot"></div><div><div class="check-main">초반 5km 4:58 사수</div><div class="check-sub">체감 '너무 느리다' 느낌이 정상. 군중에 휩쓸리지 말 것.</div></div></div>
+      <div class="check-item"><div class="check-dot"></div><div><div class="check-main">워치 심박 오류 대비</div><div class="check-sub">10분 후 HR 급락 시 호흡·다리 체감 기준으로 전환</div></div></div>
+      <div class="check-item"><div class="check-dot"></div><div><div class="check-main">32km 통과 후 페이스 업</div><div class="check-sub">≤2:38:00 통과 시 4:52로 올리기. 아니면 유지.</div></div></div>
+      <div class="check-item"><div class="check-dot"></div><div><div class="check-main">보급 전략 훈련과 동일하게</div><div class="check-sub">LSD 세션에서 연습한 보급 타이밍 그대로 실행</div></div></div>
+    </div>
+  </div>
+
+  <div style="height:80px"></div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <button class="bnav-btn active" id="nav-plan" onclick="switchPage('plan')">
+    <div class="bnav-icon">📅</div>
+    <div class="bnav-label">훈련 플랜</div>
+  </button>
+  <button class="bnav-btn" id="nav-strategy" onclick="switchPage('strategy')">
+    <div class="bnav-icon">🎯</div>
+    <div class="bnav-label">레이스 전략</div>
+  </button>
 </div>
 
 <script>
+const RACE_DATE = new Date('2026-11-01');
+
 const PLAN = [
   {w:1,phase:'rec',label:'레이스 후 완전 회복',km:30,dates:'5/18~5/24',days:[
-    {dow:'월',date:'5/18',type:'rest',main:'완전 휴식',note:'5/17 레이스 다음날. 스트레칭만.',km:'—',hr:'—'},
-    {dow:'화',date:'5/19',type:'rest',main:'완전 휴식',note:'다리 피로 제거 최우선.',km:'—',hr:'—'},
-    {dow:'수',date:'5/20',type:'recovery',main:'회복 조깅 20~25분',note:'6:10~6:30/km · HR 135 이하 · 몸 상태 점검',km:'4km',hr:'130~135'},
-    {dow:'목',date:'5/21',type:'rest',main:'완전 휴식',note:'피로 잔존 시 추가 휴식.',km:'—',hr:'—'},
-    {dow:'금',date:'5/22',type:'recovery',main:'회복 조깅 30분',note:'6:00~6:20/km · HR 138 이하',km:'5km',hr:'135~138'},
-    {dow:'토',date:'5/23',type:'easy',main:'이지런',note:'5:45~6:00/km · HR 142 이하 · 느낌 좋으면 연장 가능',km:'7km',hr:'138~142'},
-    {dow:'일',date:'5/24',type:'rest',main:'완전 휴식',note:'1주차 마무리.',km:'—',hr:'—'},
+    {dow:'월',date:'2026-05-18',ds:'5/18',type:'rest',main:'완전 휴식',note:'5/17 레이스 다음날. 스트레칭만.',km:'—',hr:'—'},
+    {dow:'화',date:'2026-05-19',ds:'5/19',type:'rest',main:'완전 휴식',note:'다리 피로 제거 최우선.',km:'—',hr:'—'},
+    {dow:'수',date:'2026-05-20',ds:'5/20',type:'recovery',main:'회복 조깅 20~25분',note:'6:10~6:30/km · HR 135 이하',km:'4km',hr:'130~135'},
+    {dow:'목',date:'2026-05-21',ds:'5/21',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'금',date:'2026-05-22',ds:'5/22',type:'recovery',main:'회복 조깅 30분',note:'6:00~6:20/km · HR 138 이하',km:'5km',hr:'135~138'},
+    {dow:'토',date:'2026-05-23',ds:'5/23',type:'easy',main:'이지런',note:'5:45~6:00/km · HR 142 이하',km:'7km',hr:'138~142'},
+    {dow:'일',date:'2026-05-24',ds:'5/24',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
   ]},
   {w:2,phase:'rec',label:'회복 완성',km:35,dates:'5/25~5/31',days:[
-    {dow:'월',date:'5/25',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'화',date:'5/26',type:'easy',main:'이지런',note:'5:40~5:55/km · HR 143 이하',km:'7km',hr:'138~143'},
-    {dow:'수',date:'5/27',type:'recovery',main:'회복 조깅',note:'6:00/km 이상 · HR 140 이하',km:'6km',hr:'135~140'},
-    {dow:'목',date:'5/28',type:'easy',main:'이지런',note:'5:35~5:50/km · HR 144 이하',km:'8km',hr:'140~144'},
-    {dow:'금',date:'5/29',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'토',date:'5/30',type:'easy',main:'이지런',note:'5:40~5:55/km · HR 145 이하',km:'8km',hr:'140~145'},
-    {dow:'일',date:'5/31',type:'lsd',main:'LSD',note:'5:50~6:10/km · HR 148 이하 · 거리 집중',km:'10km',hr:'143~148'},
+    {dow:'월',date:'2026-05-25',ds:'5/25',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'2026-05-26',ds:'5/26',type:'easy',main:'이지런',note:'5:40~5:55/km · HR 143 이하',km:'7km',hr:'138~143'},
+    {dow:'수',date:'2026-05-27',ds:'5/27',type:'recovery',main:'회복 조깅',note:'6:00/km 이상 · HR 140 이하',km:'6km',hr:'135~140'},
+    {dow:'목',date:'2026-05-28',ds:'5/28',type:'easy',main:'이지런',note:'5:35~5:50/km · HR 144 이하',km:'8km',hr:'140~144'},
+    {dow:'금',date:'2026-05-29',ds:'5/29',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'2026-05-30',ds:'5/30',type:'easy',main:'이지런',note:'5:40~5:55/km · HR 145 이하',km:'8km',hr:'140~145'},
+    {dow:'일',date:'2026-05-31',ds:'5/31',type:'lsd',main:'LSD',note:'5:50~6:10/km · HR 148 이하',km:'10km',hr:'143~148'},
   ]},
   {w:3,phase:'base',label:'베이스 재건 시작',km:42,dates:'6/1~6/7',days:[
-    {dow:'월',date:'6/1',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'화',date:'6/2',type:'easy',main:'이지런',note:'5:30~5:45/km · HR 145 이하',km:'8km',hr:'140~145'},
-    {dow:'수',date:'6/3',type:'easy',main:'이지런',note:'5:35~5:50/km · HR 145 이하',km:'7km',hr:'140~145'},
-    {dow:'목',date:'6/4',type:'tempo',main:'템포런',note:'5:10~5:20/km × 5km · HR 155 이하 · 마라톤 워크로드 적응',km:'8km',hr:'148~155'},
-    {dow:'금',date:'6/5',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'토',date:'6/6',type:'easy',main:'이지런',note:'5:30~5:45/km · HR 145 이하',km:'8km',hr:'140~145'},
-    {dow:'일',date:'6/7',type:'lsd',main:'LSD',note:'5:45~6:00/km · HR 150 이하',km:'14km',hr:'143~150'},
+    {dow:'월',date:'2026-06-01',ds:'6/1',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'2026-06-02',ds:'6/2',type:'easy',main:'이지런',note:'5:30~5:45/km · HR 145 이하',km:'8km',hr:'140~145'},
+    {dow:'수',date:'2026-06-03',ds:'6/3',type:'easy',main:'이지런',note:'5:35~5:50/km · HR 145 이하',km:'7km',hr:'140~145'},
+    {dow:'목',date:'2026-06-04',ds:'6/4',type:'tempo',main:'템포런',note:'5:10~5:20/km × 5km · HR 155 이하',km:'8km',hr:'148~155'},
+    {dow:'금',date:'2026-06-05',ds:'6/5',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'2026-06-06',ds:'6/6',type:'easy',main:'이지런',note:'5:30~5:45/km · HR 145 이하',km:'8km',hr:'140~145'},
+    {dow:'일',date:'2026-06-07',ds:'6/7',type:'lsd',main:'LSD',note:'5:45~6:00/km · HR 150 이하',km:'14km',hr:'143~150'},
   ]},
   {w:4,phase:'base',label:'베이스 · 거리 확장',km:47,dates:'6/8~6/14',days:[
-    {dow:'월',date:'6/8',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'화',date:'6/9',type:'easy',main:'이지런',note:'5:30~5:45/km · HR 145 이하',km:'8km',hr:'140~145'},
-    {dow:'수',date:'6/10',type:'easy',main:'이지런',note:'5:35~5:50/km · HR 145 이하',km:'8km',hr:'140~145'},
-    {dow:'목',date:'6/11',type:'tempo',main:'템포런',note:'5:05~5:15/km × 6km · HR 155 이하',km:'9km',hr:'148~155'},
-    {dow:'금',date:'6/12',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'토',date:'6/13',type:'easy',main:'이지런',note:'5:30~5:45/km · HR 145 이하',km:'8km',hr:'140~145'},
-    {dow:'일',date:'6/14',type:'lsd',main:'LSD',note:'5:40~5:55/km · HR 150 이하',km:'16km',hr:'143~150'},
+    {dow:'월',date:'2026-06-08',ds:'6/8',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'2026-06-09',ds:'6/9',type:'easy',main:'이지런',note:'5:30~5:45/km · HR 145 이하',km:'8km',hr:'140~145'},
+    {dow:'수',date:'2026-06-10',ds:'6/10',type:'easy',main:'이지런',note:'5:35~5:50/km · HR 145 이하',km:'8km',hr:'140~145'},
+    {dow:'목',date:'2026-06-11',ds:'6/11',type:'tempo',main:'템포런',note:'5:05~5:15/km × 6km · HR 155 이하',km:'9km',hr:'148~155'},
+    {dow:'금',date:'2026-06-12',ds:'6/12',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'2026-06-13',ds:'6/13',type:'easy',main:'이지런',note:'5:30~5:45/km · HR 145 이하',km:'8km',hr:'140~145'},
+    {dow:'일',date:'2026-06-14',ds:'6/14',type:'lsd',main:'LSD',note:'5:40~5:55/km · HR 150 이하',km:'16km',hr:'143~150'},
   ]},
   {w:5,phase:'base',label:'베이스 · 강화',km:50,dates:'6/15~6/21',days:[
-    {dow:'월',date:'6/15',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'화',date:'6/16',type:'easy',main:'이지런',note:'5:25~5:40/km · HR 147 이하',km:'9km',hr:'142~147'},
-    {dow:'수',date:'6/17',type:'easy',main:'이지런',note:'5:30~5:45/km · HR 145 이하',km:'8km',hr:'140~145'},
-    {dow:'목',date:'6/18',type:'tempo',main:'템포런',note:'5:00~5:10/km × 7km · HR 157 이하',km:'10km',hr:'150~157'},
-    {dow:'금',date:'6/19',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'토',date:'6/20',type:'easy',main:'이지런',note:'5:25~5:40/km · HR 147 이하',km:'9km',hr:'142~147'},
-    {dow:'일',date:'6/21',type:'lsd',main:'LSD',note:'5:35~5:50/km · HR 150 이하',km:'18km',hr:'143~150'},
+    {dow:'월',date:'2026-06-15',ds:'6/15',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'2026-06-16',ds:'6/16',type:'easy',main:'이지런',note:'5:25~5:40/km · HR 147 이하',km:'9km',hr:'142~147'},
+    {dow:'수',date:'2026-06-17',ds:'6/17',type:'easy',main:'이지런',note:'5:30~5:45/km · HR 145 이하',km:'8km',hr:'140~145'},
+    {dow:'목',date:'2026-06-18',ds:'6/18',type:'tempo',main:'템포런',note:'5:00~5:10/km × 7km · HR 157 이하',km:'10km',hr:'150~157'},
+    {dow:'금',date:'2026-06-19',ds:'6/19',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'2026-06-20',ds:'6/20',type:'easy',main:'이지런',note:'5:25~5:40/km · HR 147 이하',km:'9km',hr:'142~147'},
+    {dow:'일',date:'2026-06-21',ds:'6/21',type:'lsd',main:'LSD',note:'5:35~5:50/km · HR 150 이하',km:'18km',hr:'143~150'},
   ]},
   {w:6,phase:'base',label:'베이스 · 20km 첫 돌파',km:54,dates:'6/22~6/28',days:[
-    {dow:'월',date:'6/22',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'화',date:'6/23',type:'easy',main:'이지런',note:'5:25~5:40/km · HR 147 이하',km:'9km',hr:'142~147'},
-    {dow:'수',date:'6/24',type:'recovery',main:'회복 조깅',note:'5:50~6:10/km · HR 140 이하',km:'7km',hr:'135~140'},
-    {dow:'목',date:'6/25',type:'tempo',main:'템포런',note:'4:58~5:08/km × 8km · HR 158 이하',km:'11km',hr:'150~158'},
-    {dow:'금',date:'6/26',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'토',date:'6/27',type:'easy',main:'이지런',note:'5:25~5:40/km · HR 147 이하',km:'9km',hr:'142~147'},
-    {dow:'일',date:'6/28',type:'lsd',main:'LSD',note:'5:30~5:45/km · HR 152 이하 · 첫 20km',km:'20km',hr:'145~152'},
+    {dow:'월',date:'2026-06-22',ds:'6/22',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'2026-06-23',ds:'6/23',type:'easy',main:'이지런',note:'5:25~5:40/km · HR 147 이하',km:'9km',hr:'142~147'},
+    {dow:'수',date:'2026-06-24',ds:'6/24',type:'recovery',main:'회복 조깅',note:'5:50~6:10/km · HR 140 이하',km:'7km',hr:'135~140'},
+    {dow:'목',date:'2026-06-25',ds:'6/25',type:'tempo',main:'템포런',note:'4:58~5:08/km × 8km · HR 158 이하',km:'11km',hr:'150~158'},
+    {dow:'금',date:'2026-06-26',ds:'6/26',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'2026-06-27',ds:'6/27',type:'easy',main:'이지런',note:'5:25~5:40/km · HR 147 이하',km:'9km',hr:'142~147'},
+    {dow:'일',date:'2026-06-28',ds:'6/28',type:'lsd',main:'LSD · 첫 20km',note:'5:30~5:45/km · HR 152 이하',km:'20km',hr:'145~152'},
   ]},
   {w:7,phase:'base',label:'7월 더위 적응 시작',km:55,dates:'6/29~7/5',days:[
-    {dow:'월',date:'6/29',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'화',date:'6/30',type:'easy',main:'이지런 (새벽/야간)',note:'5:25~5:40/km · HR 148 이하 · 기온 기준 시간대 선택',km:'9km',hr:'143~148'},
-    {dow:'수',date:'7/1',type:'easy',main:'이지런',note:'5:30~5:45/km · HR 147 이하',km:'9km',hr:'142~147'},
-    {dow:'목',date:'7/2',type:'tempo',main:'템포런 (새벽)',note:'4:56~5:05/km × 8km · HR 158 이하 · 더위 시 GAP 기준',km:'11km',hr:'150~158'},
-    {dow:'금',date:'7/3',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'토',date:'7/4',type:'easy',main:'이지런',note:'5:25~5:40/km · HR 148 이하',km:'9km',hr:'143~148'},
-    {dow:'일',date:'7/5',type:'lsd',main:'LSD (새벽)',note:'5:30~5:45/km · HR 153 이하 · 더위 시 페이스 무시 HR 엄수',km:'22km',hr:'145~153'},
+    {dow:'월',date:'2026-06-29',ds:'6/29',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'2026-06-30',ds:'6/30',type:'easy',main:'이지런 (새벽/야간)',note:'5:25~5:40/km · HR 148 이하 · 기온 기준 시간대 선택',km:'9km',hr:'143~148'},
+    {dow:'수',date:'2026-07-01',ds:'7/1',type:'easy',main:'이지런',note:'5:30~5:45/km · HR 147 이하',km:'9km',hr:'142~147'},
+    {dow:'목',date:'2026-07-02',ds:'7/2',type:'tempo',main:'템포런 (새벽)',note:'4:56~5:05/km × 8km · HR 158 이하 · 더위 시 GAP 기준',km:'11km',hr:'150~158'},
+    {dow:'금',date:'2026-07-03',ds:'7/3',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'2026-07-04',ds:'7/4',type:'easy',main:'이지런',note:'5:25~5:40/km · HR 148 이하',km:'9km',hr:'143~148'},
+    {dow:'일',date:'2026-07-05',ds:'7/5',type:'lsd',main:'LSD (새벽)',note:'5:30~5:45/km · HR 153 이하 · 더위 시 HR 엄수',km:'22km',hr:'145~153'},
   ]},
-  {w:8,phase:'base',label:'더위 적응 · 페이스 자극',km:58,dates:'7/6~7/12',days:[
-    {dow:'월',date:'7/6',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'화',date:'7/7',type:'easy',main:'이지런',note:'5:25~5:40/km · HR 148 이하',km:'10km',hr:'143~148'},
-    {dow:'수',date:'7/8',type:'interval',main:'인터벌 첫 도입',note:'1km×4 · 4:30~4:35/km · HR 162 이하 · 워밍업 2km 포함',km:'10km',hr:'145~162'},
-    {dow:'목',date:'7/9',type:'recovery',main:'회복 조깅',note:'5:50~6:10/km · HR 140 이하',km:'7km',hr:'135~140'},
-    {dow:'금',date:'7/10',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'토',date:'7/11',type:'easy',main:'이지런',note:'5:25~5:40/km · HR 148 이하',km:'10km',hr:'143~148'},
-    {dow:'일',date:'7/12',type:'lsd',main:'LSD (새벽)',note:'5:28~5:42/km · HR 153 이하',km:'23km',hr:'145~153'},
+  {w:8,phase:'base',label:'더위 적응 · 인터벌 도입',km:58,dates:'7/6~7/12',days:[
+    {dow:'월',date:'2026-07-06',ds:'7/6',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'2026-07-07',ds:'7/7',type:'easy',main:'이지런',note:'5:25~5:40/km · HR 148 이하',km:'10km',hr:'143~148'},
+    {dow:'수',date:'2026-07-08',ds:'7/8',type:'interval',main:'인터벌 첫 도입',note:'1km×4 · 4:30~4:35/km · HR 162 이하 · 워밍업 2km',km:'10km',hr:'145~162'},
+    {dow:'목',date:'2026-07-09',ds:'7/9',type:'recovery',main:'회복 조깅',note:'5:50~6:10/km · HR 140 이하',km:'7km',hr:'135~140'},
+    {dow:'금',date:'2026-07-10',ds:'7/10',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'2026-07-11',ds:'7/11',type:'easy',main:'이지런',note:'5:25~5:40/km · HR 148 이하',km:'10km',hr:'143~148'},
+    {dow:'일',date:'2026-07-12',ds:'7/12',type:'lsd',main:'LSD (새벽)',note:'5:28~5:42/km · HR 153 이하',km:'23km',hr:'145~153'},
   ]},
   {w:9,phase:'base',label:'MP 페이스 첫 각인',km:60,dates:'7/13~7/19',days:[
-    {dow:'월',date:'7/13',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'화',date:'7/14',type:'easy',main:'이지런',note:'5:22~5:38/km · HR 148 이하',km:'10km',hr:'143~148'},
-    {dow:'수',date:'7/15',type:'mp',main:'MP 런 첫 도입',note:'4:56~5:00/km × 10km · HR 158 이하 · 초반 2km 5:05로 억제 필수',km:'13km',hr:'150~158'},
-    {dow:'목',date:'7/16',type:'recovery',main:'회복 조깅',note:'5:50~6:10/km · HR 140 이하',km:'7km',hr:'135~140'},
-    {dow:'금',date:'7/17',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'토',date:'7/18',type:'easy',main:'이지런',note:'5:22~5:38/km · HR 148 이하',km:'10km',hr:'143~148'},
-    {dow:'일',date:'7/19',type:'lsd',main:'LSD (새벽)',note:'5:25~5:40/km · HR 153 이하',km:'24km',hr:'145~153'},
+    {dow:'월',date:'2026-07-13',ds:'7/13',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'2026-07-14',ds:'7/14',type:'easy',main:'이지런',note:'5:22~5:38/km · HR 148 이하',km:'10km',hr:'143~148'},
+    {dow:'수',date:'2026-07-15',ds:'7/15',type:'mp',main:'MP 런 첫 도입',note:'4:56/km × 10km · HR 158 이하 · 초반 2km 5:05로 억제 필수',km:'13km',hr:'150~158'},
+    {dow:'목',date:'2026-07-16',ds:'7/16',type:'recovery',main:'회복 조깅',note:'5:50~6:10/km · HR 140 이하',km:'7km',hr:'135~140'},
+    {dow:'금',date:'2026-07-17',ds:'7/17',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'2026-07-18',ds:'7/18',type:'easy',main:'이지런',note:'5:22~5:38/km · HR 148 이하',km:'10km',hr:'143~148'},
+    {dow:'일',date:'2026-07-19',ds:'7/19',type:'lsd',main:'LSD (새벽)',note:'5:25~5:40/km · HR 153 이하',km:'24km',hr:'145~153'},
   ]},
-  {w:10,phase:'base',label:'베이스 완성 확인',km:62,dates:'7/20~7/26',days:[
-    {dow:'월',date:'7/20',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'화',date:'7/21',type:'easy',main:'이지런',note:'5:20~5:35/km · HR 148 이하',km:'10km',hr:'143~148'},
-    {dow:'수',date:'7/22',type:'interval',main:'인터벌',note:'1km×5 · 4:25~4:30/km · HR 163 이하',km:'11km',hr:'145~163'},
-    {dow:'목',date:'7/23',type:'recovery',main:'회복 조깅',note:'5:50~6:10/km · HR 140 이하',km:'7km',hr:'135~140'},
-    {dow:'금',date:'7/24',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'토',date:'7/25',type:'easy',main:'이지런',note:'5:20~5:35/km · HR 148 이하',km:'10km',hr:'143~148'},
-    {dow:'일',date:'7/26',type:'lsd',main:'LSD · 25km 달성',note:'5:22~5:38/km · HR 153 이하 · 7월 베이스 완성 기준',km:'25km',hr:'145~153'},
+  {w:10,phase:'base',label:'베이스 완성 · 25km',km:62,dates:'7/20~7/26',days:[
+    {dow:'월',date:'2026-07-20',ds:'7/20',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'2026-07-21',ds:'7/21',type:'easy',main:'이지런',note:'5:20~5:35/km · HR 148 이하',km:'10km',hr:'143~148'},
+    {dow:'수',date:'2026-07-22',ds:'7/22',type:'interval',main:'인터벌',note:'1km×5 · 4:25~4:30/km · HR 163 이하',km:'11km',hr:'145~163'},
+    {dow:'목',date:'2026-07-23',ds:'7/23',type:'recovery',main:'회복 조깅',note:'5:50~6:10/km · HR 140 이하',km:'7km',hr:'135~140'},
+    {dow:'금',date:'2026-07-24',ds:'7/24',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'2026-07-25',ds:'7/25',type:'easy',main:'이지런',note:'5:20~5:35/km · HR 148 이하',km:'10km',hr:'143~148'},
+    {dow:'일',date:'2026-07-26',ds:'7/26',type:'lsd',main:'LSD · 25km 달성 (베이스 완성 기준)',note:'5:22~5:38/km · HR 153 이하',km:'25km',hr:'145~153'},
   ]},
   {w:11,phase:'build',label:'빌드업 · MP 주간 고정',km:65,dates:'7/27~8/2',days:[
-    {dow:'월',date:'7/27',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'화',date:'7/28',type:'easy',main:'이지런',note:'5:18~5:33/km · HR 149 이하',km:'10km',hr:'144~149'},
-    {dow:'수',date:'7/29',type:'mp',main:'MP 런',note:'4:56/km × 12km · HR 158 이하 · 초반 2km 5:03 억제',km:'15km',hr:'150~158'},
-    {dow:'목',date:'7/30',type:'recovery',main:'회복 조깅',note:'5:50~6:10/km · HR 140 이하',km:'7km',hr:'135~140'},
-    {dow:'금',date:'7/31',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'토',date:'8/1',type:'easy',main:'이지런',note:'5:18~5:33/km · HR 149 이하',km:'11km',hr:'144~149'},
-    {dow:'일',date:'8/2',type:'lsd',main:'LSD',note:'5:20~5:35/km · HR 153 이하',km:'27km',hr:'145~153'},
+    {dow:'월',date:'2026-07-27',ds:'7/27',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'2026-07-28',ds:'7/28',type:'easy',main:'이지런',note:'5:18~5:33/km · HR 149 이하',km:'10km',hr:'144~149'},
+    {dow:'수',date:'2026-07-29',ds:'7/29',type:'mp',main:'MP 런',note:'4:56/km × 12km · HR 158 이하 · 초반 2km 5:03 억제',km:'15km',hr:'150~158'},
+    {dow:'목',date:'2026-07-30',ds:'7/30',type:'recovery',main:'회복 조깅',note:'5:50~6:10/km · HR 140 이하',km:'7km',hr:'135~140'},
+    {dow:'금',date:'2026-07-31',ds:'7/31',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'2026-08-01',ds:'8/1',type:'easy',main:'이지런',note:'5:18~5:33/km · HR 149 이하',km:'11km',hr:'144~149'},
+    {dow:'일',date:'2026-08-02',ds:'8/2',type:'lsd',main:'LSD',note:'5:20~5:35/km · HR 153 이하',km:'27km',hr:'145~153'},
   ]},
   {w:12,phase:'build',label:'빌드업 · 인터벌 강화',km:68,dates:'8/3~8/9',days:[
-    {dow:'월',date:'8/3',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'화',date:'8/4',type:'easy',main:'이지런',note:'5:18~5:33/km · HR 149 이하',km:'11km',hr:'144~149'},
-    {dow:'수',date:'8/5',type:'interval',main:'인터벌',note:'1km×5 · 4:18~4:23/km · HR 163 이하',km:'12km',hr:'145~163'},
-    {dow:'목',date:'8/6',type:'recovery',main:'회복 조깅',note:'5:50~6:10/km · HR 140 이하',km:'7km',hr:'135~140'},
-    {dow:'금',date:'8/7',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'토',date:'8/8',type:'easy',main:'이지런',note:'5:18~5:33/km · HR 149 이하',km:'11km',hr:'144~149'},
-    {dow:'일',date:'8/9',type:'lsd',main:'LSD',note:'5:18~5:33/km · HR 153 이하',km:'28km',hr:'145~153'},
+    {dow:'월',date:'2026-08-03',ds:'8/3',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'2026-08-04',ds:'8/4',type:'easy',main:'이지런',note:'5:18~5:33/km · HR 149 이하',km:'11km',hr:'144~149'},
+    {dow:'수',date:'2026-08-05',ds:'8/5',type:'interval',main:'인터벌',note:'1km×5 · 4:18~4:23/km · HR 163 이하',km:'12km',hr:'145~163'},
+    {dow:'목',date:'2026-08-06',ds:'8/6',type:'recovery',main:'회복 조깅',note:'5:50~6:10/km · HR 140 이하',km:'7km',hr:'135~140'},
+    {dow:'금',date:'2026-08-07',ds:'8/7',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'2026-08-08',ds:'8/8',type:'easy',main:'이지런',note:'5:18~5:33/km · HR 149 이하',km:'11km',hr:'144~149'},
+    {dow:'일',date:'2026-08-09',ds:'8/9',type:'lsd',main:'LSD',note:'5:18~5:33/km · HR 153 이하',km:'28km',hr:'145~153'},
   ]},
   {w:13,phase:'build',label:'빌드업 · MP+LSD 복합',km:70,dates:'8/10~8/16',days:[
-    {dow:'월',date:'8/10',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'화',date:'8/11',type:'easy',main:'이지런',note:'5:15~5:30/km · HR 149 이하',km:'11km',hr:'144~149'},
-    {dow:'수',date:'8/12',type:'mp',main:'MP 런',note:'4:56/km × 15km · HR 159 이하 · 초반 2km 5:02 억제',km:'18km',hr:'150~159'},
-    {dow:'목',date:'8/13',type:'recovery',main:'회복 조깅',note:'5:50~6:10/km · HR 140 이하',km:'7km',hr:'135~140'},
-    {dow:'금',date:'8/14',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'토',date:'8/15',type:'easy',main:'이지런 (광복절)',note:'5:15~5:30/km · HR 149 이하',km:'11km',hr:'144~149'},
-    {dow:'일',date:'8/16',type:'lsd',main:'LSD',note:'5:15~5:30/km · HR 154 이하',km:'29km',hr:'145~154'},
+    {dow:'월',date:'2026-08-10',ds:'8/10',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'2026-08-11',ds:'8/11',type:'easy',main:'이지런',note:'5:15~5:30/km · HR 149 이하',km:'11km',hr:'144~149'},
+    {dow:'수',date:'2026-08-12',ds:'8/12',type:'mp',main:'MP 런',note:'4:56/km × 15km · HR 159 이하 · 초반 2km 5:02 억제',km:'18km',hr:'150~159'},
+    {dow:'목',date:'2026-08-13',ds:'8/13',type:'recovery',main:'회복 조깅',note:'5:50~6:10/km · HR 140 이하',km:'7km',hr:'135~140'},
+    {dow:'금',date:'2026-08-14',ds:'8/14',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'2026-08-15',ds:'8/15',type:'easy',main:'이지런 (광복절)',note:'5:15~5:30/km · HR 149 이하',km:'11km',hr:'144~149'},
+    {dow:'일',date:'2026-08-16',ds:'8/16',type:'lsd',main:'LSD',note:'5:15~5:30/km · HR 154 이하',km:'29km',hr:'145~154'},
   ]},
-  {w:14,phase:'build',label:'빌드업 · 30km 첫 돌파',km:72,dates:'8/17~8/23',days:[
-    {dow:'월',date:'8/17',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'화',date:'8/18',type:'easy',main:'이지런',note:'5:15~5:30/km · HR 149 이하',km:'11km',hr:'144~149'},
-    {dow:'수',date:'8/19',type:'interval',main:'인터벌',note:'1km×6 · 4:15~4:20/km · HR 164 이하',km:'13km',hr:'145~164'},
-    {dow:'목',date:'8/20',type:'recovery',main:'회복 조깅',note:'5:50~6:10/km · HR 140 이하',km:'7km',hr:'135~140'},
-    {dow:'금',date:'8/21',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'토',date:'8/22',type:'easy',main:'이지런',note:'5:15~5:30/km · HR 149 이하',km:'11km',hr:'144~149'},
-    {dow:'일',date:'8/23',type:'lsd',main:'LSD · 첫 30km',note:'5:12~5:28/km · HR 154 이하 · 25km 이후 후반 5km MP 페이스로 마무리',km:'30km',hr:'145~154'},
+  {w:14,phase:'build',label:'빌드업 · 첫 30km 돌파',km:72,dates:'8/17~8/23',days:[
+    {dow:'월',date:'2026-08-17',ds:'8/17',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'2026-08-18',ds:'8/18',type:'easy',main:'이지런',note:'5:15~5:30/km · HR 149 이하',km:'11km',hr:'144~149'},
+    {dow:'수',date:'2026-08-19',ds:'8/19',type:'interval',main:'인터벌',note:'1km×6 · 4:15~4:20/km · HR 164 이하',km:'13km',hr:'145~164'},
+    {dow:'목',date:'2026-08-20',ds:'8/20',type:'recovery',main:'회복 조깅',note:'5:50~6:10/km · HR 140 이하',km:'7km',hr:'135~140'},
+    {dow:'금',date:'2026-08-21',ds:'8/21',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'2026-08-22',ds:'8/22',type:'easy',main:'이지런',note:'5:15~5:30/km · HR 149 이하',km:'11km',hr:'144~149'},
+    {dow:'일',date:'2026-08-23',ds:'8/23',type:'lsd',main:'LSD · 첫 30km — 후반 5km MP 마무리',note:'5:12~5:28/km · HR 154 이하',km:'30km',hr:'145~154'},
   ]},
   {w:15,phase:'peak',label:'피크 · 강도 유지',km:78,dates:'8/24~8/30',days:[
-    {dow:'월',date:'8/24',type:'rest',main:'완전 휴식',note:'30km 후 충분한 회복',km:'—',hr:'—'},
-    {dow:'화',date:'8/25',type:'recovery',main:'회복 조깅',note:'5:55~6:15/km · HR 138 이하',km:'7km',hr:'133~138'},
-    {dow:'수',date:'8/26',type:'mp',main:'MP 런',note:'4:56/km × 16km · HR 159 이하',km:'19km',hr:'150~159'},
-    {dow:'목',date:'8/27',type:'recovery',main:'회복 조깅',note:'5:55~6:15/km · HR 140 이하',km:'7km',hr:'135~140'},
-    {dow:'금',date:'8/28',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'토',date:'8/29',type:'easy',main:'이지런',note:'5:12~5:28/km · HR 150 이하',km:'12km',hr:'144~150'},
-    {dow:'일',date:'8/30',type:'lsd',main:'LSD',note:'5:10~5:25/km · HR 154 이하 · 후반 8km MP 페이스',km:'30km',hr:'145~154'},
+    {dow:'월',date:'2026-08-24',ds:'8/24',type:'rest',main:'완전 휴식',note:'30km 후 충분한 회복',km:'—',hr:'—'},
+    {dow:'화',date:'2026-08-25',ds:'8/25',type:'recovery',main:'회복 조깅',note:'5:55~6:15/km · HR 138 이하',km:'7km',hr:'133~138'},
+    {dow:'수',date:'2026-08-26',ds:'8/26',type:'mp',main:'MP 런',note:'4:56/km × 16km · HR 159 이하',km:'19km',hr:'150~159'},
+    {dow:'목',date:'2026-08-27',ds:'8/27',type:'recovery',main:'회복 조깅',note:'5:55~6:15/km · HR 140 이하',km:'7km',hr:'135~140'},
+    {dow:'금',date:'2026-08-28',ds:'8/28',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'2026-08-29',ds:'8/29',type:'easy',main:'이지런',note:'5:12~5:28/km · HR 150 이하',km:'12km',hr:'144~150'},
+    {dow:'일',date:'2026-08-30',ds:'8/30',type:'lsd',main:'LSD — 후반 8km MP',note:'5:10~5:25/km · HR 154 이하',km:'30km',hr:'145~154'},
   ]},
   {w:16,phase:'peak',label:'피크 · 인터벌 피크',km:80,dates:'8/31~9/6',days:[
-    {dow:'월',date:'8/31',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'화',date:'9/1',type:'easy',main:'이지런',note:'5:12~5:28/km · HR 150 이하',km:'12km',hr:'144~150'},
-    {dow:'수',date:'9/2',type:'interval',main:'인터벌 피크',note:'1km×6 · 4:10~4:15/km · HR 165 이하 · 갈수록 빨라지는 패턴 유지',km:'14km',hr:'145~165'},
-    {dow:'목',date:'9/3',type:'recovery',main:'회복 조깅',note:'5:55~6:15/km · HR 140 이하',km:'7km',hr:'135~140'},
-    {dow:'금',date:'9/4',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'토',date:'9/5',type:'easy',main:'이지런',note:'5:12~5:28/km · HR 150 이하',km:'12km',hr:'144~150'},
-    {dow:'일',date:'9/6',type:'lsd',main:'LSD',note:'5:08~5:23/km · HR 154 이하 · 후반 10km MP 페이스',km:'32km',hr:'145~154'},
+    {dow:'월',date:'2026-08-31',ds:'8/31',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'2026-09-01',ds:'9/1',type:'easy',main:'이지런',note:'5:12~5:28/km · HR 150 이하',km:'12km',hr:'144~150'},
+    {dow:'수',date:'2026-09-02',ds:'9/2',type:'interval',main:'인터벌 피크',note:'1km×6 · 4:10~4:15/km · HR 165 이하 · 갈수록 빨라지는 패턴',km:'14km',hr:'145~165'},
+    {dow:'목',date:'2026-09-03',ds:'9/3',type:'recovery',main:'회복 조깅',note:'5:55~6:15/km · HR 140 이하',km:'7km',hr:'135~140'},
+    {dow:'금',date:'2026-09-04',ds:'9/4',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'2026-09-05',ds:'9/5',type:'easy',main:'이지런',note:'5:12~5:28/km · HR 150 이하',km:'12km',hr:'144~150'},
+    {dow:'일',date:'2026-09-06',ds:'9/6',type:'lsd',main:'LSD — 후반 10km MP',note:'5:08~5:23/km · HR 154 이하',km:'32km',hr:'145~154'},
   ]},
   {w:17,phase:'peak',label:'피크 · 하프 레이스 체크',km:75,dates:'9/7~9/13',days:[
-    {dow:'월',date:'9/7',type:'rest',main:'완전 휴식',note:'32km 후 회복',km:'—',hr:'—'},
-    {dow:'화',date:'9/8',type:'recovery',main:'회복 조깅',note:'5:55~6:15/km · HR 138 이하',km:'7km',hr:'133~138'},
-    {dow:'수',date:'9/9',type:'easy',main:'이지런',note:'5:12~5:28/km · HR 150 이하',km:'10km',hr:'144~150'},
-    {dow:'목',date:'9/10',type:'tempo',main:'레이스 전 템포',note:'4:45~4:50/km × 5km · 하프 레이스 페이스 각인',km:'8km',hr:'155~162'},
-    {dow:'금',date:'9/11',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'토',date:'9/12',type:'recovery',main:'회복 조깅',note:'6:00/km 이상 · HR 138 이하',km:'5km',hr:'133~138'},
-    {dow:'일',date:'9/13',type:'race',main:'하프 레이스 (컨디션 체크)',note:'목표 1:36 이내 · 전반 억제 실험 · 4:33~4:35/km 균등 · 풀코스 전략 시뮬레이션',km:'21km',hr:'155~165'},
+    {dow:'월',date:'2026-09-07',ds:'9/7',type:'rest',main:'완전 휴식',note:'32km 후 회복',km:'—',hr:'—'},
+    {dow:'화',date:'2026-09-08',ds:'9/8',type:'recovery',main:'회복 조깅',note:'5:55~6:15/km · HR 138 이하',km:'7km',hr:'133~138'},
+    {dow:'수',date:'2026-09-09',ds:'9/9',type:'easy',main:'이지런',note:'5:12~5:28/km · HR 150 이하',km:'10km',hr:'144~150'},
+    {dow:'목',date:'2026-09-10',ds:'9/10',type:'tempo',main:'레이스 전 템포',note:'4:45~4:50/km × 5km · 하프 레이스 페이스 각인',km:'8km',hr:'155~162'},
+    {dow:'금',date:'2026-09-11',ds:'9/11',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'2026-09-12',ds:'9/12',type:'recovery',main:'회복 조깅',note:'6:00/km 이상 · HR 138 이하',km:'5km',hr:'133~138'},
+    {dow:'일',date:'2026-09-13',ds:'9/13',type:'race',main:'하프 레이스 (컨디션 체크)',note:'목표 1:36 이내 · 전반 억제 실험 · 풀코스 전략 시뮬레이션',km:'21km',hr:'155~165'},
   ]},
   {w:18,phase:'peak',label:'피크 · 마지막 고강도',km:78,dates:'9/14~9/20',days:[
-    {dow:'월',date:'9/14',type:'rest',main:'완전 휴식',note:'하프 레이스 다음날',km:'—',hr:'—'},
-    {dow:'화',date:'9/15',type:'recovery',main:'회복 조깅',note:'5:55~6:15/km · HR 138 이하',km:'7km',hr:'133~138'},
-    {dow:'수',date:'9/16',type:'mp',main:'MP 런',note:'4:56/km × 18km · HR 160 이하 · 피크 최장 MP',km:'21km',hr:'150~160'},
-    {dow:'목',date:'9/17',type:'recovery',main:'회복 조깅',note:'5:55~6:15/km · HR 140 이하',km:'7km',hr:'135~140'},
-    {dow:'금',date:'9/18',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'토',date:'9/19',type:'easy',main:'이지런',note:'5:12~5:28/km · HR 150 이하',km:'12km',hr:'144~150'},
-    {dow:'일',date:'9/20',type:'lsd',main:'LSD · 마지막 30km',note:'5:08~5:23/km · HR 154 이하 · 이후 30km 없음',km:'30km',hr:'145~154'},
+    {dow:'월',date:'2026-09-14',ds:'9/14',type:'rest',main:'완전 휴식',note:'하프 레이스 다음날',km:'—',hr:'—'},
+    {dow:'화',date:'2026-09-15',ds:'9/15',type:'recovery',main:'회복 조깅',note:'5:55~6:15/km · HR 138 이하',km:'7km',hr:'133~138'},
+    {dow:'수',date:'2026-09-16',ds:'9/16',type:'mp',main:'MP 런 — 피크 최장',note:'4:56/km × 18km · HR 160 이하',km:'21km',hr:'150~160'},
+    {dow:'목',date:'2026-09-17',ds:'9/17',type:'recovery',main:'회복 조깅',note:'5:55~6:15/km · HR 140 이하',km:'7km',hr:'135~140'},
+    {dow:'금',date:'2026-09-18',ds:'9/18',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'2026-09-19',ds:'9/19',type:'easy',main:'이지런',note:'5:12~5:28/km · HR 150 이하',km:'12km',hr:'144~150'},
+    {dow:'일',date:'2026-09-20',ds:'9/20',type:'lsd',main:'LSD · 마지막 30km — 이후 30km 없음',note:'5:08~5:23/km · HR 154 이하',km:'30km',hr:'145~154'},
   ]},
   {w:19,phase:'taper',label:'테이퍼 시작 · 거리 감소',km:65,dates:'9/21~9/27',days:[
-    {dow:'월',date:'9/21',type:'rest',main:'완전 휴식',note:'마지막 30km 후 회복',km:'—',hr:'—'},
-    {dow:'화',date:'9/22',type:'recovery',main:'회복 조깅',note:'5:55~6:15/km · HR 138 이하',km:'7km',hr:'133~138'},
-    {dow:'수',date:'9/23',type:'interval',main:'마지막 인터벌',note:'1km×5 · 4:12~4:18/km · HR 164 이하 · 이후 인터벌 없음',km:'12km',hr:'145~164'},
-    {dow:'목',date:'9/24',type:'recovery',main:'회복 조깅',note:'5:55~6:15/km · HR 138 이하',km:'7km',hr:'133~138'},
-    {dow:'금',date:'9/25',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'토',date:'9/26',type:'easy',main:'이지런',note:'5:15~5:30/km · HR 149 이하',km:'12km',hr:'144~149'},
-    {dow:'일',date:'9/27',type:'lsd',main:'LSD',note:'5:10~5:25/km · HR 152 이하',km:'25km',hr:'144~152'},
+    {dow:'월',date:'2026-09-21',ds:'9/21',type:'rest',main:'완전 휴식',note:'마지막 30km 후 회복',km:'—',hr:'—'},
+    {dow:'화',date:'2026-09-22',ds:'9/22',type:'recovery',main:'회복 조깅',note:'5:55~6:15/km · HR 138 이하',km:'7km',hr:'133~138'},
+    {dow:'수',date:'2026-09-23',ds:'9/23',type:'interval',main:'마지막 인터벌 — 이후 인터벌 없음',note:'1km×5 · 4:12~4:18/km · HR 164 이하',km:'12km',hr:'145~164'},
+    {dow:'목',date:'2026-09-24',ds:'9/24',type:'recovery',main:'회복 조깅',note:'5:55~6:15/km · HR 138 이하',km:'7km',hr:'133~138'},
+    {dow:'금',date:'2026-09-25',ds:'9/25',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'2026-09-26',ds:'9/26',type:'easy',main:'이지런',note:'5:15~5:30/km · HR 149 이하',km:'12km',hr:'144~149'},
+    {dow:'일',date:'2026-09-27',ds:'9/27',type:'lsd',main:'LSD',note:'5:10~5:25/km · HR 152 이하',km:'25km',hr:'144~152'},
   ]},
-  {w:20,phase:'taper',label:'테이퍼 · 강도 유지 거리 감소',km:55,dates:'9/28~10/4',days:[
-    {dow:'월',date:'9/28',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'화',date:'9/29',type:'easy',main:'이지런',note:'5:15~5:30/km · HR 149 이하',km:'10km',hr:'144~149'},
-    {dow:'수',date:'9/30',type:'mp',main:'MP 런 단축',note:'4:56/km × 12km · HR 158 이하',km:'15km',hr:'150~158'},
-    {dow:'목',date:'10/1',type:'recovery',main:'회복 조깅 (국경일)',note:'5:55~6:15/km · HR 138 이하',km:'7km',hr:'133~138'},
-    {dow:'금',date:'10/2',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'토',date:'10/3',type:'easy',main:'이지런 (개천절)',note:'5:15~5:30/km · HR 149 이하',km:'10km',hr:'144~149'},
-    {dow:'일',date:'10/4',type:'lsd',main:'LSD',note:'5:12~5:28/km · HR 152 이하',km:'22km',hr:'144~152'},
+  {w:20,phase:'taper',label:'테이퍼 · 거리 감소',km:55,dates:'9/28~10/4',days:[
+    {dow:'월',date:'2026-09-28',ds:'9/28',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'2026-09-29',ds:'9/29',type:'easy',main:'이지런',note:'5:15~5:30/km · HR 149 이하',km:'10km',hr:'144~149'},
+    {dow:'수',date:'2026-09-30',ds:'9/30',type:'mp',main:'MP 런 단축',note:'4:56/km × 12km · HR 158 이하',km:'15km',hr:'150~158'},
+    {dow:'목',date:'2026-10-01',ds:'10/1',type:'recovery',main:'회복 조깅 (국경일)',note:'5:55~6:15/km · HR 138 이하',km:'7km',hr:'133~138'},
+    {dow:'금',date:'2026-10-02',ds:'10/2',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'2026-10-03',ds:'10/3',type:'easy',main:'이지런 (개천절)',note:'5:15~5:30/km · HR 149 이하',km:'10km',hr:'144~149'},
+    {dow:'일',date:'2026-10-04',ds:'10/4',type:'lsd',main:'LSD',note:'5:12~5:28/km · HR 152 이하',km:'22km',hr:'144~152'},
   ]},
   {w:21,phase:'taper',label:'테이퍼 · 레이스 시뮬레이션',km:48,dates:'10/5~10/11',days:[
-    {dow:'월',date:'10/5',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'화',date:'10/6',type:'easy',main:'이지런',note:'5:15~5:30/km · HR 149 이하',km:'10km',hr:'144~149'},
-    {dow:'수',date:'10/7',type:'tempo',main:'레이스 페이스 시뮬레이션',note:'4:56/km × 10km + 초반 2km 5:05 억제 연습 · 핵심 세션',km:'13km',hr:'150~160'},
-    {dow:'목',date:'10/8',type:'recovery',main:'회복 조깅',note:'5:55~6:15/km · HR 138 이하',km:'7km',hr:'133~138'},
-    {dow:'금',date:'10/9',type:'rest',main:'완전 휴식 (한글날)',note:'',km:'—',hr:'—'},
-    {dow:'토',date:'10/10',type:'easy',main:'이지런',note:'5:18~5:33/km · HR 148 이하',km:'9km',hr:'143~148'},
-    {dow:'일',date:'10/11',type:'lsd',main:'LSD',note:'5:15~5:30/km · HR 152 이하',km:'18km',hr:'144~152'},
+    {dow:'월',date:'2026-10-05',ds:'10/5',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'2026-10-06',ds:'10/6',type:'easy',main:'이지런',note:'5:15~5:30/km · HR 149 이하',km:'10km',hr:'144~149'},
+    {dow:'수',date:'2026-10-07',ds:'10/7',type:'tempo',main:'레이스 페이스 시뮬레이션 — 초반 억제 연습',note:'4:56/km × 10km · 초반 2km 5:05 억제 후 진입',km:'13km',hr:'150~160'},
+    {dow:'목',date:'2026-10-08',ds:'10/8',type:'recovery',main:'회복 조깅',note:'5:55~6:15/km · HR 138 이하',km:'7km',hr:'133~138'},
+    {dow:'금',date:'2026-10-09',ds:'10/9',type:'rest',main:'완전 휴식 (한글날)',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'2026-10-10',ds:'10/10',type:'easy',main:'이지런',note:'5:18~5:33/km · HR 148 이하',km:'9km',hr:'143~148'},
+    {dow:'일',date:'2026-10-11',ds:'10/11',type:'lsd',main:'LSD',note:'5:15~5:30/km · HR 152 이하',km:'18km',hr:'144~152'},
   ]},
   {w:22,phase:'taper',label:'테이퍼 · 볼륨 40% 감축',km:38,dates:'10/12~10/18',days:[
-    {dow:'월',date:'10/12',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'화',date:'10/13',type:'easy',main:'이지런',note:'5:18~5:33/km · HR 147 이하',km:'8km',hr:'142~147'},
-    {dow:'수',date:'10/14',type:'mp',main:'MP 런 단축',note:'4:56/km × 8km · HR 157 이하 · 다리 감각 유지',km:'11km',hr:'150~157'},
-    {dow:'목',date:'10/15',type:'recovery',main:'회복 조깅',note:'6:00~6:20/km · HR 138 이하',km:'6km',hr:'133~138'},
-    {dow:'금',date:'10/16',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'토',date:'10/17',type:'easy',main:'이지런',note:'5:20~5:35/km · HR 147 이하',km:'8km',hr:'142~147'},
-    {dow:'일',date:'10/18',type:'lsd',main:'LSD',note:'5:15~5:30/km · HR 150 이하',km:'14km',hr:'144~150'},
+    {dow:'월',date:'2026-10-12',ds:'10/12',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'2026-10-13',ds:'10/13',type:'easy',main:'이지런',note:'5:18~5:33/km · HR 147 이하',km:'8km',hr:'142~147'},
+    {dow:'수',date:'2026-10-14',ds:'10/14',type:'mp',main:'MP 런 단축',note:'4:56/km × 8km · HR 157 이하 · 다리 감각 유지',km:'11km',hr:'150~157'},
+    {dow:'목',date:'2026-10-15',ds:'10/15',type:'recovery',main:'회복 조깅',note:'6:00~6:20/km · HR 138 이하',km:'6km',hr:'133~138'},
+    {dow:'금',date:'2026-10-16',ds:'10/16',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'2026-10-17',ds:'10/17',type:'easy',main:'이지런',note:'5:20~5:35/km · HR 147 이하',km:'8km',hr:'142~147'},
+    {dow:'일',date:'2026-10-18',ds:'10/18',type:'lsd',main:'LSD',note:'5:15~5:30/km · HR 150 이하',km:'14km',hr:'144~150'},
   ]},
   {w:23,phase:'taper',label:'테이퍼 완성 · 신선도 극대화',km:30,dates:'10/19~10/25',days:[
-    {dow:'월',date:'10/19',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'화',date:'10/20',type:'easy',main:'이지런',note:'5:20~5:35/km · HR 145 이하 · 다리 가볍게',km:'7km',hr:'140~145'},
-    {dow:'수',date:'10/21',type:'easy',main:'이지런',note:'5:22~5:38/km · HR 145 이하',km:'7km',hr:'140~145'},
-    {dow:'목',date:'10/22',type:'tempo',main:'짧은 스트라이드 런',note:'4:56/km × 3km + 스트라이드 4×100m · 신경계만 깨우기',km:'5km',hr:'150~158'},
-    {dow:'금',date:'10/23',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'토',date:'10/24',type:'easy',main:'이지런',note:'5:25~5:40/km · HR 143 이하 · 마지막 이지런',km:'7km',hr:'138~143'},
-    {dow:'일',date:'10/25',type:'easy',main:'30분 이내 조깅',note:'5:30~5:45/km · HR 140 이하 · 다리 느낌 확인',km:'5km',hr:'135~140'},
+    {dow:'월',date:'2026-10-19',ds:'10/19',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'2026-10-20',ds:'10/20',type:'easy',main:'이지런',note:'5:20~5:35/km · HR 145 이하',km:'7km',hr:'140~145'},
+    {dow:'수',date:'2026-10-21',ds:'10/21',type:'easy',main:'이지런',note:'5:22~5:38/km · HR 145 이하',km:'7km',hr:'140~145'},
+    {dow:'목',date:'2026-10-22',ds:'10/22',type:'tempo',main:'짧은 스트라이드 런',note:'4:56/km × 3km + 스트라이드 4×100m · 신경계만',km:'5km',hr:'150~158'},
+    {dow:'금',date:'2026-10-23',ds:'10/23',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'2026-10-24',ds:'10/24',type:'easy',main:'이지런 — 마지막 이지런',note:'5:25~5:40/km · HR 143 이하',km:'7km',hr:'138~143'},
+    {dow:'일',date:'2026-10-25',ds:'10/25',type:'easy',main:'30분 이내 조깅',note:'5:30~5:45/km · HR 140 이하 · 다리 느낌 확인',km:'5km',hr:'135~140'},
   ]},
   {w:24,phase:'race',label:'레이스 위크',km:12,dates:'10/26~11/1',days:[
-    {dow:'월',date:'10/26',type:'easy',main:'이지런',note:'5:30~5:45/km · 20~25분 · HR 140 이하',km:'4km',hr:'135~140'},
-    {dow:'화',date:'10/27',type:'easy',main:'이지런 + 스트라이드',note:'5:35~5:50/km · 20분 + 스트라이드 3×100m',km:'4km',hr:'135~140'},
-    {dow:'수',date:'10/28',type:'easy',main:'이지런',note:'5:35~5:50/km · 15~20분만',km:'3km',hr:'133~138'},
-    {dow:'목',date:'10/29',type:'rest',main:'완전 휴식',note:'수면 + 영양 관리 집중',km:'—',hr:'—'},
-    {dow:'금',date:'10/30',type:'rest',main:'완전 휴식',note:'레이스 전날. 가벼운 스트레칭만.',km:'—',hr:'—'},
-    {dow:'토',date:'10/31',type:'recovery',main:'10~15분 조깅',note:'레이스 당일 아침 워밍업 루틴 점검',km:'2km',hr:'130~135'},
-    {dow:'일',date:'11/1',type:'race',main:'JTBC 마라톤 42.195km',note:'전반 4:58 억제 → 후반 4:54 네거티브 · 목표 3:28',km:'42km',hr:'153~165'},
+    {dow:'월',date:'2026-10-26',ds:'10/26',type:'easy',main:'이지런',note:'5:30~5:45/km · 20~25분 · HR 140 이하',km:'4km',hr:'135~140'},
+    {dow:'화',date:'2026-10-27',ds:'10/27',type:'easy',main:'이지런 + 스트라이드',note:'5:35~5:50/km · 20분 + 스트라이드 3×100m',km:'4km',hr:'135~140'},
+    {dow:'수',date:'2026-10-28',ds:'10/28',type:'easy',main:'이지런',note:'5:35~5:50/km · 15~20분만',km:'3km',hr:'133~138'},
+    {dow:'목',date:'2026-10-29',ds:'10/29',type:'rest',main:'완전 휴식',note:'수면 + 영양 관리 집중',km:'—',hr:'—'},
+    {dow:'금',date:'2026-10-30',ds:'10/30',type:'rest',main:'완전 휴식',note:'레이스 전날. 스트레칭만.',km:'—',hr:'—'},
+    {dow:'토',date:'2026-10-31',ds:'10/31',type:'recovery',main:'10~15분 조깅',note:'레이스 당일 아침 워밍업 루틴 점검',km:'2km',hr:'130~135'},
+    {dow:'일',date:'2026-11-01',ds:'11/1',type:'race',main:'JTBC 마라톤 42.195km',note:'전반 4:58 억제 → 후반 4:54 네거티브 · 목표 3:28',km:'42km',hr:'153~165'},
   ]},
 ];
 
+const SPLITS = [
+  {km:'10km',time:'49:40~50:00',note:'1구간 완료 · 체력 충분히 남아야'},
+  {km:'21km (하프)',time:'1:44:30~1:45:00',note:'중간 기준 · 여기서 컨디션 판단'},
+  {km:'30km',time:'2:29:00~2:30:00',note:'30km 벽 구간 · HR 관리 핵심'},
+  {km:'32km',time:'2:39:00~2:40:00',note:'스퍼트 진입 판단 기준점'},
+  {km:'35km',time:'2:54:00~2:55:00',note:'마지막 7km · 잔여 전부 소진'},
+  {km:'골인',time:'3:28:00 이내',note:'PB · 목표 달성'},
+];
+
 const PHASE_LABELS = {rec:'회복',base:'베이스',build:'빌드업',peak:'피크',taper:'테이퍼',race:'레이스위크'};
-const PHASE_COLORS = {rec:'pb-rec',base:'pb-base',build:'pb-build',peak:'pb-peak',taper:'pb-taper',race:'pb-race'};
+const TYPE_LABELS = {rest:'휴식',easy:'이지런',recovery:'회복조깅',lsd:'LSD',tempo:'템포',interval:'인터벌',mp:'MP런',race:'레이스'};
+
 let currentPhase = 'all';
-let openWeeks = new Set();
+let openWeeks = {};
 
-function typeClass(t){
-  return 'tb-'+t;
-}
-function typeLabel(t){
-  const m={rest:'휴식',easy:'이지런',lsd:'LSD',tempo:'템포',interval:'인터벌',mp:'MP런',race:'레이스',recovery:'회복조깅'};
-  return m[t]||t;
+function todayStr() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const dd = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${dd}`;
 }
 
-function renderWeeks(){
-  const c = document.getElementById('weekContainer');
-  const filtered = currentPhase==='all' ? PLAN : PLAN.filter(w=>w.phase===currentPhase);
+function updateDday() {
+  const now = new Date();
+  now.setHours(0,0,0,0);
+  const diff = Math.ceil((RACE_DATE - now) / (1000*60*60*24));
+  document.getElementById('ddayBadge').textContent = diff > 0 ? `D-${diff}` : diff === 0 ? 'D-DAY' : '완주!';
+  const prog = Math.max(0, Math.min(100, Math.round((1 - diff/167)*100)));
+  document.getElementById('progVal').textContent = prog + '%';
+  document.getElementById('progBar').style.width = prog + '%';
+}
+
+function findToday() {
+  const ts = todayStr();
+  for (const w of PLAN) {
+    for (const d of w.days) {
+      if (d.date === ts) return d;
+    }
+  }
+  return null;
+}
+
+function renderToday() {
+  const d = findToday();
+  const card = document.getElementById('todayCard');
+  if (!d) { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+  document.getElementById('todayMain').textContent = d.main;
+  const meta = document.getElementById('todayMeta');
+  let pills = `<span class="today-pill">${TYPE_LABELS[d.type]||d.type}</span>`;
+  if (d.km !== '—') pills += `<span class="today-pill">${d.km}</span>`;
+  if (d.hr !== '—') pills += `<span class="today-pill">HR ${d.hr}</span>`;
+  meta.innerHTML = pills;
+  document.getElementById('todayNote').textContent = d.note || '';
+  if (!d.note) document.getElementById('todayNote').style.display = 'none';
+}
+
+function renderWeeks() {
+  const wrap = document.getElementById('weeksWrap');
+  const ts = todayStr();
   let html = '';
-  filtered.forEach(w=>{
-    const isOpen = openWeeks.has(w.w);
-    const restDays = w.days.filter(d=>d.type==='rest').length;
-    const runDays = 7 - restDays;
-    html += `<div class="week-block" data-phase="${w.phase}">
-      <div class="phase-banner ${PHASE_COLORS[w.phase]}">${PHASE_LABELS[w.phase]}</div>
+  PLAN.forEach(w => {
+    const hidden = currentPhase !== 'all' && w.phase !== currentPhase;
+    const isOpen = openWeeks[w.w];
+    const phaseColor = {rec:'var(--muted2)',base:'var(--cyan)',build:'var(--green)',peak:'var(--orange)',taper:'var(--purple)',race:'var(--gold)'}[w.phase];
+    html += `<div class="week-block" ${hidden?'data-hidden="true"':''}>
       <div class="week-hd" onclick="toggleWeek(${w.w})">
-        <div><div class="wk-num">W${w.w} · ${w.dates}</div><div class="wk-dates">${w.label}</div></div>
-        <div></div>
-        <div class="wk-km">${w.km}km</div>
-        <div class="wk-chevron">${isOpen?'▲':'▼'}</div>
+        <div class="wk-left">
+          <div class="wk-num">W${w.w} · ${w.dates}</div>
+          <div class="wk-name">${w.label}</div>
+          <span class="phase-tag tag-${w.phase}">${PHASE_LABELS[w.phase]}</span>
+        </div>
+        <div class="wk-right">
+          <div class="wk-km" style="color:${phaseColor}">${w.km}</div>
+          <div class="wk-chevron" style="color:${phaseColor}">${isOpen?'km ▲':'km ▼'}</div>
+        </div>
       </div>
       <div class="day-rows ${isOpen?'open':''}">`;
-    w.days.forEach(d=>{
-      const isRest = d.type==='rest';
-      html += `<div class="day-row ${isRest?'rest-row':''}">
-        <div><div class="d-dow">${d.dow}</div><div class="d-date">${d.date}</div></div>
-        <div style="padding-top:1px"><span class="type-badge ${typeClass(d.type)}">${typeLabel(d.type)}</span></div>
-        <div class="d-main">${d.main}${d.note?`<div class="d-note">${d.note}</div>`:''}</div>
-        <div class="d-metric"><strong>${d.km}</strong>${d.hr!=='—'?d.hr:'—'}</div>
+    w.days.forEach(d => {
+      const isToday = d.date === ts;
+      const isRaceDay = d.type === 'race' && d.date === '2026-11-01';
+      const rowClass = d.type==='rest'?'is-rest':isToday?'is-today':isRaceDay?'is-race-day':'';
+      html += `<div class="day-row ${rowClass}">
+        <div class="d-left">
+          <div class="d-dow">${d.dow}</div>
+          <div class="d-date">${d.ds}</div>
+          ${isToday?'<div class="today-dot"></div>':''}
+        </div>
+        <div class="d-right">
+          <div class="d-type-row">
+            <span class="type-badge tb-${d.type}">${TYPE_LABELS[d.type]||d.type}</span>
+          </div>
+          <div class="d-main">${d.main}</div>
+          ${d.km!=='—'||d.hr!=='—'?`<div class="d-metrics">${d.km!=='—'?`<span class="d-metric">${d.km}</span>`:''}${d.hr!=='—'?`<span class="d-metric">HR ${d.hr}</span>`:''}</div>`:''}
+          ${d.note?`<div class="d-note">${d.note}</div>`:''}
+        </div>
       </div>`;
     });
-    const wkTotal = w.days.filter(d=>d.km!=='—').length;
-    html += `<div class="summary-bar"><span>훈련일 <span class="sb-val">${runDays}일</span></span><span>주간 총거리 <span class="sb-val">${w.km}km</span></span></div>`;
     html += `</div></div>`;
   });
-  c.innerHTML = html;
+  wrap.innerHTML = html;
 }
 
-function toggleWeek(n){
-  if(openWeeks.has(n)) openWeeks.delete(n);
-  else openWeeks.add(n);
+function toggleWeek(n) {
+  openWeeks[n] = !openWeeks[n];
   renderWeeks();
+  if (openWeeks[n]) {
+    setTimeout(() => {
+      const blocks = document.querySelectorAll('.week-block');
+      blocks.forEach(b => {
+        const hd = b.querySelector('.wk-num');
+        if (hd && hd.textContent.startsWith('W'+n+' ')) {
+          b.scrollIntoView({behavior:'smooth',block:'start'});
+        }
+      });
+    }, 50);
+  }
 }
 
-function filterPhase(p){
+function filterPhase(p, btn) {
   currentPhase = p;
-  openWeeks.clear();
-  document.querySelectorAll('.pnav').forEach(b=>b.classList.remove('active'));
-  event.target.classList.add('active');
+  openWeeks = {};
+  document.querySelectorAll('.phase-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
   renderWeeks();
 }
 
+function renderSplits() {
+  const el = document.getElementById('splitList');
+  el.innerHTML = SPLITS.map(s => `
+    <div class="check-item">
+      <div class="check-dot" style="border-color:${s.km==='골인'?'var(--gold)':'var(--border2)'}"></div>
+      <div>
+        <div class="check-main" style="${s.km==='골인'?'color:var(--gold)':''}">${s.km} — ${s.time}</div>
+        <div class="check-sub">${s.note}</div>
+      </div>
+    </div>`).join('');
+}
+
+function switchPage(p) {
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.getElementById('nav-'+p).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function autoOpenToday() {
+  const ts = todayStr();
+  for (const w of PLAN) {
+    if (w.days.some(d => d.date === ts)) {
+      openWeeks[w.w] = true;
+      break;
+    }
+  }
+}
+
+updateDday();
+autoOpenToday();
+renderToday();
 renderWeeks();
+renderSplits();
 </script>
+</body>
+</html>
