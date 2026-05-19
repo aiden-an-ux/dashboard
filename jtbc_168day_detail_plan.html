@@ -1,0 +1,348 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans)}
+.root{padding:1rem 0}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.phase-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.pnav{font-size:11px;padding:5px 12px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);cursor:pointer;background:transparent;color:var(--color-text-secondary);transition:all .15s}
+.pnav.active{background:var(--color-background-info);color:#0C447C;border-color:#378ADD;font-weight:500}
+.week-block{margin-bottom:18px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden}
+.week-hd{display:grid;grid-template-columns:110px 1fr 80px 70px;gap:0;padding:10px 14px;background:var(--color-background-secondary);border-bottom:0.5px solid var(--color-border-tertiary);align-items:center;cursor:pointer}
+.week-hd:hover{background:var(--color-background-tertiary)}
+.wk-num{font-size:12px;font-weight:500;color:var(--color-text-primary)}
+.wk-dates{font-size:11px;color:var(--color-text-secondary)}
+.wk-label{font-size:11px;color:var(--color-text-secondary)}
+.wk-km{font-size:13px;font-weight:500;color:var(--color-text-primary);text-align:right}
+.wk-chevron{font-size:14px;color:var(--color-text-secondary);text-align:right}
+.day-rows{display:none}
+.day-rows.open{display:block}
+.day-row{display:grid;grid-template-columns:54px 62px 1fr 90px;gap:0;padding:9px 14px;border-bottom:0.5px solid var(--color-border-tertiary);align-items:start}
+.day-row:last-child{border-bottom:none}
+.day-row.rest-row{opacity:.55}
+.d-dow{font-size:12px;font-weight:500;color:var(--color-text-secondary)}
+.d-date{font-size:11px;color:var(--color-text-secondary);margin-top:1px}
+.type-badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:3px;font-weight:500;white-space:nowrap}
+.tb-rest{background:#F1EFE8;color:#5F5E5A}
+.tb-easy{background:#E6F1FB;color:#185FA5}
+.tb-lsd{background:#E1F5EE;color:#0F6E56}
+.tb-tempo{background:#FAEEDA;color:#854F0B}
+.tb-interval{background:#FCEBEB;color:#A32D2D}
+.tb-mp{background:#EEEDFE;color:#534AB7}
+.tb-race{background:#FAEEDA;color:#633806;border:1px solid #EF9F27}
+.tb-recovery{background:#F1EFE8;color:#444441}
+.d-main{font-size:12px;color:var(--color-text-primary);line-height:1.5;padding:0 10px}
+.d-note{font-size:11px;color:var(--color-text-secondary);margin-top:2px;line-height:1.4}
+.d-metric{font-size:11px;color:var(--color-text-secondary);text-align:right;line-height:1.55}
+.d-metric strong{font-size:12px;font-weight:500;color:var(--color-text-primary);display:block}
+.phase-banner{padding:8px 14px;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase}
+.pb-rec{background:#F1EFE8;color:#5F5E5A}
+.pb-base{background:#E6F1FB;color:#185FA5}
+.pb-build{background:#E1F5EE;color:#0F6E56}
+.pb-peak{background:#FAEEDA;color:#854F0B}
+.pb-taper{background:#EEEDFE;color:#534AB7}
+.pb-race{background:#FCEBEB;color:#A32D2D}
+.summary-bar{display:flex;gap:16px;align-items:center;padding:6px 14px;background:var(--color-background-secondary);border-top:0.5px solid var(--color-border-tertiary);font-size:11px;color:var(--color-text-secondary)}
+.sb-val{font-weight:500;color:var(--color-text-primary)}
+</style>
+
+<h2 class="sr-only">JTBC 마라톤 168일 날짜별 훈련 플랜 — 2026.5.18 ~ 2026.11.1</h2>
+
+<div class="root">
+
+<div class="phase-nav" id="phaseNav">
+  <button class="pnav active" onclick="filterPhase('all')">전체 24주</button>
+  <button class="pnav" onclick="filterPhase('rec')">회복 W1~2</button>
+  <button class="pnav" onclick="filterPhase('base')">베이스 W3~10</button>
+  <button class="pnav" onclick="filterPhase('build')">빌드업 W11~14</button>
+  <button class="pnav" onclick="filterPhase('peak')">피크 W15~18</button>
+  <button class="pnav" onclick="filterPhase('taper')">테이퍼 W19~23</button>
+  <button class="pnav" onclick="filterPhase('race')">레이스위크 W24</button>
+</div>
+
+<div id="weekContainer"></div>
+
+</div>
+
+<script>
+const PLAN = [
+  {w:1,phase:'rec',label:'레이스 후 완전 회복',km:30,dates:'5/18~5/24',days:[
+    {dow:'월',date:'5/18',type:'rest',main:'완전 휴식',note:'5/17 레이스 다음날. 스트레칭만.',km:'—',hr:'—'},
+    {dow:'화',date:'5/19',type:'rest',main:'완전 휴식',note:'다리 피로 제거 최우선.',km:'—',hr:'—'},
+    {dow:'수',date:'5/20',type:'recovery',main:'회복 조깅 20~25분',note:'6:10~6:30/km · HR 135 이하 · 몸 상태 점검',km:'4km',hr:'130~135'},
+    {dow:'목',date:'5/21',type:'rest',main:'완전 휴식',note:'피로 잔존 시 추가 휴식.',km:'—',hr:'—'},
+    {dow:'금',date:'5/22',type:'recovery',main:'회복 조깅 30분',note:'6:00~6:20/km · HR 138 이하',km:'5km',hr:'135~138'},
+    {dow:'토',date:'5/23',type:'easy',main:'이지런',note:'5:45~6:00/km · HR 142 이하 · 느낌 좋으면 연장 가능',km:'7km',hr:'138~142'},
+    {dow:'일',date:'5/24',type:'rest',main:'완전 휴식',note:'1주차 마무리.',km:'—',hr:'—'},
+  ]},
+  {w:2,phase:'rec',label:'회복 완성',km:35,dates:'5/25~5/31',days:[
+    {dow:'월',date:'5/25',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'5/26',type:'easy',main:'이지런',note:'5:40~5:55/km · HR 143 이하',km:'7km',hr:'138~143'},
+    {dow:'수',date:'5/27',type:'recovery',main:'회복 조깅',note:'6:00/km 이상 · HR 140 이하',km:'6km',hr:'135~140'},
+    {dow:'목',date:'5/28',type:'easy',main:'이지런',note:'5:35~5:50/km · HR 144 이하',km:'8km',hr:'140~144'},
+    {dow:'금',date:'5/29',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'5/30',type:'easy',main:'이지런',note:'5:40~5:55/km · HR 145 이하',km:'8km',hr:'140~145'},
+    {dow:'일',date:'5/31',type:'lsd',main:'LSD',note:'5:50~6:10/km · HR 148 이하 · 거리 집중',km:'10km',hr:'143~148'},
+  ]},
+  {w:3,phase:'base',label:'베이스 재건 시작',km:42,dates:'6/1~6/7',days:[
+    {dow:'월',date:'6/1',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'6/2',type:'easy',main:'이지런',note:'5:30~5:45/km · HR 145 이하',km:'8km',hr:'140~145'},
+    {dow:'수',date:'6/3',type:'easy',main:'이지런',note:'5:35~5:50/km · HR 145 이하',km:'7km',hr:'140~145'},
+    {dow:'목',date:'6/4',type:'tempo',main:'템포런',note:'5:10~5:20/km × 5km · HR 155 이하 · 마라톤 워크로드 적응',km:'8km',hr:'148~155'},
+    {dow:'금',date:'6/5',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'6/6',type:'easy',main:'이지런',note:'5:30~5:45/km · HR 145 이하',km:'8km',hr:'140~145'},
+    {dow:'일',date:'6/7',type:'lsd',main:'LSD',note:'5:45~6:00/km · HR 150 이하',km:'14km',hr:'143~150'},
+  ]},
+  {w:4,phase:'base',label:'베이스 · 거리 확장',km:47,dates:'6/8~6/14',days:[
+    {dow:'월',date:'6/8',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'6/9',type:'easy',main:'이지런',note:'5:30~5:45/km · HR 145 이하',km:'8km',hr:'140~145'},
+    {dow:'수',date:'6/10',type:'easy',main:'이지런',note:'5:35~5:50/km · HR 145 이하',km:'8km',hr:'140~145'},
+    {dow:'목',date:'6/11',type:'tempo',main:'템포런',note:'5:05~5:15/km × 6km · HR 155 이하',km:'9km',hr:'148~155'},
+    {dow:'금',date:'6/12',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'6/13',type:'easy',main:'이지런',note:'5:30~5:45/km · HR 145 이하',km:'8km',hr:'140~145'},
+    {dow:'일',date:'6/14',type:'lsd',main:'LSD',note:'5:40~5:55/km · HR 150 이하',km:'16km',hr:'143~150'},
+  ]},
+  {w:5,phase:'base',label:'베이스 · 강화',km:50,dates:'6/15~6/21',days:[
+    {dow:'월',date:'6/15',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'6/16',type:'easy',main:'이지런',note:'5:25~5:40/km · HR 147 이하',km:'9km',hr:'142~147'},
+    {dow:'수',date:'6/17',type:'easy',main:'이지런',note:'5:30~5:45/km · HR 145 이하',km:'8km',hr:'140~145'},
+    {dow:'목',date:'6/18',type:'tempo',main:'템포런',note:'5:00~5:10/km × 7km · HR 157 이하',km:'10km',hr:'150~157'},
+    {dow:'금',date:'6/19',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'6/20',type:'easy',main:'이지런',note:'5:25~5:40/km · HR 147 이하',km:'9km',hr:'142~147'},
+    {dow:'일',date:'6/21',type:'lsd',main:'LSD',note:'5:35~5:50/km · HR 150 이하',km:'18km',hr:'143~150'},
+  ]},
+  {w:6,phase:'base',label:'베이스 · 20km 첫 돌파',km:54,dates:'6/22~6/28',days:[
+    {dow:'월',date:'6/22',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'6/23',type:'easy',main:'이지런',note:'5:25~5:40/km · HR 147 이하',km:'9km',hr:'142~147'},
+    {dow:'수',date:'6/24',type:'recovery',main:'회복 조깅',note:'5:50~6:10/km · HR 140 이하',km:'7km',hr:'135~140'},
+    {dow:'목',date:'6/25',type:'tempo',main:'템포런',note:'4:58~5:08/km × 8km · HR 158 이하',km:'11km',hr:'150~158'},
+    {dow:'금',date:'6/26',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'6/27',type:'easy',main:'이지런',note:'5:25~5:40/km · HR 147 이하',km:'9km',hr:'142~147'},
+    {dow:'일',date:'6/28',type:'lsd',main:'LSD',note:'5:30~5:45/km · HR 152 이하 · 첫 20km',km:'20km',hr:'145~152'},
+  ]},
+  {w:7,phase:'base',label:'7월 더위 적응 시작',km:55,dates:'6/29~7/5',days:[
+    {dow:'월',date:'6/29',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'6/30',type:'easy',main:'이지런 (새벽/야간)',note:'5:25~5:40/km · HR 148 이하 · 기온 기준 시간대 선택',km:'9km',hr:'143~148'},
+    {dow:'수',date:'7/1',type:'easy',main:'이지런',note:'5:30~5:45/km · HR 147 이하',km:'9km',hr:'142~147'},
+    {dow:'목',date:'7/2',type:'tempo',main:'템포런 (새벽)',note:'4:56~5:05/km × 8km · HR 158 이하 · 더위 시 GAP 기준',km:'11km',hr:'150~158'},
+    {dow:'금',date:'7/3',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'7/4',type:'easy',main:'이지런',note:'5:25~5:40/km · HR 148 이하',km:'9km',hr:'143~148'},
+    {dow:'일',date:'7/5',type:'lsd',main:'LSD (새벽)',note:'5:30~5:45/km · HR 153 이하 · 더위 시 페이스 무시 HR 엄수',km:'22km',hr:'145~153'},
+  ]},
+  {w:8,phase:'base',label:'더위 적응 · 페이스 자극',km:58,dates:'7/6~7/12',days:[
+    {dow:'월',date:'7/6',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'7/7',type:'easy',main:'이지런',note:'5:25~5:40/km · HR 148 이하',km:'10km',hr:'143~148'},
+    {dow:'수',date:'7/8',type:'interval',main:'인터벌 첫 도입',note:'1km×4 · 4:30~4:35/km · HR 162 이하 · 워밍업 2km 포함',km:'10km',hr:'145~162'},
+    {dow:'목',date:'7/9',type:'recovery',main:'회복 조깅',note:'5:50~6:10/km · HR 140 이하',km:'7km',hr:'135~140'},
+    {dow:'금',date:'7/10',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'7/11',type:'easy',main:'이지런',note:'5:25~5:40/km · HR 148 이하',km:'10km',hr:'143~148'},
+    {dow:'일',date:'7/12',type:'lsd',main:'LSD (새벽)',note:'5:28~5:42/km · HR 153 이하',km:'23km',hr:'145~153'},
+  ]},
+  {w:9,phase:'base',label:'MP 페이스 첫 각인',km:60,dates:'7/13~7/19',days:[
+    {dow:'월',date:'7/13',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'7/14',type:'easy',main:'이지런',note:'5:22~5:38/km · HR 148 이하',km:'10km',hr:'143~148'},
+    {dow:'수',date:'7/15',type:'mp',main:'MP 런 첫 도입',note:'4:56~5:00/km × 10km · HR 158 이하 · 초반 2km 5:05로 억제 필수',km:'13km',hr:'150~158'},
+    {dow:'목',date:'7/16',type:'recovery',main:'회복 조깅',note:'5:50~6:10/km · HR 140 이하',km:'7km',hr:'135~140'},
+    {dow:'금',date:'7/17',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'7/18',type:'easy',main:'이지런',note:'5:22~5:38/km · HR 148 이하',km:'10km',hr:'143~148'},
+    {dow:'일',date:'7/19',type:'lsd',main:'LSD (새벽)',note:'5:25~5:40/km · HR 153 이하',km:'24km',hr:'145~153'},
+  ]},
+  {w:10,phase:'base',label:'베이스 완성 확인',km:62,dates:'7/20~7/26',days:[
+    {dow:'월',date:'7/20',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'7/21',type:'easy',main:'이지런',note:'5:20~5:35/km · HR 148 이하',km:'10km',hr:'143~148'},
+    {dow:'수',date:'7/22',type:'interval',main:'인터벌',note:'1km×5 · 4:25~4:30/km · HR 163 이하',km:'11km',hr:'145~163'},
+    {dow:'목',date:'7/23',type:'recovery',main:'회복 조깅',note:'5:50~6:10/km · HR 140 이하',km:'7km',hr:'135~140'},
+    {dow:'금',date:'7/24',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'7/25',type:'easy',main:'이지런',note:'5:20~5:35/km · HR 148 이하',km:'10km',hr:'143~148'},
+    {dow:'일',date:'7/26',type:'lsd',main:'LSD · 25km 달성',note:'5:22~5:38/km · HR 153 이하 · 7월 베이스 완성 기준',km:'25km',hr:'145~153'},
+  ]},
+  {w:11,phase:'build',label:'빌드업 · MP 주간 고정',km:65,dates:'7/27~8/2',days:[
+    {dow:'월',date:'7/27',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'7/28',type:'easy',main:'이지런',note:'5:18~5:33/km · HR 149 이하',km:'10km',hr:'144~149'},
+    {dow:'수',date:'7/29',type:'mp',main:'MP 런',note:'4:56/km × 12km · HR 158 이하 · 초반 2km 5:03 억제',km:'15km',hr:'150~158'},
+    {dow:'목',date:'7/30',type:'recovery',main:'회복 조깅',note:'5:50~6:10/km · HR 140 이하',km:'7km',hr:'135~140'},
+    {dow:'금',date:'7/31',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'8/1',type:'easy',main:'이지런',note:'5:18~5:33/km · HR 149 이하',km:'11km',hr:'144~149'},
+    {dow:'일',date:'8/2',type:'lsd',main:'LSD',note:'5:20~5:35/km · HR 153 이하',km:'27km',hr:'145~153'},
+  ]},
+  {w:12,phase:'build',label:'빌드업 · 인터벌 강화',km:68,dates:'8/3~8/9',days:[
+    {dow:'월',date:'8/3',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'8/4',type:'easy',main:'이지런',note:'5:18~5:33/km · HR 149 이하',km:'11km',hr:'144~149'},
+    {dow:'수',date:'8/5',type:'interval',main:'인터벌',note:'1km×5 · 4:18~4:23/km · HR 163 이하',km:'12km',hr:'145~163'},
+    {dow:'목',date:'8/6',type:'recovery',main:'회복 조깅',note:'5:50~6:10/km · HR 140 이하',km:'7km',hr:'135~140'},
+    {dow:'금',date:'8/7',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'8/8',type:'easy',main:'이지런',note:'5:18~5:33/km · HR 149 이하',km:'11km',hr:'144~149'},
+    {dow:'일',date:'8/9',type:'lsd',main:'LSD',note:'5:18~5:33/km · HR 153 이하',km:'28km',hr:'145~153'},
+  ]},
+  {w:13,phase:'build',label:'빌드업 · MP+LSD 복합',km:70,dates:'8/10~8/16',days:[
+    {dow:'월',date:'8/10',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'8/11',type:'easy',main:'이지런',note:'5:15~5:30/km · HR 149 이하',km:'11km',hr:'144~149'},
+    {dow:'수',date:'8/12',type:'mp',main:'MP 런',note:'4:56/km × 15km · HR 159 이하 · 초반 2km 5:02 억제',km:'18km',hr:'150~159'},
+    {dow:'목',date:'8/13',type:'recovery',main:'회복 조깅',note:'5:50~6:10/km · HR 140 이하',km:'7km',hr:'135~140'},
+    {dow:'금',date:'8/14',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'8/15',type:'easy',main:'이지런 (광복절)',note:'5:15~5:30/km · HR 149 이하',km:'11km',hr:'144~149'},
+    {dow:'일',date:'8/16',type:'lsd',main:'LSD',note:'5:15~5:30/km · HR 154 이하',km:'29km',hr:'145~154'},
+  ]},
+  {w:14,phase:'build',label:'빌드업 · 30km 첫 돌파',km:72,dates:'8/17~8/23',days:[
+    {dow:'월',date:'8/17',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'8/18',type:'easy',main:'이지런',note:'5:15~5:30/km · HR 149 이하',km:'11km',hr:'144~149'},
+    {dow:'수',date:'8/19',type:'interval',main:'인터벌',note:'1km×6 · 4:15~4:20/km · HR 164 이하',km:'13km',hr:'145~164'},
+    {dow:'목',date:'8/20',type:'recovery',main:'회복 조깅',note:'5:50~6:10/km · HR 140 이하',km:'7km',hr:'135~140'},
+    {dow:'금',date:'8/21',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'8/22',type:'easy',main:'이지런',note:'5:15~5:30/km · HR 149 이하',km:'11km',hr:'144~149'},
+    {dow:'일',date:'8/23',type:'lsd',main:'LSD · 첫 30km',note:'5:12~5:28/km · HR 154 이하 · 25km 이후 후반 5km MP 페이스로 마무리',km:'30km',hr:'145~154'},
+  ]},
+  {w:15,phase:'peak',label:'피크 · 강도 유지',km:78,dates:'8/24~8/30',days:[
+    {dow:'월',date:'8/24',type:'rest',main:'완전 휴식',note:'30km 후 충분한 회복',km:'—',hr:'—'},
+    {dow:'화',date:'8/25',type:'recovery',main:'회복 조깅',note:'5:55~6:15/km · HR 138 이하',km:'7km',hr:'133~138'},
+    {dow:'수',date:'8/26',type:'mp',main:'MP 런',note:'4:56/km × 16km · HR 159 이하',km:'19km',hr:'150~159'},
+    {dow:'목',date:'8/27',type:'recovery',main:'회복 조깅',note:'5:55~6:15/km · HR 140 이하',km:'7km',hr:'135~140'},
+    {dow:'금',date:'8/28',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'8/29',type:'easy',main:'이지런',note:'5:12~5:28/km · HR 150 이하',km:'12km',hr:'144~150'},
+    {dow:'일',date:'8/30',type:'lsd',main:'LSD',note:'5:10~5:25/km · HR 154 이하 · 후반 8km MP 페이스',km:'30km',hr:'145~154'},
+  ]},
+  {w:16,phase:'peak',label:'피크 · 인터벌 피크',km:80,dates:'8/31~9/6',days:[
+    {dow:'월',date:'8/31',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'9/1',type:'easy',main:'이지런',note:'5:12~5:28/km · HR 150 이하',km:'12km',hr:'144~150'},
+    {dow:'수',date:'9/2',type:'interval',main:'인터벌 피크',note:'1km×6 · 4:10~4:15/km · HR 165 이하 · 갈수록 빨라지는 패턴 유지',km:'14km',hr:'145~165'},
+    {dow:'목',date:'9/3',type:'recovery',main:'회복 조깅',note:'5:55~6:15/km · HR 140 이하',km:'7km',hr:'135~140'},
+    {dow:'금',date:'9/4',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'9/5',type:'easy',main:'이지런',note:'5:12~5:28/km · HR 150 이하',km:'12km',hr:'144~150'},
+    {dow:'일',date:'9/6',type:'lsd',main:'LSD',note:'5:08~5:23/km · HR 154 이하 · 후반 10km MP 페이스',km:'32km',hr:'145~154'},
+  ]},
+  {w:17,phase:'peak',label:'피크 · 하프 레이스 체크',km:75,dates:'9/7~9/13',days:[
+    {dow:'월',date:'9/7',type:'rest',main:'완전 휴식',note:'32km 후 회복',km:'—',hr:'—'},
+    {dow:'화',date:'9/8',type:'recovery',main:'회복 조깅',note:'5:55~6:15/km · HR 138 이하',km:'7km',hr:'133~138'},
+    {dow:'수',date:'9/9',type:'easy',main:'이지런',note:'5:12~5:28/km · HR 150 이하',km:'10km',hr:'144~150'},
+    {dow:'목',date:'9/10',type:'tempo',main:'레이스 전 템포',note:'4:45~4:50/km × 5km · 하프 레이스 페이스 각인',km:'8km',hr:'155~162'},
+    {dow:'금',date:'9/11',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'9/12',type:'recovery',main:'회복 조깅',note:'6:00/km 이상 · HR 138 이하',km:'5km',hr:'133~138'},
+    {dow:'일',date:'9/13',type:'race',main:'하프 레이스 (컨디션 체크)',note:'목표 1:36 이내 · 전반 억제 실험 · 4:33~4:35/km 균등 · 풀코스 전략 시뮬레이션',km:'21km',hr:'155~165'},
+  ]},
+  {w:18,phase:'peak',label:'피크 · 마지막 고강도',km:78,dates:'9/14~9/20',days:[
+    {dow:'월',date:'9/14',type:'rest',main:'완전 휴식',note:'하프 레이스 다음날',km:'—',hr:'—'},
+    {dow:'화',date:'9/15',type:'recovery',main:'회복 조깅',note:'5:55~6:15/km · HR 138 이하',km:'7km',hr:'133~138'},
+    {dow:'수',date:'9/16',type:'mp',main:'MP 런',note:'4:56/km × 18km · HR 160 이하 · 피크 최장 MP',km:'21km',hr:'150~160'},
+    {dow:'목',date:'9/17',type:'recovery',main:'회복 조깅',note:'5:55~6:15/km · HR 140 이하',km:'7km',hr:'135~140'},
+    {dow:'금',date:'9/18',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'9/19',type:'easy',main:'이지런',note:'5:12~5:28/km · HR 150 이하',km:'12km',hr:'144~150'},
+    {dow:'일',date:'9/20',type:'lsd',main:'LSD · 마지막 30km',note:'5:08~5:23/km · HR 154 이하 · 이후 30km 없음',km:'30km',hr:'145~154'},
+  ]},
+  {w:19,phase:'taper',label:'테이퍼 시작 · 거리 감소',km:65,dates:'9/21~9/27',days:[
+    {dow:'월',date:'9/21',type:'rest',main:'완전 휴식',note:'마지막 30km 후 회복',km:'—',hr:'—'},
+    {dow:'화',date:'9/22',type:'recovery',main:'회복 조깅',note:'5:55~6:15/km · HR 138 이하',km:'7km',hr:'133~138'},
+    {dow:'수',date:'9/23',type:'interval',main:'마지막 인터벌',note:'1km×5 · 4:12~4:18/km · HR 164 이하 · 이후 인터벌 없음',km:'12km',hr:'145~164'},
+    {dow:'목',date:'9/24',type:'recovery',main:'회복 조깅',note:'5:55~6:15/km · HR 138 이하',km:'7km',hr:'133~138'},
+    {dow:'금',date:'9/25',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'9/26',type:'easy',main:'이지런',note:'5:15~5:30/km · HR 149 이하',km:'12km',hr:'144~149'},
+    {dow:'일',date:'9/27',type:'lsd',main:'LSD',note:'5:10~5:25/km · HR 152 이하',km:'25km',hr:'144~152'},
+  ]},
+  {w:20,phase:'taper',label:'테이퍼 · 강도 유지 거리 감소',km:55,dates:'9/28~10/4',days:[
+    {dow:'월',date:'9/28',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'9/29',type:'easy',main:'이지런',note:'5:15~5:30/km · HR 149 이하',km:'10km',hr:'144~149'},
+    {dow:'수',date:'9/30',type:'mp',main:'MP 런 단축',note:'4:56/km × 12km · HR 158 이하',km:'15km',hr:'150~158'},
+    {dow:'목',date:'10/1',type:'recovery',main:'회복 조깅 (국경일)',note:'5:55~6:15/km · HR 138 이하',km:'7km',hr:'133~138'},
+    {dow:'금',date:'10/2',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'10/3',type:'easy',main:'이지런 (개천절)',note:'5:15~5:30/km · HR 149 이하',km:'10km',hr:'144~149'},
+    {dow:'일',date:'10/4',type:'lsd',main:'LSD',note:'5:12~5:28/km · HR 152 이하',km:'22km',hr:'144~152'},
+  ]},
+  {w:21,phase:'taper',label:'테이퍼 · 레이스 시뮬레이션',km:48,dates:'10/5~10/11',days:[
+    {dow:'월',date:'10/5',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'10/6',type:'easy',main:'이지런',note:'5:15~5:30/km · HR 149 이하',km:'10km',hr:'144~149'},
+    {dow:'수',date:'10/7',type:'tempo',main:'레이스 페이스 시뮬레이션',note:'4:56/km × 10km + 초반 2km 5:05 억제 연습 · 핵심 세션',km:'13km',hr:'150~160'},
+    {dow:'목',date:'10/8',type:'recovery',main:'회복 조깅',note:'5:55~6:15/km · HR 138 이하',km:'7km',hr:'133~138'},
+    {dow:'금',date:'10/9',type:'rest',main:'완전 휴식 (한글날)',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'10/10',type:'easy',main:'이지런',note:'5:18~5:33/km · HR 148 이하',km:'9km',hr:'143~148'},
+    {dow:'일',date:'10/11',type:'lsd',main:'LSD',note:'5:15~5:30/km · HR 152 이하',km:'18km',hr:'144~152'},
+  ]},
+  {w:22,phase:'taper',label:'테이퍼 · 볼륨 40% 감축',km:38,dates:'10/12~10/18',days:[
+    {dow:'월',date:'10/12',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'10/13',type:'easy',main:'이지런',note:'5:18~5:33/km · HR 147 이하',km:'8km',hr:'142~147'},
+    {dow:'수',date:'10/14',type:'mp',main:'MP 런 단축',note:'4:56/km × 8km · HR 157 이하 · 다리 감각 유지',km:'11km',hr:'150~157'},
+    {dow:'목',date:'10/15',type:'recovery',main:'회복 조깅',note:'6:00~6:20/km · HR 138 이하',km:'6km',hr:'133~138'},
+    {dow:'금',date:'10/16',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'10/17',type:'easy',main:'이지런',note:'5:20~5:35/km · HR 147 이하',km:'8km',hr:'142~147'},
+    {dow:'일',date:'10/18',type:'lsd',main:'LSD',note:'5:15~5:30/km · HR 150 이하',km:'14km',hr:'144~150'},
+  ]},
+  {w:23,phase:'taper',label:'테이퍼 완성 · 신선도 극대화',km:30,dates:'10/19~10/25',days:[
+    {dow:'월',date:'10/19',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'화',date:'10/20',type:'easy',main:'이지런',note:'5:20~5:35/km · HR 145 이하 · 다리 가볍게',km:'7km',hr:'140~145'},
+    {dow:'수',date:'10/21',type:'easy',main:'이지런',note:'5:22~5:38/km · HR 145 이하',km:'7km',hr:'140~145'},
+    {dow:'목',date:'10/22',type:'tempo',main:'짧은 스트라이드 런',note:'4:56/km × 3km + 스트라이드 4×100m · 신경계만 깨우기',km:'5km',hr:'150~158'},
+    {dow:'금',date:'10/23',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
+    {dow:'토',date:'10/24',type:'easy',main:'이지런',note:'5:25~5:40/km · HR 143 이하 · 마지막 이지런',km:'7km',hr:'138~143'},
+    {dow:'일',date:'10/25',type:'easy',main:'30분 이내 조깅',note:'5:30~5:45/km · HR 140 이하 · 다리 느낌 확인',km:'5km',hr:'135~140'},
+  ]},
+  {w:24,phase:'race',label:'레이스 위크',km:12,dates:'10/26~11/1',days:[
+    {dow:'월',date:'10/26',type:'easy',main:'이지런',note:'5:30~5:45/km · 20~25분 · HR 140 이하',km:'4km',hr:'135~140'},
+    {dow:'화',date:'10/27',type:'easy',main:'이지런 + 스트라이드',note:'5:35~5:50/km · 20분 + 스트라이드 3×100m',km:'4km',hr:'135~140'},
+    {dow:'수',date:'10/28',type:'easy',main:'이지런',note:'5:35~5:50/km · 15~20분만',km:'3km',hr:'133~138'},
+    {dow:'목',date:'10/29',type:'rest',main:'완전 휴식',note:'수면 + 영양 관리 집중',km:'—',hr:'—'},
+    {dow:'금',date:'10/30',type:'rest',main:'완전 휴식',note:'레이스 전날. 가벼운 스트레칭만.',km:'—',hr:'—'},
+    {dow:'토',date:'10/31',type:'recovery',main:'10~15분 조깅',note:'레이스 당일 아침 워밍업 루틴 점검',km:'2km',hr:'130~135'},
+    {dow:'일',date:'11/1',type:'race',main:'JTBC 마라톤 42.195km',note:'전반 4:58 억제 → 후반 4:54 네거티브 · 목표 3:28',km:'42km',hr:'153~165'},
+  ]},
+];
+
+const PHASE_LABELS = {rec:'회복',base:'베이스',build:'빌드업',peak:'피크',taper:'테이퍼',race:'레이스위크'};
+const PHASE_COLORS = {rec:'pb-rec',base:'pb-base',build:'pb-build',peak:'pb-peak',taper:'pb-taper',race:'pb-race'};
+let currentPhase = 'all';
+let openWeeks = new Set();
+
+function typeClass(t){
+  return 'tb-'+t;
+}
+function typeLabel(t){
+  const m={rest:'휴식',easy:'이지런',lsd:'LSD',tempo:'템포',interval:'인터벌',mp:'MP런',race:'레이스',recovery:'회복조깅'};
+  return m[t]||t;
+}
+
+function renderWeeks(){
+  const c = document.getElementById('weekContainer');
+  const filtered = currentPhase==='all' ? PLAN : PLAN.filter(w=>w.phase===currentPhase);
+  let html = '';
+  filtered.forEach(w=>{
+    const isOpen = openWeeks.has(w.w);
+    const restDays = w.days.filter(d=>d.type==='rest').length;
+    const runDays = 7 - restDays;
+    html += `<div class="week-block" data-phase="${w.phase}">
+      <div class="phase-banner ${PHASE_COLORS[w.phase]}">${PHASE_LABELS[w.phase]}</div>
+      <div class="week-hd" onclick="toggleWeek(${w.w})">
+        <div><div class="wk-num">W${w.w} · ${w.dates}</div><div class="wk-dates">${w.label}</div></div>
+        <div></div>
+        <div class="wk-km">${w.km}km</div>
+        <div class="wk-chevron">${isOpen?'▲':'▼'}</div>
+      </div>
+      <div class="day-rows ${isOpen?'open':''}">`;
+    w.days.forEach(d=>{
+      const isRest = d.type==='rest';
+      html += `<div class="day-row ${isRest?'rest-row':''}">
+        <div><div class="d-dow">${d.dow}</div><div class="d-date">${d.date}</div></div>
+        <div style="padding-top:1px"><span class="type-badge ${typeClass(d.type)}">${typeLabel(d.type)}</span></div>
+        <div class="d-main">${d.main}${d.note?`<div class="d-note">${d.note}</div>`:''}</div>
+        <div class="d-metric"><strong>${d.km}</strong>${d.hr!=='—'?d.hr:'—'}</div>
+      </div>`;
+    });
+    const wkTotal = w.days.filter(d=>d.km!=='—').length;
+    html += `<div class="summary-bar"><span>훈련일 <span class="sb-val">${runDays}일</span></span><span>주간 총거리 <span class="sb-val">${w.km}km</span></span></div>`;
+    html += `</div></div>`;
+  });
+  c.innerHTML = html;
+}
+
+function toggleWeek(n){
+  if(openWeeks.has(n)) openWeeks.delete(n);
+  else openWeeks.add(n);
+  renderWeeks();
+}
+
+function filterPhase(p){
+  currentPhase = p;
+  openWeeks.clear();
+  document.querySelectorAll('.pnav').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  renderWeeks();
+}
+
+renderWeeks();
+</script>
