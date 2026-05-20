@@ -706,13 +706,13 @@ const PLAN = [
     {dow:'화',date:'2026-07-28',ds:'7/28',type:'easy',main:'이지런',note:'5:18~5:33/km · HR 149 이하',km:'10km',hr:'144~149'},
     {dow:'수',date:'2026-07-29',ds:'7/29',type:'mp',main:'MP 런',note:'4:56/km × 12km · HR 158 이하 · 초반 2km 5:03 억제',km:'15km',hr:'150~158'},
     {dow:'목',date:'2026-07-30',ds:'7/30',type:'recovery',main:'회복 조깅',note:'5:50~6:10/km · HR 140 이하',km:'7km',hr:'135~140'},
-    {dow:'금',date:'2026-07-31',ds:'7/31',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'토',date:'2026-08-01',ds:'8/1',type:'easy',main:'이지런',note:'5:18~5:33/km · HR 149 이하',km:'11km',hr:'144~149'},
-    {dow:'일',date:'2026-08-02',ds:'8/2',type:'lsd',main:'LSD',note:'5:20~5:35/km · HR 153 이하',km:'27km',hr:'145~153'},
+    {dow:'금',date:'2026-07-31',ds:'7/31',type:'rest',main:'완전 휴식',note:'대회 전날. 가벼운 스트레칭만.',km:'—',hr:'—'},
+    {dow:'토',date:'2026-08-01',ds:'8/1',type:'race',main:'10K 대회 (실내)',note:'실내 대회 — 열적응 불필요. 기록 도전 가능. 초반 억제 연습 병행: 1~3km 4:15 억제 후 후반 당기기. 대회 후 스트레칭 충분히.',km:'10km',hr:'160~175'},
+    {dow:'일',date:'2026-08-02',ds:'8/2',type:'recovery',main:'대회 다음날 회복 조깅',note:'6:00~6:20/km · HR 135 이하 · 다리 상태 점검. LSD는 W12 화요일로 이동.',km:'6km',hr:'130~135'},
   ]},
-  {w:12,phase:'build',label:'빌드업 · 인터벌 강화',km:68,dates:'8/3~8/9',days:[
-    {dow:'월',date:'2026-08-03',ds:'8/3',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'화',date:'2026-08-04',ds:'8/4',type:'easy',main:'이지런',note:'5:18~5:33/km · HR 149 이하',km:'11km',hr:'144~149'},
+  {w:12,phase:'build',label:'빌드업 · 인터벌 강화',km:70,dates:'8/3~8/9',days:[
+    {dow:'월',date:'2026-08-03',ds:'8/3',type:'rest',main:'완전 휴식',note:'8/1 대회 이틀 후. 다리 피로 확인.',km:'—',hr:'—'},
+    {dow:'화',date:'2026-08-04',ds:'8/4',type:'lsd',main:'LSD (W11에서 이동)',note:'5:18~5:33/km · HR 153 이하 · 대회 후 3일째 — 상태 좋으면 진행, 피로 잔존 시 27km→22km 단축 가능',km:'27km',hr:'145~153'},
     {dow:'수',date:'2026-08-05',ds:'8/5',type:'interval',main:'인터벌',note:'1km×5 · 4:18~4:23/km · HR 163 이하',km:'12km',hr:'145~163'},
     {dow:'목',date:'2026-08-06',ds:'8/6',type:'recovery',main:'회복 조깅',note:'5:50~6:10/km · HR 140 이하',km:'7km',hr:'135~140'},
     {dow:'금',date:'2026-08-07',ds:'8/7',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
@@ -782,32 +782,32 @@ const PLAN = [
     {dow:'토',date:'2026-09-26',ds:'9/26',type:'easy',main:'이지런',note:'5:15~5:30/km · HR 149 이하',km:'12km',hr:'144~149'},
     {dow:'일',date:'2026-09-27',ds:'9/27',type:'lsd',main:'LSD',note:'5:10~5:25/km · HR 152 이하',km:'25km',hr:'144~152'},
   ]},
-  {w:20,phase:'taper',label:'테이퍼 · 거리 감소',km:55,dates:'9/28~10/4',days:[
+  {w:20,phase:'taper',label:'테이퍼 · 여행 (10/1~10/10 조깅만)',km:38,dates:'9/28~10/4',days:[
     {dow:'월',date:'2026-09-28',ds:'9/28',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
     {dow:'화',date:'2026-09-29',ds:'9/29',type:'easy',main:'이지런',note:'5:15~5:30/km · HR 149 이하',km:'10km',hr:'144~149'},
-    {dow:'수',date:'2026-09-30',ds:'9/30',type:'mp',main:'MP 런 단축',note:'4:56/km × 12km · HR 158 이하',km:'15km',hr:'150~158'},
-    {dow:'목',date:'2026-10-01',ds:'10/1',type:'recovery',main:'회복 조깅 (국경일)',note:'5:55~6:15/km · HR 138 이하',km:'7km',hr:'133~138'},
-    {dow:'금',date:'2026-10-02',ds:'10/2',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'토',date:'2026-10-03',ds:'10/3',type:'easy',main:'이지런 (개천절)',note:'5:15~5:30/km · HR 149 이하',km:'10km',hr:'144~149'},
-    {dow:'일',date:'2026-10-04',ds:'10/4',type:'lsd',main:'LSD',note:'5:12~5:28/km · HR 152 이하',km:'22km',hr:'144~152'},
+    {dow:'수',date:'2026-09-30',ds:'9/30',type:'mp',main:'MP 런 — 여행 전 마지막 강도',note:'4:56/km × 12km · HR 158 이하 · 여행 전 감각 각인',km:'15km',hr:'150~158'},
+    {dow:'목',date:'2026-10-01',ds:'10/1',type:'recovery',main:'여행 조깅 (국경일)',note:'여행 중 — 5:50~6:20/km · HR 138 이하 · 30분 이내 가볍게',km:'5km',hr:'130~138'},
+    {dow:'금',date:'2026-10-02',ds:'10/2',type:'rest',main:'휴식 또는 가벼운 걷기',note:'여행 중 — 피로 관리 우선',km:'—',hr:'—'},
+    {dow:'토',date:'2026-10-03',ds:'10/3',type:'recovery',main:'여행 조깅 (개천절)',note:'여행 중 — 5:50~6:20/km · HR 138 이하 · 30분 이내',km:'5km',hr:'130~138'},
+    {dow:'일',date:'2026-10-04',ds:'10/4',type:'recovery',main:'여행 조깅',note:'여행 중 — 5:50~6:20/km · HR 138 이하 · LSD 없음. 테이퍼 구간이므로 무리 금지.',km:'5km',hr:'130~138'},
   ]},
-  {w:21,phase:'taper',label:'테이퍼 · 레이스 시뮬레이션',km:48,dates:'10/5~10/11',days:[
-    {dow:'월',date:'2026-10-05',ds:'10/5',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'화',date:'2026-10-06',ds:'10/6',type:'easy',main:'이지런',note:'5:15~5:30/km · HR 149 이하',km:'10km',hr:'144~149'},
-    {dow:'수',date:'2026-10-07',ds:'10/7',type:'tempo',main:'레이스 페이스 시뮬레이션 — 초반 억제 연습',note:'4:56/km × 10km · 초반 2km 5:05 억제 후 진입',km:'13km',hr:'150~160'},
-    {dow:'목',date:'2026-10-08',ds:'10/8',type:'recovery',main:'회복 조깅',note:'5:55~6:15/km · HR 138 이하',km:'7km',hr:'133~138'},
-    {dow:'금',date:'2026-10-09',ds:'10/9',type:'rest',main:'완전 휴식 (한글날)',note:'',km:'—',hr:'—'},
-    {dow:'토',date:'2026-10-10',ds:'10/10',type:'easy',main:'이지런',note:'5:18~5:33/km · HR 148 이하',km:'9km',hr:'143~148'},
-    {dow:'일',date:'2026-10-11',ds:'10/11',type:'lsd',main:'LSD',note:'5:15~5:30/km · HR 152 이하',km:'18km',hr:'144~152'},
+  {w:21,phase:'taper',label:'테이퍼 · 여행 복귀 + 감각 회복',km:42,dates:'10/5~10/11',days:[
+    {dow:'월',date:'2026-10-05',ds:'10/5',type:'recovery',main:'여행 조깅',note:'여행 중 — 5:50~6:20/km · HR 138 이하 · 30분 이내',km:'5km',hr:'130~138'},
+    {dow:'화',date:'2026-10-06',ds:'10/6',type:'recovery',main:'여행 조깅',note:'여행 중 — 5:50~6:20/km · HR 138 이하',km:'5km',hr:'130~138'},
+    {dow:'수',date:'2026-10-07',ds:'10/7',type:'recovery',main:'여행 조깅',note:'여행 중 — 5:50~6:20/km · HR 138 이하 · MP 시뮬레이션 없음. 여행 마지막 조깅.',km:'5km',hr:'130~138'},
+    {dow:'목',date:'2026-10-08',ds:'10/8',type:'recovery',main:'여행 조깅',note:'여행 중 — 5:50~6:20/km · HR 138 이하',km:'5km',hr:'130~138'},
+    {dow:'금',date:'2026-10-09',ds:'10/9',type:'rest',main:'완전 휴식 (한글날 / 여행 중)',note:'여행 피로 관리. 귀국 이동일 가능.',km:'—',hr:'—'},
+    {dow:'토',date:'2026-10-10',ds:'10/10',type:'rest',main:'여행 마지막날 / 귀국',note:'여행 복귀. 이동 피로 고려 — 가벼운 스트레칭만.',km:'—',hr:'—'},
+    {dow:'일',date:'2026-10-11',ds:'10/11',type:'easy',main:'귀국 후 첫 훈련 — 이지런',note:'복귀 후 감각 확인. 5:20~5:35/km · HR 148 이하 · 몸 상태 우선 점검. LSD 대신 이지런으로 대체.',km:'10km',hr:'143~148'},
   ]},
-  {w:22,phase:'taper',label:'테이퍼 · 볼륨 40% 감축',km:38,dates:'10/12~10/18',days:[
+  {w:22,phase:'taper',label:'테이퍼 · 여행 복귀 감각 회복',km:44,dates:'10/12~10/18',days:[
     {dow:'월',date:'2026-10-12',ds:'10/12',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'화',date:'2026-10-13',ds:'10/13',type:'easy',main:'이지런',note:'5:18~5:33/km · HR 147 이하',km:'8km',hr:'142~147'},
-    {dow:'수',date:'2026-10-14',ds:'10/14',type:'mp',main:'MP 런 단축',note:'4:56/km × 8km · HR 157 이하 · 다리 감각 유지',km:'11km',hr:'150~157'},
+    {dow:'화',date:'2026-10-13',ds:'10/13',type:'easy',main:'이지런 — 복귀 후 감각 점검',note:'5:15~5:30/km · HR 148 이하 · 여행 피로 완전 해소 확인',km:'8km',hr:'142~148'},
+    {dow:'수',date:'2026-10-14',ds:'10/14',type:'tempo',main:'레이스 페이스 시뮬레이션 — 초반 억제 연습',note:'4:56/km × 10km · 초반 2km 5:05 억제 후 진입 · 여행 공백 후 감각 복원 핵심 세션',km:'13km',hr:'150~160'},
     {dow:'목',date:'2026-10-15',ds:'10/15',type:'recovery',main:'회복 조깅',note:'6:00~6:20/km · HR 138 이하',km:'6km',hr:'133~138'},
     {dow:'금',date:'2026-10-16',ds:'10/16',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
-    {dow:'토',date:'2026-10-17',ds:'10/17',type:'easy',main:'이지런',note:'5:20~5:35/km · HR 147 이하',km:'8km',hr:'142~147'},
-    {dow:'일',date:'2026-10-18',ds:'10/18',type:'lsd',main:'LSD',note:'5:15~5:30/km · HR 150 이하',km:'14km',hr:'144~150'},
+    {dow:'토',date:'2026-10-17',ds:'10/17',type:'mp',main:'MP 런 단축 — 마지막 MP',note:'4:56/km × 8km · HR 157 이하 · 다리 감각 최종 확인',km:'11km',hr:'150~157'},
+    {dow:'일',date:'2026-10-18',ds:'10/18',type:'easy',main:'이지런',note:'5:20~5:35/km · HR 147 이하',km:'8km',hr:'142~147'},
   ]},
   {w:23,phase:'taper',label:'테이퍼 완성 · 신선도 극대화',km:30,dates:'10/19~10/25',days:[
     {dow:'월',date:'2026-10-19',ds:'10/19',type:'rest',main:'완전 휴식',note:'',km:'—',hr:'—'},
@@ -844,6 +844,18 @@ const TYPE_LABELS = {rest:'휴식',easy:'이지런',recovery:'회복조깅',lsd:
 let currentPhase = 'all';
 let openWeeks = {};
 
+// 자정에 D-day + 오늘 훈련 자동 갱신
+function scheduleRefresh() {
+  const now = new Date();
+  const msUntilMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1) - now;
+  setTimeout(() => {
+    updateDday();
+    renderToday();
+    renderWeeks();
+    scheduleRefresh();
+  }, msUntilMidnight + 1000);
+}
+
 function todayStr() {
   const d = new Date();
   const y = d.getFullYear();
@@ -855,9 +867,32 @@ function todayStr() {
 function updateDday() {
   const now = new Date();
   now.setHours(0,0,0,0);
-  const diff = Math.ceil((RACE_DATE - now) / (1000*60*60*24));
-  document.getElementById('ddayBadge').textContent = diff > 0 ? `D-${diff}` : diff === 0 ? 'D-DAY' : '완주!';
-  const prog = Math.max(0, Math.min(100, Math.round((1 - diff/167)*100)));
+  const race = new Date('2026-11-01');
+  race.setHours(0,0,0,0);
+  const diff = Math.round((race - now) / (1000*60*60*24));
+  const badge = document.getElementById('ddayBadge');
+  const sub = document.getElementById('ddaySub');
+  if (diff > 0) {
+    badge.textContent = `D-${diff}`;
+    badge.style.color = diff <= 7 ? 'var(--red)' : diff <= 30 ? 'var(--orange)' : 'var(--gold)';
+  } else if (diff === 0) {
+    badge.textContent = 'D-DAY';
+    badge.style.color = 'var(--gold)';
+  } else {
+    badge.textContent = '완주!';
+    badge.style.color = 'var(--green)';
+  }
+  // 날짜 표시
+  const now2 = new Date();
+  const mo = String(now2.getMonth()+1);
+  const dy = String(now2.getDate());
+  const dow = ['일','월','화','수','목','금','토'][now2.getDay()];
+  sub.textContent = `${mo}/${dy}(${dow}) · JTBC 11/1`;
+  // 진행률
+  const START = new Date('2026-05-18'); START.setHours(0,0,0,0);
+  const total = Math.round((race - START) / (1000*60*60*24));
+  const elapsed = Math.round((now - START) / (1000*60*60*24));
+  const prog = Math.max(0, Math.min(100, Math.round(elapsed / total * 100)));
   document.getElementById('progVal').textContent = prog + '%';
   document.getElementById('progBar').style.width = prog + '%';
 }
@@ -866,25 +901,40 @@ function findToday() {
   const ts = todayStr();
   for (const w of PLAN) {
     for (const d of w.days) {
-      if (d.date === ts) return d;
+      if (d.date === ts) return {day: d, week: w};
     }
   }
   return null;
 }
 
 function renderToday() {
-  const d = findToday();
+  const result = findToday();
   const card = document.getElementById('todayCard');
-  if (!d) { card.style.display = 'none'; return; }
+  if (!result) {
+    // 플랜 범위 밖이면 카드 숨김
+    card.style.display = 'none';
+    return;
+  }
+  const {day: d, week: w} = result;
   card.style.display = 'block';
+  // 유형별 테두리 색
+  const typeColor = {rest:'var(--muted)',easy:'var(--cyan)',recovery:'var(--muted2)',lsd:'var(--green)',tempo:'var(--orange)',interval:'var(--red)',mp:'var(--purple)',race:'var(--gold)'}[d.type]||'var(--cyan)';
+  card.style.borderTopColor = typeColor;
+  // 주차 정보
+  document.querySelector('.today-label').textContent = `▶ 오늘의 훈련 · W${w.w} ${w.dates}`;
   document.getElementById('todayMain').textContent = d.main;
   const meta = document.getElementById('todayMeta');
-  let pills = `<span class="today-pill">${TYPE_LABELS[d.type]||d.type}</span>`;
+  let pills = `<span class="today-pill" style="color:${typeColor};border-color:${typeColor}22">${TYPE_LABELS[d.type]||d.type}</span>`;
   if (d.km !== '—') pills += `<span class="today-pill">${d.km}</span>`;
   if (d.hr !== '—') pills += `<span class="today-pill">HR ${d.hr}</span>`;
   meta.innerHTML = pills;
-  document.getElementById('todayNote').textContent = d.note || '';
-  if (!d.note) document.getElementById('todayNote').style.display = 'none';
+  const noteEl = document.getElementById('todayNote');
+  if (d.note) {
+    noteEl.textContent = d.note;
+    noteEl.style.display = 'block';
+  } else {
+    noteEl.style.display = 'none';
+  }
 }
 
 function renderWeeks() {
@@ -992,6 +1042,7 @@ autoOpenToday();
 renderToday();
 renderWeeks();
 renderSplits();
+scheduleRefresh();
 </script>
 </body>
 </html>
