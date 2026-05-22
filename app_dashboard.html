@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>앱 내 방문자수 비율 대시보드</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f5f3;
+    --surface: #ffffff;
+    --surface2: #f1efe8;
+    --border: rgba(0,0,0,0.1);
+    --text: #1a1a18;
+    --text-muted: #6b6b66;
+    --blue: #378ADD;
+    --teal: #1D9E75;
+    --amber: #BA7517;
+    --purple: #534AB7;
+    --pink: #D4537E;
+    --gray: #888780;
+    --blue-dark: #185FA5;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1a18;
+      --surface: #242422;
+      --surface2: #2c2c2a;
+      --border: rgba(255,255,255,0.1);
+      --text: #f0ede8;
+      --text-muted: #a0a09a;
+      --blue-dark: #85B7EB;
+    }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  header {
+    margin-bottom: 1.5rem;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  h1 {
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+
+  .date-badge {
+    font-size: 12px;
+    color: var(--text-muted);
+    background: var(--surface2);
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 0.5px solid var(--border);
+    white-space: nowrap;
+  }
+
+  .total-hero {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+  }
+
+  .total-num {
+    font-size: 36px;
+    font-weight: 500;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+
+  .total-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .sec {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .sec-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-muted);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 10px;
+    margin-bottom: 1.25rem;
+  }
+
+  .kpi {
+    background: var(--surface2);
+    border-radius: var(--radius-md);
+    padding: .875rem 1rem;
+  }
+
+  .kpi-l {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 3px;
+  }
+
+  .kpi-v {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+
+  .kpi-r {
+    font-size: 11px;
+    color: var(--blue-dark);
+  }
+
+  .chart-wrap {
+    position: relative;
+    width: 100%;
+  }
+
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .bar-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    width: 80px;
+    flex-shrink: 0;
+    text-align: right;
+  }
+
+  .bar-track {
+    flex: 1;
+    background: var(--surface2);
+    border-radius: 3px;
+    height: 8px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 8px;
+    border-radius: 3px;
+    transition: width 0.6s ease;
+  }
+
+  .bar-val {
+    font-size: 11px;
+    color: var(--text);
+    font-weight: 500;
+    min-width: 60px;
+    text-align: right;
+  }
+
+  .bar-pct {
+    font-size: 11px;
+    color: var(--text-muted);
+    min-width: 38px;
+    text-align: right;
+  }
+
+  .row2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+  }
+
+  .leg-wrap {
+    margin-top: 10px;
+    font-size: 11px;
+    color: var(--text-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .leg-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .leg-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .divider {
+    height: 0.5px;
+    background: var(--border);
+    margin: 1rem 0;
+  }
+
+  @media (max-width: 520px) {
+    .row2 { grid-template-columns: 1fr; }
+    .total-num { font-size: 28px; }
+    .bar-label { width: 68px; font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="header-top">
+      <h1>앱 내 방문자수 비율</h1>
+      <span class="date-badge">0424–0521 DataStory 기준</span>
+    </div>
+  </header>
+
+  <div class="total-hero">
+    <span class="total-num">2,415,859</span>
+    <span class="total-sub">앱 총 방문자수 · 전체 비율 기준값</span>
+  </div>
+
+  <!-- Section 2: My 탭 -->
+  <div class="sec">
+    <p class="sec-label">2. My 탭 항목별 방문 수치 및 비율 (앱 방문자 대비)</p>
+    <div class="kpi-row">
+      <div class="kpi"><p class="kpi-l">My</p><p class="kpi-v">109,973</p><p class="kpi-r">4.6%</p></div>
+      <div class="kpi"><p class="kpi-l">보험상품</p><p class="kpi-v">23,098</p><p class="kpi-r">1.0%</p></div>
+      <div class="kpi"><p class="kpi-l">라플레이</p><p class="kpi-v">2,306,141</p><p class="kpi-r">95.5%</p></div>
+      <div class="kpi"><p class="kpi-l">내보험점수</p><p class="kpi-v">21,664</p><p class="kpi-r">0.9%</p></div>
+      <div class="kpi"><p class="kpi-l">건강관리</p><p class="kpi-v">14,114</p><p class="kpi-r">0.6%</p></div>
+      <div class="kpi"><p class="kpi-l">전체메뉴</p><p class="kpi-v">33,282</p><p class="kpi-r">1.4%</p></div>
+    </div>
+    <div class="chart-wrap" style="height:200px;">
+      <canvas id="myTabChart" role="img" aria-label="My탭 항목별 방문자수 가로 막대 차트">라플레이 2,306,141(95.5%) / My 109,973(4.6%) / 전체메뉴 33,282(1.4%) / 보험상품 23,098(1.0%) / 내보험점수 21,664(0.9%) / 건강관리 14,114(0.6%)</canvas>
+    </div>
+  </div>
+
+  <!-- Section 3: 라플레이 상세 -->
+  <div class="sec">
+    <p class="sec-label">3. 라플레이 내 상세 방문 분포 (앱 방문자 대비)</p>
+    <div id="raffle-bars"></div>
+  </div>
+
+  <!-- Section 4: 퀵메뉴 -->
+  <div class="sec">
+    <p class="sec-label">4. 퀵메뉴 내 방문 비율 (앱 방문자 대비)</p>
+    <div id="quick-bars"></div>
+  </div>
+
+  <!-- Section 5: 라플피드 -->
+  <div class="sec">
+    <p class="sec-label">5. 라플피드 상단 / 하단 비율 (앱 방문자 대비)</p>
+    <div class="row2">
+      <div id="feed-bars"></div>
+      <div>
+        <div class="chart-wrap" style="height:180px;">
+          <canvas id="feedChart" role="img" aria-label="라플피드 상단 추천 영역 대 하단 영역 도넛 차트">상단 추천 영역 10,151 / 하단 영역 2,343</canvas>
+        </div>
+        <div class="leg-wrap" id="feed-legend"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 6: 포인트 사용처 -->
+  <div class="sec">
+    <p class="sec-label">6. 포인트 사용처 비율 (앱 방문자 대비)</p>
+    <div class="row2">
+      <div id="point-bars"></div>
+      <div>
+        <div class="chart-wrap" style="height:200px;">
+          <canvas id="pointChart" role="img" aria-label="포인트 사용처별 비율 도넛 차트">라플광산 26,383 / 라플장터 26,754 / 라플상점 27,372 / 교보문고전환 17,896 / 보험료결제 1,037 / 대출이자납입 423</canvas>
+        </div>
+        <div class="leg-wrap" id="point-legend"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const APP = 2415859;
+const nn = v => v.toLocaleString('ko-KR');
+const pp = (v, base) => (v / base * 100).toFixed(1) + '%';
+
+function makeBars(containerId, items, base, color) {
+  const el = document.getElementById(containerId);
+  const max = Math.max(...items.map(i => i.val));
+  items.forEach(item => {
+    const widthPct = (item.val / max * 100).toFixed(1);
+    const appPct = (item.val / base * 100).toFixed(1);
+    const row = document.createElement('div');
+    row.className = 'bar-row';
+    row.innerHTML = `
+      <span class="bar-label">${item.label}</span>
+      <div class="bar-track"><div class="bar-fill" style="width:0%;background:${color};" data-w="${widthPct}"></div></div>
+      <span class="bar-val">${nn(item.val)}</span>
+      <span class="bar-pct">${appPct}%</span>`;
+    el.appendChild(row);
+  });
+  requestAnimationFrame(() => {
+    el.querySelectorAll('.bar-fill').forEach(el => { el.style.width = el.dataset.w + '%'; });
+  });
+}
+
+const raffleItems = [
+  {label:'미션리스트', val:2083593},
+  {label:'걷기 미션', val:2064888},
+  {label:'위플레이', val:288154},
+  {label:'퀵메뉴', val:784886},
+  {label:'포인트 이용내역', val:91079},
+  {label:'포인트 사용처', val:99865},
+  {label:'친구초대', val:8608},
+  {label:'쿠폰함', val:8020},
+  {label:'라플피드', val:12494},
+];
+makeBars('raffle-bars', raffleItems, APP, '#378ADD');
+
+const quickItems = [
+  {label:'라플출첵', val:363917},
+  {label:'운동', val:273626},
+  {label:'수면', val:88710},
+  {label:'라플룰렛', val:14128},
+  {label:'오늘의운세', val:12551},
+  {label:'행운담기', val:12491},
+  {label:'모두의라플', val:6533},
+  {label:'북런챌린지', val:4888},
+  {label:'라플소식', val:2797},
+  {label:'교보문고', val:2684},
+  {label:'미니보험', val:2561},
+];
+makeBars('quick-bars', quickItems, APP, '#1D9E75');
+
+const feedItems = [
+  {label:'상단 추천', val:10151},
+  {label:'하단 영역', val:2343},
+];
+makeBars('feed-bars', feedItems, APP, '#BA7517');
+
+const feedColors = ['#378ADD','#888780'];
+const feedTotal = feedItems.reduce((a, d) => a + d.val, 0);
+new Chart(document.getElementById('feedChart'), {
+  type: 'doughnut',
+  data: {
+    labels: feedItems.map(d => d.label),
+    datasets: [{ data: feedItems.map(d => d.val), backgroundColor: feedColors, borderWidth: 0 }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false, cutout: '62%',
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + nn(ctx.raw) + ' (' + pp(ctx.raw, feedTotal) + ')' } } }
+  }
+});
+const fl = document.getElementById('feed-legend');
+feedItems.forEach((d, i) => {
+  fl.innerHTML += `<span class="leg-item"><span class="leg-dot" style="background:${feedColors[i]};"></span>${d.label} ${pp(d.val, feedTotal)}</span>`;
+});
+
+const pointItems = [
+  {label:'라플광산', val:26383},
+  {label:'라플장터', val:26754},
+  {label:'라플상점', val:27372},
+  {label:'교보문고전환', val:17896},
+  {label:'보험료 결제', val:1037},
+  {label:'대출이자 납입', val:423},
+];
+makeBars('point-bars', pointItems, APP, '#534AB7');
+const pointColors = ['#378ADD','#1D9E75','#BA7517','#D4537E','#534AB7','#888780'];
+const pointTotal = pointItems.reduce((a, d) => a + d.val, 0);
+new Chart(document.getElementById('pointChart'), {
+  type: 'doughnut',
+  data: {
+    labels: pointItems.map(d => d.label),
+    datasets: [{ data: pointItems.map(d => d.val), backgroundColor: pointColors, borderWidth: 0 }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false, cutout: '62%',
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + nn(ctx.raw) + ' (' + pp(ctx.raw, pointTotal) + ')' } } }
+  }
+});
+const pl = document.getElementById('point-legend');
+pointItems.forEach((d, i) => {
+  pl.innerHTML += `<span class="leg-item"><span class="leg-dot" style="background:${pointColors[i]};"></span>${d.label} ${pp(d.val, pointTotal)}</span>`;
+});
+
+const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+const axisColor = isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)';
+const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
+
+new Chart(document.getElementById('myTabChart'), {
+  type: 'bar',
+  data: {
+    labels: ['라플레이', 'My', '전체메뉴', '보험상품', '내보험점수', '건강관리'],
+    datasets: [{
+      data: [2306141, 109973, 33282, 23098, 21664, 14114],
+      backgroundColor: ['#378ADD','#1D9E75','#888780','#BA7517','#534AB7','#D4537E'],
+      borderWidth: 0, borderRadius: 4
+    }]
+  },
+  options: {
+    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ' ' + nn(ctx.raw) + ' (' + pp(ctx.raw, APP) + ')' } }
+    },
+    scales: {
+      x: {
+        grid: { color: gridColor },
+        ticks: { font: { size: 10 }, color: axisColor, callback: v => v >= 10000 ? (v / 10000).toFixed(0) + '만' : v }
+      },
+      y: {
+        grid: { display: false },
+        ticks: { font: { size: 11 }, color: axisColor }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>
