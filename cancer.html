@@ -96,6 +96,12 @@ input { font-family: inherit; }
 }
 
 /* ── Progress ── */
+.progress-bar-wrap-outer {
+  position: sticky; top: 56px; z-index: 45;
+  background: rgba(244,247,246,0.97); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--gray-100);
+  padding-bottom: 0.6rem;
+}
 .progress-bar-wrap {
   max-width: 640px; margin: 0 auto; padding: 0.75rem 1rem;
   display: flex; align-items: center; justify-content: space-between;
@@ -114,21 +120,77 @@ input { font-family: inherit; }
   transition: width 0.5s var(--ease-out);
 }
 
-/* ── Step Content ── */
-.step-area {
-  flex: 1; max-width: 640px; margin: 0 auto; padding: 1.5rem 1rem 6rem;
+/* ── Timeline (cumulative scroll) ── */
+.timeline-area {
+  flex: 1; max-width: 640px; margin: 0 auto; padding: 1.25rem 1rem 4rem;
   width: 100%;
 }
-.step-content { animation: fadeSlideIn 0.3s var(--ease-out) both; }
-@keyframes fadeSlideIn {
-  from { opacity: 0; transform: translateX(40px); }
-  to   { opacity: 1; transform: translateX(0); }
+.tl-section { margin-bottom: 1rem; }
+
+/* 완료된 단계 → 요약 칩 */
+.step-chip {
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; padding: 0.85rem 1.1rem;
+  background: var(--white); border: 1.5px solid var(--gray-100);
+  border-radius: 0.9rem; text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+  animation: chipIn 0.3s var(--ease-out) both;
 }
-.step-content.reverse { animation: fadeSlideInRev 0.3s var(--ease-out) both; }
-@keyframes fadeSlideInRev {
-  from { opacity: 0; transform: translateX(-40px); }
-  to   { opacity: 1; transform: translateX(0); }
+.step-chip:hover { border-color: var(--green); background: var(--green-light); }
+@keyframes chipIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
+.step-chip-check {
+  width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+  background: var(--green); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+}
+.step-chip-body { flex: 1; min-width: 0; }
+.step-chip-q { font-size: 0.72rem; color: var(--gray-400); margin-bottom: 1px; }
+.step-chip-a { font-size: 0.9rem; font-weight: 700; color: var(--gray-800); }
+.step-chip-a span.muted { font-weight: 400; color: var(--gray-500); }
+.step-chip-edit { font-size: 0.75rem; color: var(--green-dark); font-weight: 600; flex-shrink: 0; }
+
+/* 활성 단계 → 펼쳐진 카드 */
+.step-live {
+  background: var(--white); border-radius: 1.1rem;
+  border: 1.5px solid var(--green); padding: 1.5rem 1.25rem 1.25rem;
+  box-shadow: 0 4px 20px rgba(14,169,104,0.1);
+  animation: liveIn 0.35s var(--ease-out) both;
+}
+@keyframes liveIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.step-confirm-btn {
+  width: 100%; padding: 0.95rem; margin-top: 1.1rem;
+  border-radius: 0.875rem; font-size: 0.95rem; font-weight: 700;
+  transition: all 0.18s var(--ease-out);
+}
+.step-confirm-btn.active { background: var(--green); color: var(--white); box-shadow: var(--shadow-green); }
+.step-confirm-btn.active:hover { background: var(--green-dark); }
+.step-confirm-btn.active:active { transform: scale(0.98); }
+.step-confirm-btn.disabled { background: var(--gray-200); color: var(--gray-400); cursor: not-allowed; }
+
+/* 시작 카드(인트로 — 발화 메시지) */
+.intro-card {
+  text-align: center; padding: 2.2rem 1.25rem 1.5rem;
+}
+.intro-emoji { font-size: 2.6rem; margin-bottom: 1rem; }
+.intro-greeting {
+  font-size: 1.05rem; font-weight: 700; color: var(--gray-900);
+  line-height: 1.65; margin-bottom: 1rem;
+}
+.intro-sub { font-size: 0.88rem; color: var(--gray-500); margin-bottom: 1.6rem; line-height: 1.65; }
+.intro-start-btn {
+  width: 100%; padding: 1.05rem 2rem; border-radius: 0.9rem;
+  background: var(--green); color: var(--white);
+  font-size: 1.05rem; font-weight: 700; box-shadow: var(--shadow-green);
+  transition: all 0.18s var(--ease-out);
+}
+.intro-start-btn:hover { background: var(--green-dark); }
+.intro-start-btn:active { transform: scale(0.98); }
 
 /* ── Question Header ── */
 .q-emoji { font-size: 2.2rem; margin-bottom: 0.75rem; }
@@ -317,30 +379,7 @@ input[type=range] { position: absolute; inset: 0; width: 100%; opacity: 0; curso
   padding: 0.5rem 0.75rem; margin-top: 0.75rem;
 }
 
-/* ── Bottom CTA ── */
-.bottom-bar {
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 40;
-  background: rgba(244,247,246,0.95); backdrop-filter: blur(12px);
-  border-top: 1px solid var(--gray-100); padding: 1rem;
-}
-.bottom-inner { max-width: 640px; margin: 0 auto; display: flex; gap: 0.6rem; }
-.prev-btn {
-  flex: 0 0 30%; padding: 1rem;
-  border-radius: 0.875rem; font-size: 0.9rem; font-weight: 700;
-  background: var(--gray-100); color: var(--gray-600);
-  transition: all 0.15s;
-}
-.prev-btn:hover { background: var(--gray-200); }
-.prev-btn:disabled { opacity: 0; pointer-events: none; }
-.next-btn {
-  flex: 1; padding: 1rem;
-  border-radius: 0.875rem; font-size: 1rem; font-weight: 700;
-  transition: all 0.18s var(--ease-out);
-}
-.next-btn.active { background: var(--green); color: var(--white); box-shadow: var(--shadow-green); }
-.next-btn.active:hover { background: var(--green-dark); transform: translateY(-1px); }
-.next-btn.active:active { transform: scale(0.98); }
-.next-btn.disabled { background: var(--gray-200); color: var(--gray-400); cursor: not-allowed; }
+/* ── (하단 고정바 제거 — 누적 스크롤 방식에서는 각 단계 내부에 확인 버튼 사용) ── */
 
 /* ── Result Screen ── */
 #result-screen { display: none; animation: fadeIn 0.4s var(--ease-out); }
@@ -436,19 +475,13 @@ input[type=range] { position: absolute; inset: 0; width: 100%; opacity: 0; curso
 </head>
 <body>
 <!-- ═══════════════════════════════════════════════════
-     WIZARD SCREEN
+     WIZARD SCREEN (누적 스크롤 방식)
 ═══════════════════════════════════════════════════ -->
 <div class="wizard-wrap" id="wizard-screen">
 
   <!-- Top Nav -->
   <nav class="top-nav">
     <div class="top-nav-inner">
-      <button class="back-btn" onclick="handlePrev()">
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
-        </svg>
-        뒤로
-      </button>
       <div class="nav-title">
         <div class="nav-badge">교</div>
         암보험 설계
@@ -457,29 +490,22 @@ input[type=range] { position: absolute; inset: 0; width: 100%; opacity: 0; curso
     </div>
   </nav>
 
-  <!-- Progress -->
-  <div style="max-width:640px;margin:0 auto;padding:0.75rem 1rem 0;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-      <span class="step-label" id="step-label">01 / 09</span>
-      <span class="step-hint" id="step-hint">다음 단계로 계속</span>
-    </div>
-    <div class="progress-track">
-      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+  <!-- Progress (sticky) -->
+  <div class="progress-bar-wrap-outer" id="progress-wrap" style="display:none;">
+    <div style="max-width:640px;margin:0 auto;padding:0.6rem 1rem 0;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <span class="step-label" id="step-label">01 / 09</span>
+        <span class="step-hint" id="step-hint">진행 중</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+      </div>
     </div>
   </div>
 
-  <!-- Step Area -->
-  <div class="step-area">
-    <div id="step-content" class="step-content"></div>
-  </div>
+  <!-- Timeline: 완료된 단계는 칩으로 쌓이고, 현재 단계만 펼쳐짐 -->
+  <div class="timeline-area" id="timeline"></div>
 
-  <!-- Bottom CTA -->
-  <div class="bottom-bar">
-    <div class="bottom-inner">
-      <button class="prev-btn" id="prev-btn" onclick="handlePrev()">이전</button>
-      <button class="next-btn disabled" id="next-btn" onclick="handleNext()">다음 →</button>
-    </div>
-  </div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════
@@ -505,8 +531,6 @@ input[type=range] { position: absolute; inset: 0; width: 100%; opacity: 0; curso
 //  STATE
 // ══════════════════════════════════════════════════
 const TOTAL_STEPS = 9;
-let currentStep = 1;
-let direction = 1; // 1=forward, -1=backward
 
 const wizardData = {
   gender: null,         // 'male' | 'female'
@@ -672,42 +696,23 @@ function fmt(n) { return n.toLocaleString('ko-KR'); }
 // ══════════════════════════════════════════════════
 //  NAVIGATION
 // ══════════════════════════════════════════════════
-function getEffectiveStep() {
-  if (wizardData.smokingStatus === 'smoker' && currentStep >= 4) return currentStep - 1;
-  return currentStep;
+function getNextStep(step) {
+  if (step === 2 && wizardData.smokingStatus === 'smoker') return 4; // skip 건강등급
+  if (step >= TOTAL_STEPS) return null;
+  return step + 1;
 }
-function getEffectiveTotal() {
+function getDisplaySteps() {
+  // 표시되는 전체 단계 수 (흡연자는 9단계 중 1개 스킵)
   return wizardData.smokingStatus === 'smoker' ? TOTAL_STEPS - 1 : TOTAL_STEPS;
 }
-
-function handleNext() {
-  if (!canProceed()) return;
-  if (currentStep === TOTAL_STEPS) {
-    showResult();
-    return;
-  }
-  direction = 1;
-  if (currentStep === 2 && wizardData.smokingStatus === 'smoker') {
-    currentStep = 4;
-  } else {
-    currentStep++;
-  }
-  renderStep();
+function getDisplayIndex(step) {
+  // 현재 step이 화면상 몇 번째로 보이는지 (흡연자 스킵 보정)
+  if (wizardData.smokingStatus === 'smoker' && step >= 4) return step - 1;
+  return step;
 }
 
-function handlePrev() {
-  if (currentStep <= 1) return;
-  direction = -1;
-  if (currentStep === 4 && wizardData.smokingStatus === 'smoker') {
-    currentStep = 2;
-  } else {
-    currentStep--;
-  }
-  renderStep();
-}
-
-function canProceed() {
-  switch (currentStep) {
+function canProceedFor(step) {
+  switch (step) {
     case 1: return wizardData.gender !== null;
     case 2: return wizardData.smokingStatus !== null;
     case 3: return wizardData.nonSmokerGrade !== null;
@@ -721,36 +726,163 @@ function canProceed() {
   }
 }
 
-// ══════════════════════════════════════════════════
-//  RENDER ENGINE
-// ══════════════════════════════════════════════════
-function renderStep() {
-  const es = getEffectiveStep();
-  const et = getEffectiveTotal();
-
-  document.getElementById('step-label').textContent =
-    String(es).padStart(2,'0') + ' / ' + String(et).padStart(2,'0');
-  const pct = ((es - 1) / (et - 1)) * 100;
-  document.getElementById('progress-fill').style.width = pct + '%';
-  document.getElementById('step-hint').textContent =
-    currentStep === TOTAL_STEPS ? '마지막 단계입니다' : '다음 단계로 계속';
-
-  const container = document.getElementById('step-content');
-  container.className = 'step-content' + (direction < 0 ? ' reverse' : '');
-  void container.offsetWidth;
-  container.className = 'step-content' + (direction < 0 ? ' reverse' : '');
-  container.innerHTML = getStepHTML(currentStep);
-
-  document.getElementById('prev-btn').disabled = currentStep === 1;
-
-  updateNextBtn();
+// 완료된 단계의 선택 결과를 한 줄 요약 (칩 텍스트)
+function getChipSummary(step) {
+  switch (step) {
+    case 1: return { q: '성별', a: wizardData.gender === 'male' ? '남성' : '여성' };
+    case 2: return { q: '흡연 여부', a: wizardData.smokingStatus === 'smoker' ? '흡연자' : '비흡연자' };
+    case 3: {
+      const map = { standard: '비흡연체', healthy: '건강체', 'super-healthy': '슈퍼건강체' };
+      return { q: '비흡연 등급', a: map[wizardData.nonSmokerGrade] };
+    }
+    case 4: return { q: '진단보험금', a: fmt(wizardData.diagnosisAmount) + '만원' };
+    case 5: return { q: '환급 특약', a: wizardData.refundOption === 'yes' ? '환급 특약 선택' : '환급 특약 없음' };
+    case 6: return { q: '보험 유형', a: wizardData.insuranceType === 'pure' ? '순수보장형' : '만기지급형' };
+    case 7: return { q: '보험 기간', a: wizardData.coveragePeriod + '세 만기' };
+    case 8: return { q: '납입 기간', a: wizardData.paymentPeriod + '년납' };
+    case 9: return { q: '생년월일', a: `${wizardData.birthYear}.${wizardData.birthMonth}.${wizardData.birthDay}` };
+    default: return { q: '', a: '' };
+  }
 }
 
-function updateNextBtn() {
-  const btn = document.getElementById('next-btn');
-  const ok = canProceed();
-  btn.className = 'next-btn ' + (ok ? 'active' : 'disabled');
-  btn.textContent = currentStep === TOTAL_STEPS ? '설계 결과 보기 →' : '다음 →';
+function chipHTML(step) {
+  const { q, a } = getChipSummary(step);
+  return `
+    <div class="tl-section" id="tl-step-${step}" data-step="${step}">
+      <button class="step-chip" onclick="reopenStep(${step})">
+        <div class="step-chip-check">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+          </svg>
+        </div>
+        <div class="step-chip-body">
+          <div class="step-chip-q">${q}</div>
+          <div class="step-chip-a">${a}</div>
+        </div>
+        <span class="step-chip-edit">수정</span>
+      </button>
+    </div>`;
+}
+
+function liveHTML(step) {
+  return `
+    <div class="tl-section" id="tl-step-${step}" data-step="${step}">
+      <div class="step-live" id="live-card-${step}">
+        ${getStepHTML(step)}
+      </div>
+    </div>`;
+}
+
+// 현재 활성 단계 (펼쳐진 카드)
+let activeStep = null;
+
+// ── 인트로(발화 메시지) 화면 ──
+function showIntro() {
+  activeStep = null;
+  const tl = document.getElementById('timeline');
+  document.getElementById('progress-wrap').style.display = 'none';
+  tl.innerHTML = `
+    <div class="tl-section">
+      <div class="step-live">
+        <div class="intro-card">
+          <div class="intro-emoji">😊</div>
+          <p class="intro-greeting">
+            안녕하세요! 😊<br>
+            처음 낸 보험료 그대로, 만기까지 절대 오르지 않는<br>
+            비갱신 암보험 설계에 오신 것을 환영합니다.
+          </p>
+          <p class="intro-sub">
+            고객님에게 딱 맞는 가장 실속 있는 매월 보험료를 바로 계산해 드릴게요.<br>
+            딱 1분이면 끝나요! 우선 몇 가지 정보만 먼저 확인해 볼까요?
+          </p>
+          <button class="intro-start-btn" onclick="beginSteps()">좋아요, 시작할래요!</button>
+        </div>
+      </div>
+    </div>`;
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+// ── 실제 위저드 1단계 시작 ──
+function beginSteps() {
+  activeStep = 1;
+  const tl = document.getElementById('timeline');
+  tl.innerHTML = liveHTML(1);
+  document.getElementById('progress-wrap').style.display = '';
+  updateProgress();
+  scrollToStep(1);
+}
+
+function updateProgress() {
+  const idx = getDisplayIndex(activeStep);
+  const total = getDisplaySteps();
+  document.getElementById('step-label').textContent =
+    String(idx).padStart(2,'0') + ' / ' + String(total).padStart(2,'0');
+  const pct = ((idx - 1) / (total - 1)) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('step-hint').textContent =
+    activeStep === TOTAL_STEPS ? '마지막 단계입니다' : '진행 중';
+}
+
+function scrollToStep(step) {
+  setTimeout(() => {
+    const el = document.getElementById('tl-step-' + step);
+    if (!el) return;
+    const nav = document.querySelector('.top-nav');
+    const progressWrap = document.getElementById('progress-wrap');
+    const stickyHeight = (nav ? nav.offsetHeight : 0) + (progressWrap && progressWrap.style.display !== 'none' ? progressWrap.offsetHeight : 0);
+    const targetY = el.getBoundingClientRect().top + window.pageYOffset - stickyHeight - 12;
+    window.scrollTo({ top: targetY, behavior: 'smooth' });
+  }, 80);
+}
+
+// 선택 즉시 다음 단계로 진행 (라디오형 choice-btn에서 호출)
+function advanceFromStep(step) {
+  if (!canProceedFor(step)) return;
+
+  const tl = document.getElementById('timeline');
+  // 현재 단계를 칩으로 교체
+  const sec = document.getElementById('tl-step-' + step);
+  sec.outerHTML = chipHTML(step);
+
+  const next = getNextStep(step);
+  if (next === null) {
+    showResult();
+    return;
+  }
+  activeStep = next;
+  tl.insertAdjacentHTML('beforeend', liveHTML(next));
+  updateProgress();
+  scrollToStep(next);
+}
+
+// 칩(완료된 단계) 클릭 시 다시 펼쳐서 수정 가능하게 — 이후 단계는 모두 제거
+function reopenStep(step) {
+  activeStep = step;
+  const tl = document.getElementById('timeline');
+  // step 이후의 모든 tl-section 제거
+  const sections = Array.from(tl.querySelectorAll('.tl-section'));
+  let removing = false;
+  sections.forEach(sec => {
+    const s = parseInt(sec.dataset.step);
+    if (s === step) removing = true;
+    if (removing) sec.remove();
+  });
+  tl.insertAdjacentHTML('beforeend', liveHTML(step));
+  updateProgress();
+  scrollToStep(step);
+}
+
+// 단계 내부 "확인" 버튼이 필요한 경우 (슬라이더/입력형) 호출
+function confirmStep(step) {
+  advanceFromStep(step);
+}
+
+function updateConfirmBtn(step) {
+  const btn = document.getElementById('confirm-btn-' + step);
+  if (!btn) return;
+  const ok = canProceedFor(step);
+  btn.className = 'step-confirm-btn ' + (ok ? 'active' : 'disabled');
+  btn.textContent = step === TOTAL_STEPS ? '설계 결과 보기 →' : '다음 →';
 }
 
 // ══════════════════════════════════════════════════
@@ -771,10 +903,10 @@ function getStepHTML(step) {
   }
 }
 
-function choiceBtn(value, field, icon, label, sub) {
+function choiceBtn(value, field, icon, label, sub, step) {
   const sel = wizardData[field] === value ? ' selected' : '';
   return `
-    <button class="choice-btn${sel}" onclick="selectChoice('${field}','${value}')">
+    <button class="choice-btn${sel}" onclick="selectChoice('${field}','${value}',${step})">
       <span class="choice-icon">${icon}</span>
       <div class="choice-text">
         <div class="choice-main">${label}</div>
@@ -794,8 +926,8 @@ function stepGender() {
     <h1 class="q-title">성별을 선택해 주세요</h1>
     <p class="q-sub">암 발병률과 보험료 산출에 사용됩니다</p>
     <div class="choice-list">
-      ${choiceBtn('male','gender','♂️','남성','남성 암 발병 주요 부위: 위암, 폐암, 대장암')}
-      ${choiceBtn('female','gender','♀️','여성','여성 암 발병 주요 부위: 유방암, 갑상선암, 대장암')}
+      ${choiceBtn('male','gender','♂️','남성','남성 암 발병 주요 부위: 위암, 폐암, 대장암',1)}
+      ${choiceBtn('female','gender','♀️','여성','여성 암 발병 주요 부위: 유방암, 갑상선암, 대장암',1)}
     </div>
     <div class="insight-card">
       <div class="insight-icon">
@@ -813,8 +945,8 @@ function stepSmoking() {
     <h1 class="q-title">흡연 여부를 알려주세요</h1>
     <p class="q-sub">최근 1년 이내 흡연 경험을 기준으로 합니다</p>
     <div class="choice-list">
-      ${choiceBtn('non-smoker','smokingStatus','🌿','비흡연자','비흡연 할인 적용 — 최대 30% 보험료 절감')}
-      ${choiceBtn('smoker','smokingStatus','🚬','흡연자','표준 요율 적용')}
+      ${choiceBtn('non-smoker','smokingStatus','🌿','비흡연자','비흡연 할인 적용 — 최대 30% 보험료 절감',2)}
+      ${choiceBtn('smoker','smokingStatus','🚬','흡연자','표준 요율 적용',2)}
     </div>
     <div class="insight-card">
       <div class="insight-icon">
@@ -832,9 +964,9 @@ function stepNonSmokerGrade() {
     <h1 class="q-title">비흡연 등급을 선택해 주세요</h1>
     <p class="q-sub">건강 상태에 따라 추가 할인이 적용됩니다</p>
     <div class="choice-list">
-      ${choiceBtn('standard','nonSmokerGrade','✅','비흡연체','기본 비흡연 할인 적용')}
-      ${choiceBtn('healthy','nonSmokerGrade','💪','건강체','비흡연 + 혈압·혈당 정상 — 추가 8% 할인')}
-      ${choiceBtn('super-healthy','nonSmokerGrade','⭐','슈퍼건강체','비흡연 + 모든 건강지표 우수 — 추가 15% 할인')}
+      ${choiceBtn('standard','nonSmokerGrade','✅','비흡연체','기본 비흡연 할인 적용',3)}
+      ${choiceBtn('healthy','nonSmokerGrade','💪','건강체','비흡연 + 혈압·혈당 정상 — 추가 8% 할인',3)}
+      ${choiceBtn('super-healthy','nonSmokerGrade','⭐','슈퍼건강체','비흡연 + 모든 건강지표 우수 — 추가 15% 할인',3)}
     </div>
     <div class="insight-card">
       <div class="insight-icon">
@@ -874,7 +1006,9 @@ function stepDiagnosisAmount() {
       <div class="info-card-body">암 치료 평균 비용은 <strong>3,000~5,000만원</strong> 수준입니다. 소득 대체 및 생활비를 고려하면 <strong>5,000만원 이상</strong>을 권장합니다.</div>
     </div>
 
-    ${renderSubqPanel(4)}`;
+    ${renderSubqPanel(4)}
+
+    <button class="step-confirm-btn active" id="confirm-btn-4" onclick="confirmStep(4)">다음 →</button>`;
 }
 
 function stepRefund() {
@@ -884,8 +1018,8 @@ function stepRefund() {
     <p class="q-sub">암 진단 확정 시 보험료 전액을 돌려받는 옵션입니다</p>
 
     <div class="choice-list">
-      ${choiceBtn('yes','refundOption','💵','환급 특약 선택','암 진단 확정 시 기납입 보험료 + 잔여 납입 보험료 전액 페이백 — 보험료 약 18% 추가')}
-      ${choiceBtn('no','refundOption','🛡️','환급 특약 없음','보장에만 집중 — 보험료 최소화')}
+      ${choiceBtn('yes','refundOption','💵','환급 특약 선택','암 진단 확정 시 기납입 보험료 + 잔여 납입 보험료 전액 페이백 — 보험료 약 18% 추가',5)}
+      ${choiceBtn('no','refundOption','🛡️','환급 특약 없음','보장에만 집중 — 보험료 최소화',5)}
     </div>
     <div class="info-card green">
       <div class="info-card-title">💡 환급 특약 작동 구조</div>
@@ -914,8 +1048,8 @@ function stepInsuranceType() {
     <p class="q-sub">보장 방식과 만기 지급 여부를 결정합니다</p>
 
     <div class="choice-list">
-      ${choiceBtn('pure','insuranceType','🎯','순수보장형','보장에만 집중 — 가장 낮은 보험료, 만기 환급 없음')}
-      ${choiceBtn('maturity','insuranceType','🏦','만기지급형','만기 시 일정 금액 지급 — 보험료 약 35% 추가')}
+      ${choiceBtn('pure','insuranceType','🎯','순수보장형','보장에만 집중 — 가장 낮은 보험료, 만기 환급 없음',6)}
+      ${choiceBtn('maturity','insuranceType','🏦','만기지급형','만기 시 일정 금액 지급 — 보험료 약 35% 추가',6)}
     </div>
     <div class="insight-card">
       <div class="insight-icon">
@@ -940,7 +1074,7 @@ function stepCoveragePeriod() {
     <h1 class="q-title">보험 기간을 선택해 주세요</h1>
     <p class="q-sub">언제까지 보장을 받을지 결정합니다</p>
     <div class="choice-list">
-      ${opts.map(o=>choiceBtn(o.v,'coveragePeriod','📆',''+o.l,o.s)).join('')}
+      ${opts.map(o=>choiceBtn(o.v,'coveragePeriod','📆',''+o.l,o.s,7)).join('')}
     </div>
     <div class="insight-card">
       <div class="insight-icon">
@@ -965,7 +1099,7 @@ function stepPaymentPeriod() {
     <p class="q-sub">보험료를 얼마나 오래 납입할지 결정합니다</p>
 
     <div class="choice-list">
-      ${opts.map(o=>choiceBtn(o.v,'paymentPeriod','💳',''+o.l,o.s)).join('')}
+      ${opts.map(o=>choiceBtn(o.v,'paymentPeriod','💳',''+o.l,o.s,8)).join('')}
     </div>
     <div class="insight-card">
       <div class="insight-icon">
@@ -990,19 +1124,19 @@ function stepBirthDate() {
         <label class="birth-label">출생연도</label>
         <input class="birth-input" type="number" placeholder="1990" min="1940" max="2010"
           value="${wizardData.birthYear}" id="birth-year"
-          oninput="wizardData.birthYear=this.value;checkAgeBadge();updateNextBtn()">
+          oninput="wizardData.birthYear=this.value;checkAgeBadge();updateConfirmBtn(9)">
       </div>
       <div>
         <label class="birth-label">월</label>
         <input class="birth-input" type="number" placeholder="1" min="1" max="12"
           value="${wizardData.birthMonth}" id="birth-month"
-          oninput="wizardData.birthMonth=this.value;updateNextBtn()">
+          oninput="wizardData.birthMonth=this.value;updateConfirmBtn(9)">
       </div>
       <div>
         <label class="birth-label">일</label>
         <input class="birth-input" type="number" placeholder="1" min="1" max="31"
           value="${wizardData.birthDay}" id="birth-day"
-          oninput="wizardData.birthDay=this.value;updateNextBtn()">
+          oninput="wizardData.birthDay=this.value;updateConfirmBtn(9)">
       </div>
     </div>
     <div class="age-badge${wizardData.birthYear.length===4?' visible':''}" id="age-badge">
@@ -1017,20 +1151,26 @@ function stepBirthDate() {
       <p class="insight-text">나이는 암보험료에 가장 큰 영향을 미치는 요소입니다. 지금까지 입력하신 모든 조건을 반영하여 예상 보험료를 즉시 산출해 드립니다.</p>
     </div>
 
-    ${renderSubqPanel(9)}`;
+    ${renderSubqPanel(9)}
+
+    <button class="step-confirm-btn disabled" id="confirm-btn-9" onclick="confirmStep(9)">설계 결과 보기 →</button>`;
 }
 
 // ══════════════════════════════════════════════════
 //  EVENT HANDLERS
 // ══════════════════════════════════════════════════
-function selectChoice(field, value) {
+function selectChoice(field, value, step) {
   if (field === 'coveragePeriod' || field === 'paymentPeriod') {
     wizardData[field] = parseInt(value);
   } else {
     wizardData[field] = value;
   }
   if (field === 'smokingStatus') wizardData.nonSmokerGrade = null;
-  renderStep();
+
+  // 라디오형 선택은 잠시 선택 표시 후 바로 다음 단계로 진행
+  const card = document.getElementById('live-card-' + step);
+  if (card) card.innerHTML = getStepHTML(step);
+  setTimeout(() => advanceFromStep(step), 260);
 }
 
 function updateSlider(field, val, min, max, displayId, fillId, thumbId, fmt2) {
@@ -1042,7 +1182,7 @@ function updateSlider(field, val, min, max, displayId, fillId, thumbId, fmt2) {
   document.querySelectorAll('.quick-btn').forEach(btn => {
     btn.classList.toggle('active', parseInt(btn.dataset.val || btn.textContent) === parseInt(val));
   });
-  updateNextBtn();
+  updateConfirmBtn(4);
 }
 
 function setDiag(amt) {
@@ -1060,7 +1200,7 @@ function setDiag(amt) {
     const btnAmt = [1000,3000,5000,7000,10000].find(a => btn.textContent === (a>=10000?'1억':a/1000+'천'));
     btn.classList.toggle('active', btnAmt === amt);
   });
-  updateNextBtn();
+  updateConfirmBtn(4);
 }
 
 function checkAgeBadge() {
@@ -1195,8 +1335,6 @@ function showResult() {
 }
 
 function resetWizard() {
-  currentStep = 1;
-  direction = 1;
   wizardData.gender = null;
   wizardData.smokingStatus = null;
   wizardData.nonSmokerGrade = null;
@@ -1212,22 +1350,13 @@ function resetWizard() {
   document.getElementById('result-screen').classList.remove('visible');
   document.getElementById('wizard-screen').style.display = '';
   window.scrollTo(0, 0);
-  renderStep();
+  showIntro();
 }
-
-// ══════════════════════════════════════════════════
-//  KEYBOARD SUPPORT
-// ══════════════════════════════════════════════════
-document.addEventListener('keydown', function(e) {
-  if (document.getElementById('result-screen').classList.contains('visible')) return;
-  if (e.key === 'Enter' && canProceed()) handleNext();
-  if (e.key === 'ArrowLeft' && currentStep > 1) handlePrev();
-});
 
 // ══════════════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════════════
-renderStep();
+showIntro();
 </script>
 </body>
 </html>
