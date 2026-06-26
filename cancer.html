@@ -125,47 +125,65 @@ input { font-family: inherit; }
   flex: 1; max-width: 640px; margin: 0 auto; padding: 1.25rem 1rem 4rem;
   width: 100%;
 }
-.tl-section { margin-bottom: 1rem; }
+.tl-section { margin-bottom: 1.5rem; }
 
-/* 완료된 단계 → 요약 칩 */
-.step-chip {
-  display: flex; align-items: center; gap: 12px;
-  width: 100%; padding: 0.85rem 1.1rem;
-  background: var(--white); border: 1.5px solid var(--gray-100);
-  border-radius: 0.9rem; text-align: left;
-  transition: border-color 0.15s, background 0.15s;
-  animation: chipIn 0.3s var(--ease-out) both;
+/* ══════════════════════════════════════
+   ★ CHAT BUBBLES — 대화형 UI의 기본 단위
+   ══════════════════════════════════════ */
+.bot-row {
+  display: flex; align-items: flex-start; gap: 10px;
+  margin-bottom: 0.8rem;
 }
-.step-chip:hover { border-color: var(--green); background: var(--green-light); }
-@keyframes chipIn {
-  from { opacity: 0; transform: translateY(-8px); }
+.bot-row.followup { margin-top: 0.7rem; margin-bottom: 0; }
+@keyframes bubbleIn {
+  from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.step-chip-check {
-  width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
-  background: var(--green); color: #fff;
+.bot-avatar {
+  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; margin-top: 1px;
+  background: var(--navy); font-size: 15px;
   display: flex; align-items: center; justify-content: center;
 }
-.step-chip-body { flex: 1; min-width: 0; }
-.step-chip-q { font-size: 0.72rem; color: var(--gray-400); margin-bottom: 1px; }
-.step-chip-a { font-size: 0.9rem; font-weight: 700; color: var(--gray-800); }
-.step-chip-a span.muted { font-weight: 400; color: var(--gray-500); }
-.step-chip-edit { font-size: 0.75rem; color: var(--green-dark); font-weight: 600; flex-shrink: 0; }
+.bot-avatar.spacer { background: transparent; }
+.bot-bubble {
+  background: var(--gray-50);
+  border-radius: 0.3rem 1.1rem 1.1rem 1.1rem;
+  padding: 0.95rem 1.15rem; max-width: 88%;
+}
 
-/* 활성 단계 → 펼쳐진 카드 */
+/* 답변 영역 — 말풍선 아래, 아바타 폭만큼 들여쓰기 */
+.reply-zone { margin: 0 0 0.2rem 42px; }
+.reply-zone + .bot-row { margin-top: 0.7rem; }
+
+/* 완료된 단계 → 대화 기록(봇 요약 말풍선 + 내 답변 말풍선) */
+.exchange-btn { display: block; width: 100%; text-align: left; animation: bubbleIn 0.3s var(--ease-out) both; }
+.bot-bubble.recap {
+  background: var(--gray-100); padding: 0.5rem 0.9rem;
+  font-size: 0.78rem; color: var(--gray-500); font-weight: 600;
+}
+.bot-avatar.recap { width: 26px; height: 26px; font-size: 12px; opacity: 0.65; }
+.user-row { display: flex; justify-content: flex-end; margin: 0.45rem 0 0.3rem; }
+.user-bubble {
+  background: var(--green); color: #fff; font-weight: 700; font-size: 0.92rem;
+  padding: 0.65rem 1.05rem; max-width: 80%;
+  border-radius: 1.1rem 0.3rem 1.1rem 1.1rem;
+  transition: box-shadow 0.15s;
+}
+.edit-hint { text-align: right; font-size: 0.7rem; color: var(--gray-400); padding-right: 4px; transition: color 0.15s; }
+.exchange-btn:hover .user-bubble { box-shadow: 0 3px 14px rgba(14,169,104,0.3); }
+.exchange-btn:hover .edit-hint { color: var(--green-dark); }
+
+/* 진행 중인 질문 컨테이너 — 시각적 박스 없음(말풍선이 곧 컨테이너). 최초 마운트 시 1회만 페이드인(재렌더링 시 재생되지 않음) */
 .step-live {
-  background: var(--white); border-radius: 1.1rem;
-  border: 1.5px solid var(--green); padding: 1.5rem 1.25rem 1.25rem;
-  box-shadow: 0 4px 20px rgba(14,169,104,0.1);
-  animation: liveIn 0.35s var(--ease-out) both;
+  background: transparent; border: none; padding: 0; box-shadow: none;
+  animation: bubbleIn 0.35s var(--ease-out) both;
 }
-@keyframes liveIn {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+
+.confirm-row { display: flex; justify-content: flex-end; margin: 1rem 0 0; }
 .step-confirm-btn {
-  width: 100%; padding: 0.95rem; margin-top: 1.1rem;
-  border-radius: 0.875rem; font-size: 0.95rem; font-weight: 700;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 0.75rem 1.6rem; margin: 0;
+  border-radius: 99px; font-size: 0.88rem; font-weight: 700;
   transition: all 0.18s var(--ease-out);
 }
 .step-confirm-btn.active { background: var(--green); color: var(--white); box-shadow: var(--shadow-green); }
@@ -173,45 +191,43 @@ input { font-family: inherit; }
 .step-confirm-btn.active:active { transform: scale(0.98); }
 .step-confirm-btn.disabled { background: var(--gray-200); color: var(--gray-400); cursor: not-allowed; }
 
-/* 시작 카드(인트로 — 발화 메시지) */
-.intro-card {
-  text-align: center; padding: 2.2rem 1.25rem 1.5rem;
-}
-.intro-emoji { font-size: 2.6rem; margin-bottom: 1rem; }
-.intro-greeting {
-  font-size: 1.05rem; font-weight: 700; color: var(--gray-900);
-  line-height: 1.65; margin-bottom: 1rem;
-}
-.intro-sub { font-size: 0.88rem; color: var(--gray-500); margin-bottom: 1.6rem; line-height: 1.65; }
+/* 인트로(첫 발화) */
 .intro-start-btn {
-  width: 100%; padding: 1.05rem 2rem; border-radius: 0.9rem;
+  display: inline-flex; align-items: center; padding: 0.85rem 1.8rem; border-radius: 99px;
   background: var(--green); color: var(--white);
-  font-size: 1.05rem; font-weight: 700; box-shadow: var(--shadow-green);
+  font-size: 0.95rem; font-weight: 700; box-shadow: var(--shadow-green);
   transition: all 0.18s var(--ease-out);
 }
 .intro-start-btn:hover { background: var(--green-dark); }
 .intro-start-btn:active { transform: scale(0.98); }
 
-/* ── Question Header ── */
-.q-emoji { font-size: 2.2rem; margin-bottom: 0.75rem; }
+/* ── Question Text (말풍선 내부) ── */
 .q-title {
-  font-size: 1.5rem; font-weight: 900; color: var(--gray-900);
-  line-height: 1.35; margin-bottom: 0.4rem; letter-spacing: -0.3px;
+  font-size: 1.18rem; font-weight: 800; color: var(--gray-900);
+  line-height: 1.4; letter-spacing: -0.2px;
 }
-.q-sub { font-size: 0.875rem; color: var(--gray-500); margin-bottom: 1.5rem; }
+.q-sub { font-size: 0.84rem; color: var(--gray-500); margin-top: 0.35rem; line-height: 1.5; }
 
 /* ══════════════════════════════════════
    ★ SUB-PROCESS: 질문 풀이 카드 (URL 서브 콘텐츠, 항상 펼침)
    ══════════════════════════════════════ */
 .subq-card {
-  background: var(--white); border: 1px solid var(--gray-100);
-  border-radius: 0.9rem; padding: 1.25rem;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-  margin-top: 1.5rem;
+  background: var(--white);
+  border-radius: 0.3rem 1.1rem 1.1rem 1.1rem; padding: 1.2rem;
+  box-shadow: 0 2px 10px rgba(15,36,56,0.06);
+  max-width: 92%;
 }
 .subq-header {
-  display: flex; align-items: center; gap: 10px; margin-bottom: 1rem;
+  width: 100%; display: flex; align-items: center; gap: 10px;
+  text-align: left; cursor: pointer;
 }
+.subq-chevron { flex-shrink: 0; margin-left: auto; color: var(--gray-400); transition: transform 0.25s var(--ease-out); }
+.subq-body {
+  display: grid; grid-template-rows: 0fr; overflow: hidden;
+  transition: grid-template-rows 0.3s var(--ease-out);
+}
+.subq-body.open { grid-template-rows: 1fr; }
+.subq-body-inner { overflow: hidden; padding-top: 1rem; min-height: 0; }
 .subq-badge {
   font-size: 0.7rem; font-weight: 700; color: var(--white);
   background: var(--navy); border-radius: 6px; padding: 3px 9px;
@@ -239,7 +255,7 @@ input { font-family: inherit; }
 }
 .subq-compare-card {
   background: var(--gray-50); border-radius: 0.6rem; padding: 0.8rem;
-  text-align: center; border: 1px solid var(--gray-100);
+  text-align: center;
 }
 .subq-compare-emoji { font-size: 1.6rem; margin-bottom: 4px; }
 .subq-compare-label { font-size: 0.75rem; font-weight: 700; color: var(--gray-700); }
@@ -264,7 +280,7 @@ input { font-family: inherit; }
   color: var(--green-dark); padding: 2px 8px; border-radius: 99px; flex-shrink: 0;
 }
 .subq-warn {
-  display: flex; gap: 8px; background: var(--red-50); border: 1px solid var(--red-200);
+  display: flex; gap: 8px; background: var(--red-50);
   border-radius: 0.6rem; padding: 0.7rem 0.9rem; margin-top: 0.9rem;
 }
 .subq-warn-icon { flex-shrink: 0; }
@@ -272,17 +288,18 @@ input { font-family: inherit; }
 .subq-warn-text strong { font-weight: 700; }
 
 /* ── Choice Buttons ── */
-.choice-list { display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 1.25rem; }
+.choice-list { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 0.2rem; }
 .choice-btn {
-  width: 100%; text-align: left; padding: 1.1rem 1.4rem;
-  border-radius: 0.9rem; border: 2px solid var(--gray-200);
-  background: var(--white); transition: all 0.18s var(--ease-out);
+  width: 100%; text-align: left; padding: 1.05rem 1.3rem;
+  border-radius: 1rem; border: none;
+  background: var(--white); box-shadow: 0 1px 3px rgba(15,36,56,0.08);
+  transition: all 0.18s var(--ease-out);
   display: flex; align-items: center; gap: 1rem;
 }
-.choice-btn:hover { border-color: rgba(14,169,104,0.4); background: var(--green-light); }
+.choice-btn:hover { background: var(--green-light); box-shadow: 0 3px 10px rgba(14,169,104,0.2); }
 .choice-btn.selected {
-  border-color: var(--green); background: var(--green-light);
-  box-shadow: 0 2px 12px rgba(14,169,104,0.14);
+  background: var(--green-light);
+  box-shadow: 0 3px 14px rgba(14,169,104,0.28);
   transform: scale(1.01);
 }
 .choice-icon { font-size: 1.4rem; flex-shrink: 0; }
@@ -304,64 +321,58 @@ input { font-family: inherit; }
 }
 .choice-radio svg { display: none; }
 .choice-btn.selected .choice-radio svg { display: block; }
+.choice-flag {
+  display: inline-block; margin-left: 6px; padding: 2px 7px;
+  font-size: 0.65rem; font-weight: 800; color: var(--white);
+  background: var(--green); border-radius: 99px; vertical-align: middle;
+}
 
-/* ── Slider ── */
-.slider-display { text-align: center; margin-bottom: 1rem; }
-.slider-value { font-size: 2.6rem; font-weight: 900; color: var(--green-dark); letter-spacing: -1px; }
-.slider-unit { font-size: 1.05rem; color: var(--gray-500); margin-left: 4px; }
-.slider-wrap { position: relative; padding: 0.5rem 0 2rem; margin-bottom: 0.5rem; }
-.slider-track { height: 8px; background: var(--gray-200); border-radius: 99px; position: relative; }
-.slider-fill { position: absolute; height: 8px; background: var(--green); border-radius: 99px; top: 0; left: 0; }
-.slider-thumb {
-  position: absolute; top: -6px;
-  width: 20px; height: 20px; border-radius: 50%;
-  background: var(--white); border: 2px solid var(--green);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  transform: translateX(-50%); pointer-events: none;
+/* ── Cost Grid (월 생활비 / 암종류 선택) ── */
+.cost-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.55rem; margin-bottom: 0.2rem; }
+.cost-btn {
+  padding: 0.9rem 0.5rem; border-radius: 0.85rem; border: none;
+  background: var(--white); box-shadow: 0 1px 3px rgba(15,36,56,0.08);
+  font-size: 0.92rem; font-weight: 700; color: var(--gray-700);
+  transition: all 0.15s;
 }
-input[type=range] { position: absolute; inset: 0; width: 100%; opacity: 0; cursor: pointer; height: 24px; }
-.slider-labels { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--gray-400); margin-top: 0.5rem; }
-.quick-btns { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; margin-bottom: 1.25rem; }
-.quick-btn {
-  padding: 0.5rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 700;
-  background: var(--gray-100); color: var(--gray-600); transition: all 0.15s;
+.cost-btn:hover { background: var(--green-light); box-shadow: 0 3px 10px rgba(14,169,104,0.2); }
+.cost-btn.selected {
+  background: var(--green-light); color: var(--green-dark);
+  box-shadow: 0 3px 14px rgba(14,169,104,0.25);
 }
-.quick-btn:hover { background: var(--gray-200); }
-.quick-btn.active { background: var(--green); color: var(--white); }
+.cost-btn.full { grid-column: 1 / -1; }
 
 /* ── Birth Date ── */
-.birth-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem; }
 .birth-label { font-size: 0.75rem; color: var(--gray-500); margin-bottom: 6px; display: block; }
 .birth-input {
-  width: 100%; padding: 0.875rem 1rem;
-  border-radius: 0.75rem; border: 2px solid var(--gray-200);
+  width: 100%; padding: 0.875rem 0.5rem;
+  border-radius: 0.5rem 0.5rem 0 0; border: none; border-bottom: 2px solid var(--gray-200);
   font-size: 1.1rem; font-weight: 700; text-align: center;
-  outline: none; transition: border-color 0.15s;
-  background: var(--white);
+  outline: none; transition: border-color 0.15s, background 0.15s;
+  background: var(--gray-50);
 }
-.birth-input:focus { border-color: var(--green); }
+.birth-input:focus { border-color: var(--green); background: var(--green-light); }
 .age-badge {
-  background: var(--green-light); border: 1px solid rgba(14,169,104,0.25);
-  border-radius: 0.75rem; padding: 0.75rem 1.25rem;
-  font-size: 0.875rem; color: var(--green-dark); margin-bottom: 1rem;
+  background: var(--green-light); border-radius: 0.6rem; padding: 0.75rem 1.1rem;
+  font-size: 0.875rem; color: var(--green-dark); margin-top: 0.85rem;
   display: none;
 }
 .age-badge.visible { display: block; animation: fadeIn 0.3s ease; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-/* ── Info Cards ── */
+/* ── Info Cards (followup 말풍선으로 사용) ── */
 .insight-card {
-  display: flex; gap: 0.75rem;
-  background: var(--gray-50); border: 1px solid var(--gray-100);
-  border-radius: 0.75rem; padding: 1rem 1.25rem; margin-top: 1rem;
+  display: flex; gap: 0.7rem;
+  background: var(--gray-50); border-radius: 0.3rem 1.1rem 1.1rem 1.1rem;
+  padding: 0.9rem 1.1rem; max-width: 88%;
 }
 .insight-icon { color: var(--green-dark); flex-shrink: 0; margin-top: 2px; }
 .insight-text { font-size: 0.8rem; color: var(--gray-600); line-height: 1.6; }
 
-.info-card { border-radius: 0.75rem; padding: 1rem 1.25rem; margin-top: 1rem; }
-.info-card.green { background: var(--green-light); border: 1px solid rgba(14,169,104,0.25); }
-.info-card.blue  { background: var(--blue-50);  border: 1px solid var(--blue-200); }
-.info-card.amber { background: var(--amber-50); border: 1px solid var(--amber-200); }
+.info-card { border-radius: 0.3rem 1.1rem 1.1rem 1.1rem; padding: 0.95rem 1.15rem; max-width: 88%; }
+.info-card.green { background: var(--green-light); }
+.info-card.blue  { background: var(--blue-50); }
+.info-card.amber { background: var(--amber-50); }
 .info-card-title { font-size: 0.75rem; font-weight: 700; margin-bottom: 0.5rem; }
 .info-card.green .info-card-title { color: var(--green-dark); }
 .info-card.blue  .info-card-title { color: var(--blue-700); }
@@ -384,33 +395,7 @@ input[type=range] { position: absolute; inset: 0; width: 100%; opacity: 0; curso
 /* ── Result Screen ── */
 #result-screen { display: none; animation: fadeIn 0.4s var(--ease-out); }
 #result-screen.visible { display: block; }
-.result-wrap { max-width: 640px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
-.result-header { text-align: center; padding: 1.5rem 0 1.25rem; }
-.result-check {
-  width: 64px; height: 64px; border-radius: 50%;
-  background: var(--green); margin: 0 auto 1rem;
-  display: flex; align-items: center; justify-content: center;
-  animation: popIn 0.5s var(--ease-out);
-}
-@keyframes popIn { from { opacity: 0; transform: scale(0.5); } to { opacity: 1; transform: scale(1); } }
-.result-title { font-size: 1.4rem; font-weight: 900; color: var(--gray-900); margin-bottom: 0.4rem; }
-.result-sub { font-size: 0.875rem; color: var(--gray-500); }
-
-.premium-card {
-  background: linear-gradient(135deg, var(--navy), var(--navy-deep));
-  border-radius: 1.25rem; padding: 2rem;
-  text-align: center; color: var(--white);
-  box-shadow: var(--shadow-navy); margin-bottom: 1.25rem;
-}
-.premium-label { font-size: 0.875rem; opacity: 0.75; margin-bottom: 0.5rem; }
-.premium-amount { font-size: 2.8rem; font-weight: 900; line-height: 1; color: var(--green-mid); }
-.premium-unit { font-size: 1.2rem; opacity: 0.85; margin-left: 4px; }
-.premium-detail { font-size: 0.8rem; opacity: 0.65; margin-top: 0.75rem; }
-.premium-notice {
-  font-size: 0.7rem; opacity: 0.6;
-  background: rgba(255,255,255,0.1); border-radius: 0.5rem;
-  padding: 0.5rem 0.75rem; margin-top: 1rem;
-}
+.result-wrap { max-width: 640px; margin: 0 auto; padding: 1.5rem 1rem 7rem; }
 
 /* ── 설계 근거 카드 (URL 결과 화면 스타일) ── */
 .reason-card {
@@ -423,7 +408,7 @@ input[type=range] { position: absolute; inset: 0; width: 100%; opacity: 0; curso
 .reason-title strong { color: var(--green-dark); }
 .reason-body { font-size: 0.82rem; color: var(--gray-600); line-height: 1.6; }
 
-.summary-card, .coverage-card, .insight-dark {
+.summary-card {
   background: var(--white); border-radius: 1.1rem;
   border: 1px solid var(--gray-100); box-shadow: 0 1px 4px rgba(0,0,0,0.04);
   overflow: hidden; margin-bottom: 1.1rem;
@@ -433,23 +418,7 @@ input[type=range] { position: absolute; inset: 0; width: 100%; opacity: 0; curso
 .summary-row:last-child { border-bottom: none; }
 .summary-key { font-size: 0.85rem; color: var(--gray-500); }
 .summary-val { font-size: 0.85rem; font-weight: 700; color: var(--gray-800); }
-.coverage-list { padding: 1.2rem 1.4rem; display: flex; flex-direction: column; gap: 0.85rem; }
-.coverage-item { display: flex; align-items: center; justify-content: space-between; }
-.coverage-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-right: 8px; }
-.coverage-label { font-size: 0.85rem; color: var(--gray-600); display: flex; align-items: center; }
-.coverage-val { font-size: 0.85rem; font-weight: 700; }
-.coverage-val.highlight { color: var(--green-dark); }
 
-.insight-dark { background: var(--navy); border: none; }
-.insight-dark-inner { padding: 1.4rem; }
-.insight-dark-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.68rem; font-weight: 600; color: var(--green-mid);
-  text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 0.7rem;
-}
-.insight-dark-text { font-size: 0.85rem; color: rgba(255,255,255,0.82); line-height: 1.7; }
-
-.result-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; padding-bottom: 1rem; }
 .result-btn-outline {
   padding: 1rem; border-radius: 0.875rem;
   border: 2px solid var(--gray-200); color: var(--gray-700);
@@ -464,11 +433,85 @@ input[type=range] { position: absolute; inset: 0; width: 100%; opacity: 0; curso
 }
 .result-btn-green:hover { background: var(--green-dark); }
 
+/* ── Result Screen v2 (이미지 레퍼런스 기반) ── */
+.result-hero-title {
+  font-size: 1.35rem; font-weight: 900; color: var(--gray-900);
+  line-height: 1.4; padding: 0.4rem 0 1.4rem;
+}
+.info-q {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 15px; height: 15px; border-radius: 50%;
+  border: 1px solid var(--gray-300); color: var(--gray-400);
+  font-size: 0.62rem; font-weight: 700; margin-left: 5px;
+  cursor: help; flex-shrink: 0;
+}
+.edit-btn-wrap { text-align: center; padding: 1rem 0 0.2rem; }
+.edit-btn {
+  padding: 0.55rem 1.5rem; border-radius: 0.6rem;
+  border: 1px solid var(--gray-300); background: var(--white);
+  color: var(--gray-600); font-size: 0.8rem; font-weight: 700;
+  transition: all 0.15s;
+}
+.edit-btn:hover { background: var(--gray-50); border-color: var(--gray-400); }
+
+.discount-banner {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--green-light); border-radius: 0.9rem;
+  padding: 0.8rem 1.1rem; margin: 1.1rem 0 1.5rem;
+  font-size: 0.82rem; color: #0c4a30; font-weight: 700; line-height: 1.4;
+}
+.discount-banner-icon {
+  width: 30px; height: 30px; border-radius: 50%; background: var(--white);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; flex-shrink: 0;
+}
+
+.section-label { font-size: 0.85rem; font-weight: 700; color: var(--gray-500); margin: 0 0 0.6rem; }
+.scenario-card {
+  background: var(--white); border-radius: 1.1rem; border: 1px solid var(--gray-100);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04); padding: 1.25rem 1.4rem; margin-bottom: 1.6rem;
+}
+.scenario-total-label { font-size: 0.95rem; font-weight: 700; color: var(--gray-800); margin-bottom: 4px; }
+.scenario-total-amt { font-size: 1.5rem; font-weight: 900; color: var(--green-dark); margin-bottom: 1rem; }
+.scenario-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.4rem 0; font-size: 0.85rem; color: var(--gray-600);
+}
+.scenario-row .s-label { display: flex; align-items: center; gap: 7px; }
+.scenario-row .s-val { font-weight: 700; color: var(--gray-800); }
+.scenario-row .s-icon { width: 15px; height: 15px; flex-shrink: 0; color: var(--gray-400); }
+.scenario-row.primary .s-icon { color: var(--green); }
+
+.item-list {
+  background: var(--white); border-radius: 1.1rem; border: 1px solid var(--gray-100);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04); padding: 1.1rem 1.4rem; margin-bottom: 0.85rem;
+}
+.item-row { display: flex; align-items: center; justify-content: space-between; padding: 0.45rem 0; font-size: 0.85rem; }
+.item-row .dot { color: var(--gray-400); margin-right: 8px; }
+.item-key { color: var(--gray-600); display: flex; align-items: center; }
+.item-val { font-weight: 700; color: var(--gray-800); }
+.legal-note { font-size: 0.7rem; color: var(--gray-400); line-height: 1.65; margin: 0.6rem 0 1.5rem; }
+
+.bottom-bar {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 40;
+  background: var(--white); border-top: 1px solid var(--gray-100);
+  box-shadow: 0 -4px 16px rgba(0,0,0,0.06);
+  padding: 1rem 1.25rem;
+}
+.bottom-bar-inner { max-width: 640px; margin: 0 auto; }
+.bottom-bar-row {
+  display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.8rem;
+}
+.bottom-bar-label { font-size: 0.85rem; color: var(--gray-500); font-weight: 700; }
+.bottom-bar-amount { font-size: 1.35rem; font-weight: 900; color: var(--green-dark); }
+.bottom-bar-amount .unit-prefix { font-size: 0.85rem; font-weight: 700; margin-right: 3px; }
+.bottom-bar-btns { display: grid; grid-template-columns: 1fr 1.3fr; gap: 0.6rem; }
+.bottom-bar-btns .result-btn-outline, .bottom-bar-btns .result-btn-green { padding: 0.85rem; font-size: 0.85rem; }
+
 /* ── Responsive ── */
 @media (max-width: 480px) {
   .q-title { font-size: 1.3rem; }
   .slider-value { font-size: 2.2rem; }
-  .premium-amount { font-size: 2.3rem; }
   .subq-compare-grid { gap: 0.45rem; }
 }
 </style>
@@ -514,45 +557,59 @@ input[type=range] { position: absolute; inset: 0; width: 100%; opacity: 0; curso
 <div id="result-screen">
   <nav class="top-nav">
     <div class="top-nav-inner">
-      <button class="back-btn" onclick="resetWizard()">
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <button class="back-btn" onclick="editFromResult()" aria-label="뒤로">
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
         </svg>
-        다시 설계하기
       </button>
-      <span style="font-size:0.9rem;font-weight:700;color:#1f2937;">설계 결과</span>
-      <div style="width:80px"></div>
+      <button class="back-btn" onclick="resetWizard()">처음으로</button>
     </div>
   </nav>
   <div class="result-wrap" id="result-content"></div>
+  <div id="result-bottom-bar"></div>
 </div>
 <script>
 // ══════════════════════════════════════════════════
 //  STATE
 // ══════════════════════════════════════════════════
-const TOTAL_STEPS = 9;
+const TOTAL_STEPS = 10;
 
 const wizardData = {
   gender: null,         // 'male' | 'female'
   smokingStatus: null,  // 'smoker' | 'non-smoker'
   nonSmokerGrade: null, // 'standard' | 'healthy' | 'super-healthy'
-  diagnosisAmount: 5000,// 만원
+  monthlyLivingCost: null, // 만원 (100~1000, 1000=1,000만원 이상)
+  familyCancerTypes: [], // 가족력 있는 암 종류 다중선택 배열 ('없음' 포함 가능)
+  diagnosisAmount: 0,   // 만원 — 월 생활비 × 12 (+가족력 15%) 자동계산
   refundOption: null,   // 'yes' | 'no'
   insuranceType: null,  // 'pure' | 'maturity'
-  coveragePeriod: 100,  // 세
-  paymentPeriod: 20,    // 년
+  coveragePeriod: null, // 세
+  paymentPeriod: null,  // 년
   birthYear: '',
   birthMonth: '',
   birthDay: '',
 };
 
-// Step order: 1=성별 2=흡연 3=비흡연등급 4=진단보험금 5=환급특약 6=보험유형 7=보험기간 8=납입기간 9=생년월일
+const CANCER_TYPES = ['위암','간암','폐암','대장암','갑상선암','유방암','자궁(경부)암','전립선암','혈액암(백혈병)','기타'];
+
+// 완료된 단계를 다시 열 때 봇 아바타로 쓰는 이모지
+const STEP_EMOJI = { 1:'👤', 2:'🚭', 3:'💚', 4:'💰', 5:'👪', 6:'🔄', 7:'📋', 8:'📅', 9:'💳', 10:'🎂' };
+
+const BASE_RATES = {
+  'male-smoker': 18500, 'male-non-smoker': 13200,
+  'female-smoker': 14800, 'female-non-smoker': 10500,
+};
+
+// 보장금액 비율 — 진단보험금(diagnosisAmount) 대비 비율 (결과화면 "상황별/항목별 보장금액"에서 사용)
+const COVERAGE_RATIOS = { high: 2.0, general: 1.0, breastProstate: 0.5, minor: 0.1 };
+
+// Step order: 1=성별 2=흡연 3=비흡연등급 4=월생활비 5=가족력 6=환급특약 7=보험유형 8=보험기간 9=납입기간 10=생년월일
 
 // ══════════════════════════════════════════════════
 //  ★ SUB-PROCESS DATA — URL "질문 풀이" 화면을 단계별 서브 콘텐츠로 매핑
 // ══════════════════════════════════════════════════
 const SUBQ = {
-  4: { // 진단보험금 단계 → Q2 매핑
+  4: { // 월 생활비 단계 → Q2 매핑
     qnum: 'Q2',
     question: '암 진단금은 얼마가 적당한가요?',
     answerTitle: '월 생활비 × 12개월을 기준으로 잡으면 돼요',
@@ -560,7 +617,7 @@ const SUBQ = {
     detailTitle: '왜 생활비 기준일까요?',
     detailBody: '암 진단비는 <strong>병원비가 아니라 생활비</strong>입니다. 치료에 전념하는 동안 끊기는 소득을 대신하고, 대출금·생활비·교육비를 멈추지 않게 해주는 돈이에요. 치료비는 실손보험이 따로 막아줍니다.',
   },
-  5: { // 환급특약 단계 → Q5 매핑
+  6: { // 환급특약 단계 → Q5 매핑
     qnum: 'Q5',
     question: '진단금 받으면 보험 끝인가요?',
     answerTitle: '아니에요, 오히려 그때부터 시작이에요',
@@ -573,7 +630,7 @@ const SUBQ = {
       { tag: '계속 보장', text: '100세까지 보장 무료로 유지' },
     ],
   },
-  6: { // 보험유형 단계 → Q6 매핑
+  7: { // 보험유형 단계 → Q6 매핑
     qnum: 'Q6',
     question: '암 안 걸리면 낸 돈 날아가나요?',
     answerTitle: '건강하게 만기를 맞으면 보험료가 아까울 수 있죠',
@@ -584,7 +641,7 @@ const SUBQ = {
       { emoji: '🏦', label: '만기환급형', sub: '환급 있음 · 보험료 높음' },
     ],
   },
-  8: { // 납입기간 단계 → Q4 매핑
+  9: { // 납입기간 단계 → Q4 매핑
     qnum: 'Q4',
     question: '비갱신형이 갱신형보다 유리한가요?',
     answerTitle: '길게 유지하는 암보험은 비갱신형이 유리해요',
@@ -592,7 +649,7 @@ const SUBQ = {
     detailTitle: '보험이 가장 필요한 순간, 유지할 수 있어야 해요',
     warn: '갱신형 상품은 초기 보험료가 저렴해 보이지만, 은퇴 후 소득이 없는 고령 시기에 보험료가 폭등하여 정작 암 발병률이 가장 높은 70~80대에 보험을 유지하지 못하고 해지하게 되는 단점이 있습니다.',
   },
-  9: { // 생년월일 단계 → Q7 매핑
+  10: { // 생년월일 단계 → Q7 매핑 (현재 호출되지 않는 비활성 데이터)
     qnum: 'Q7',
     question: '인터넷 가입이라 불안한데요 괜찮나요?',
     answerTitle: '인터넷이라서 불리한 게 아니에요',
@@ -643,16 +700,35 @@ function renderSubqPanel(step) {
 
   return `
     <div class="subq-card">
-      <div class="subq-header">
+      <button class="subq-header" onclick="toggleSubq(${step})" aria-expanded="false">
         <span class="subq-badge">자주하는 질문</span>
         <span class="subq-header-text">${data.question}</span>
+        <svg class="subq-chevron" id="subq-chevron-${step}" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </button>
+      <div class="subq-body" id="subq-body-${step}">
+        <div class="subq-body-inner">
+          <div class="subq-answer-box">
+            <div class="subq-answer-title">${data.answerTitle}</div>
+            <div class="subq-answer-body">${data.answerBody}</div>
+          </div>
+          ${detailHTML}
+        </div>
       </div>
-      <div class="subq-answer-box">
-        <div class="subq-answer-title">${data.answerTitle}</div>
-        <div class="subq-answer-body">${data.answerBody}</div>
-      </div>
-      ${detailHTML}
     </div>`;
+}
+
+// 자주하는 질문 아코디언 펼침/접힘
+function toggleSubq(step) {
+  const body = document.getElementById('subq-body-' + step);
+  const chevron = document.getElementById('subq-chevron-' + step);
+  if (!body) return;
+  const opening = !body.classList.contains('open');
+  body.classList.toggle('open', opening);
+  if (chevron) chevron.style.transform = opening ? 'rotate(180deg)' : '';
+  const btn = body.previousElementSibling;
+  if (btn) btn.setAttribute('aria-expanded', opening ? 'true' : 'false');
 }
 
 // ══════════════════════════════════════════════════
@@ -664,12 +740,8 @@ function calcPremium() {
   const age = 2026 - year;
   if (age < 15 || age > 70) return null;
 
-  const baseRates = {
-    'male-smoker': 18500, 'male-non-smoker': 13200,
-    'female-smoker': 14800, 'female-non-smoker': 10500,
-  };
   const key = `${wizardData.gender}-${wizardData.smokingStatus === 'smoker' ? 'smoker' : 'non-smoker'}`;
-  let base = baseRates[key] || 13200;
+  let base = BASE_RATES[key] || 13200;
 
   base *= 1 + Math.max(0, (age - 30)) * 0.028;
 
@@ -683,15 +755,27 @@ function calcPremium() {
   if (wizardData.refundOption === 'yes') base *= 1.18;
   if (wizardData.coveragePeriod === 80) base *= 0.88;
   else if (wizardData.coveragePeriod === 90) base *= 0.94;
-  if (wizardData.paymentPeriod === 10) base *= 1.65;
-  else if (wizardData.paymentPeriod === 15) base *= 1.28;
-  else if (wizardData.paymentPeriod === 30) base *= 0.78;
+  const paymentYears = wizardData.paymentPeriod === 'full'
+    ? Math.max(1, wizardData.coveragePeriod - age)
+    : wizardData.paymentPeriod;
+  if (paymentYears < 20) base *= 1.65;
+  else if (paymentYears > 20) base *= 0.78;
 
   const monthly = Math.round(base / 100) * 100;
-  return { monthly, annual: monthly * 12 };
+  return { monthly, annual: monthly * 12, paymentYears };
 }
 
 function fmt(n) { return n.toLocaleString('ko-KR'); }
+
+// 비흡연 할인액 — 흡연자 기본요율 대비 비흡연자 기본요율 차이만 반영 (건강체/슈퍼건강체 추가할인은 별도)
+function calcNonSmokerDiscount(premium) {
+  if (!premium || wizardData.smokingStatus !== 'non-smoker') return 0;
+  const smokerRate = BASE_RATES[`${wizardData.gender}-smoker`];
+  const nonSmokerRate = BASE_RATES[`${wizardData.gender}-non-smoker`];
+  if (!smokerRate || !nonSmokerRate) return 0;
+  const hypotheticalMonthly = Math.round((premium.monthly * (smokerRate / nonSmokerRate)) / 100) * 100;
+  return Math.max(0, hypotheticalMonthly - premium.monthly);
+}
 
 // ══════════════════════════════════════════════════
 //  NAVIGATION
@@ -702,7 +786,7 @@ function getNextStep(step) {
   return step + 1;
 }
 function getDisplaySteps() {
-  // 표시되는 전체 단계 수 (흡연자는 9단계 중 1개 스킵)
+  // 표시되는 전체 단계 수 (흡연자는 10단계 중 1개 스킵)
   return wizardData.smokingStatus === 'smoker' ? TOTAL_STEPS - 1 : TOTAL_STEPS;
 }
 function getDisplayIndex(step) {
@@ -716,12 +800,13 @@ function canProceedFor(step) {
     case 1: return wizardData.gender !== null;
     case 2: return wizardData.smokingStatus !== null;
     case 3: return wizardData.nonSmokerGrade !== null;
-    case 4: return wizardData.diagnosisAmount > 0;
-    case 5: return wizardData.refundOption !== null;
-    case 6: return wizardData.insuranceType !== null;
-    case 7: return wizardData.coveragePeriod > 0;
-    case 8: return wizardData.paymentPeriod > 0;
-    case 9: return wizardData.birthYear.length === 4 && wizardData.birthMonth.length >= 1 && wizardData.birthDay.length >= 1;
+    case 4: return wizardData.monthlyLivingCost !== null;
+    case 5: return wizardData.familyCancerTypes.length > 0;
+    case 6: return wizardData.refundOption !== null;
+    case 7: return wizardData.insuranceType !== null;
+    case 8: return wizardData.coveragePeriod > 0;
+    case 9: return wizardData.paymentPeriod === 'full' || wizardData.paymentPeriod > 0;
+    case 10: return wizardData.birthYear.length === 4 && wizardData.birthMonth.length >= 1 && wizardData.birthDay.length >= 1;
     default: return false;
   }
 }
@@ -735,31 +820,37 @@ function getChipSummary(step) {
       const map = { standard: '비흡연체', healthy: '건강체', 'super-healthy': '슈퍼건강체' };
       return { q: '비흡연 등급', a: map[wizardData.nonSmokerGrade] };
     }
-    case 4: return { q: '진단보험금', a: fmt(wizardData.diagnosisAmount) + '만원' };
-    case 5: return { q: '환급 특약', a: wizardData.refundOption === 'yes' ? '환급 특약 선택' : '환급 특약 없음' };
-    case 6: return { q: '보험 유형', a: wizardData.insuranceType === 'pure' ? '순수보장형' : '만기지급형' };
-    case 7: return { q: '보험 기간', a: wizardData.coveragePeriod + '세 만기' };
-    case 8: return { q: '납입 기간', a: wizardData.paymentPeriod + '년납' };
-    case 9: return { q: '생년월일', a: `${wizardData.birthYear}.${wizardData.birthMonth}.${wizardData.birthDay}` };
+    case 4: {
+      const costLabel = wizardData.monthlyLivingCost >= 1000 ? '1,000만원 이상' : fmt(wizardData.monthlyLivingCost) + '만원';
+      return { q: '월 생활비', a: costLabel };
+    }
+    case 5: {
+      const famLabel = wizardData.familyCancerTypes.includes('없음') ? '가족력 없음' : `가족력 ${wizardData.familyCancerTypes.join('·')}`;
+      return { q: '가족력 → 진단보험금', a: `${famLabel} → ${fmt(wizardData.diagnosisAmount)}만원` };
+    }
+    case 6: return { q: '환급 특약', a: wizardData.refundOption === 'yes' ? '환급 특약 선택' : '환급 특약 없음' };
+    case 7: return { q: '보험 유형', a: wizardData.insuranceType === 'pure' ? '순수보장형' : '만기지급형' };
+    case 8: return { q: '보험 기간', a: wizardData.coveragePeriod + '세 만기' };
+    case 9: return { q: '납입 기간', a: wizardData.paymentPeriod === 'full' ? '전기납 (보험기간 동안)' : wizardData.paymentPeriod + '년납' };
+    case 10: return { q: '생년월일', a: `${wizardData.birthYear}.${wizardData.birthMonth}.${wizardData.birthDay}` };
     default: return { q: '', a: '' };
   }
 }
 
 function chipHTML(step) {
   const { q, a } = getChipSummary(step);
+  const emoji = STEP_EMOJI[step] || '💬';
   return `
     <div class="tl-section" id="tl-step-${step}" data-step="${step}">
-      <button class="step-chip" onclick="reopenStep(${step})">
-        <div class="step-chip-check">
-          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="3">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-          </svg>
+      <button class="exchange-btn" onclick="reopenStep(${step})">
+        <div class="bot-row">
+          <div class="bot-avatar recap">${emoji}</div>
+          <div class="bot-bubble recap">${q}</div>
         </div>
-        <div class="step-chip-body">
-          <div class="step-chip-q">${q}</div>
-          <div class="step-chip-a">${a}</div>
+        <div class="user-row">
+          <div class="user-bubble">${a}</div>
         </div>
-        <span class="step-chip-edit">수정</span>
+        <div class="edit-hint">수정하기</div>
       </button>
     </div>`;
 }
@@ -783,20 +874,27 @@ function showIntro() {
   document.getElementById('progress-wrap').style.display = 'none';
   tl.innerHTML = `
     <div class="tl-section">
-      <div class="step-live">
-        <div class="intro-card">
-          <div class="intro-emoji">😊</div>
-          <p class="intro-greeting">
+      <div class="bot-row">
+        <div class="bot-avatar">😊</div>
+        <div class="bot-bubble">
+          <p class="q-sub" style="margin:0;font-size:0.95rem;color:var(--gray-900);line-height:1.65;">
             안녕하세요! 😊<br>
             처음 낸 보험료 그대로, 만기까지 절대 오르지 않는<br>
             비갱신 암보험 설계에 오신 것을 환영합니다.
           </p>
-          <p class="intro-sub">
+        </div>
+      </div>
+      <div class="bot-row followup">
+        <div class="bot-avatar spacer"></div>
+        <div class="bot-bubble">
+          <p class="q-sub" style="margin:0;">
             고객님에게 딱 맞는 가장 실속 있는 매월 보험료를 바로 계산해 드릴게요.<br>
             딱 1분이면 끝나요! 우선 몇 가지 정보만 먼저 확인해 볼까요?
           </p>
-          <button class="intro-start-btn" onclick="beginSteps()">좋아요, 시작할래요!</button>
         </div>
+      </div>
+      <div class="reply-zone">
+        <button class="intro-start-btn" onclick="beginSteps()">좋아요, 시작할래요!</button>
       </div>
     </div>`;
   window.scrollTo({ top: 0, behavior: 'instant' });
@@ -893,23 +991,24 @@ function getStepHTML(step) {
     case 1: return stepGender();
     case 2: return stepSmoking();
     case 3: return stepNonSmokerGrade();
-    case 4: return stepDiagnosisAmount();
-    case 5: return stepRefund();
-    case 6: return stepInsuranceType();
-    case 7: return stepCoveragePeriod();
-    case 8: return stepPaymentPeriod();
-    case 9: return stepBirthDate();
+    case 4: return stepMonthlyLivingCost();
+    case 5: return stepFamilyHistory();
+    case 6: return stepRefund();
+    case 7: return stepInsuranceType();
+    case 8: return stepCoveragePeriod();
+    case 9: return stepPaymentPeriod();
+    case 10: return stepBirthDate();
     default: return '';
   }
 }
 
-function choiceBtn(value, field, icon, label, sub, step) {
+function choiceBtn(value, field, icon, label, sub, step, flag=null) {
   const sel = wizardData[field] === value ? ' selected' : '';
   return `
     <button class="choice-btn${sel}" onclick="selectChoice('${field}','${value}',${step})">
       <span class="choice-icon">${icon}</span>
       <div class="choice-text">
-        <div class="choice-main">${label}</div>
+        <div class="choice-main">${label}${flag ? `<span class="choice-flag">${flag}</span>` : ''}</div>
         ${sub ? `<div class="choice-sub">${sub}</div>` : ''}
       </div>
       <div class="choice-radio">
@@ -920,240 +1019,241 @@ function choiceBtn(value, field, icon, label, sub, step) {
     </button>`;
 }
 
+// 봇의 질문 — 아바타 + 말풍선 (대화의 한 턴)
+function botMain(emoji, title, sub) {
+  return `
+    <div class="bot-row">
+      <div class="bot-avatar">${emoji}</div>
+      <div class="bot-bubble">
+        <div class="q-title">${title}</div>
+        ${sub ? `<p class="q-sub">${sub}</p>` : ''}
+      </div>
+    </div>`;
+}
+
+// 봇의 후속 메시지(팁/특약설명/FAQ 등) — 같은 턴의 연속이라 아바타는 비워둠
+function botFollowup(innerHTML) {
+  if (!innerHTML) return '';
+  return `<div class="bot-row followup"><div class="bot-avatar spacer"></div>${innerHTML}</div>`;
+}
+
 function stepGender() {
   return `
-    <div class="q-emoji">👤</div>
-    <h1 class="q-title">성별을 선택해 주세요</h1>
-    <p class="q-sub">암 발병률과 보험료 산출에 사용됩니다</p>
-    <div class="choice-list">
-      ${choiceBtn('male','gender','♂️','남성','남성 암 발병 주요 부위: 위암, 폐암, 대장암',1)}
-      ${choiceBtn('female','gender','♀️','여성','여성 암 발병 주요 부위: 유방암, 갑상선암, 대장암',1)}
-    </div>
-    <div class="insight-card">
-      <div class="insight-icon">
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
+    ${botMain('👤', '성별을 선택해 주세요', '암 발병률과 보험료 산출에 사용됩니다')}
+    <div class="reply-zone">
+      <div class="choice-list">
+        ${choiceBtn('male','gender','♂️','남성','남성 암 발병 주요 부위: 위암, 폐암, 대장암',1)}
+        ${choiceBtn('female','gender','♀️','여성','여성 암 발병 주요 부위: 유방암, 갑상선암, 대장암',1)}
       </div>
-      <p class="insight-text">통계적으로 여성은 남성보다 암 발병률이 약 15% 낮아 보험료가 더 저렴합니다. 단, 유방암·갑상선암 특약은 별도 고려가 필요합니다.</p>
-    </div>`;
+    </div>
+    ${botFollowup(`
+      <div class="insight-card">
+        <div class="insight-icon">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <p class="insight-text">통계적으로 여성은 남성보다 암 발병률이 약 15% 낮아 보험료가 더 저렴합니다. 단, 유방암·갑상선암은 별도 고려가 필요합니다.</p>
+      </div>`)}`;
 }
 
 function stepSmoking() {
   return `
-    <div class="q-emoji">🚭</div>
-    <h1 class="q-title">흡연 여부를 알려주세요</h1>
-    <p class="q-sub">최근 1년 이내 흡연 경험을 기준으로 합니다</p>
-    <div class="choice-list">
-      ${choiceBtn('non-smoker','smokingStatus','🌿','비흡연자','비흡연 할인 적용 — 최대 30% 보험료 절감',2)}
-      ${choiceBtn('smoker','smokingStatus','🚬','흡연자','표준 요율 적용',2)}
-    </div>
-    <div class="insight-card">
-      <div class="insight-icon">
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
+    ${botMain('🚭', '흡연 여부를 알려주세요', '최근 1년 이내 흡연 경험을 기준으로 합니다')}
+    <div class="reply-zone">
+      <div class="choice-list">
+        ${choiceBtn('non-smoker','smokingStatus','🌿','비흡연자','• 보험료 할인 적용<br>• 건강조건 충족 시 추가 할인 가능',2)}
+        ${choiceBtn('smoker','smokingStatus','🚬','흡연자','표준 요율 적용',2)}
       </div>
-      <p class="insight-text">흡연은 암 발병 위험을 최대 3배 높입니다. 금연 후 1년이 지나면 비흡연자로 재분류되어 보험료를 낮출 수 있습니다.</p>
-    </div>`;
+    </div>
+    ${botFollowup(`
+      <div class="insight-card">
+        <div class="insight-icon">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <p class="insight-text">흡연은 암 발병 위험을 최대 3배 높입니다. 가입 후 금연 1년이 지나면 비흡연자로 재분류되어 보험료를 낮출 수 있습니다.</p>
+      </div>`)}`;
 }
 
 function stepNonSmokerGrade() {
   return `
-    <div class="q-emoji">💚</div>
-    <h1 class="q-title">비흡연 등급을 선택해 주세요</h1>
-    <p class="q-sub">건강 상태에 따라 추가 할인이 적용됩니다</p>
-    <div class="choice-list">
-      ${choiceBtn('standard','nonSmokerGrade','✅','비흡연체','기본 비흡연 할인 적용',3)}
-      ${choiceBtn('healthy','nonSmokerGrade','💪','건강체','비흡연 + 혈압·혈당 정상 — 추가 8% 할인',3)}
-      ${choiceBtn('super-healthy','nonSmokerGrade','⭐','슈퍼건강체','비흡연 + 모든 건강지표 우수 — 추가 15% 할인',3)}
-    </div>
-    <div class="insight-card">
-      <div class="insight-icon">
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
+    ${botMain('💚', '비흡연 등급을 선택해 주세요', '건강 상태에 따라 추가 할인이 적용됩니다')}
+    <div class="reply-zone">
+      <div class="choice-list">
+        ${choiceBtn('standard','nonSmokerGrade','✅','비흡연체','기본 비흡연 할인 적용',3)}
+        ${choiceBtn('healthy','nonSmokerGrade','💪','건강체','∙ 평생 비흡연 또는 가입일 기준 최근 1년간 금연<br>∙ 혈압(수축기/이완기) 140/90mmHg 미만<br>∙ BMI 18.5이상 ~ 26.5 미만',3)}
+        ${choiceBtn('super-healthy','nonSmokerGrade','⭐','슈퍼건강체','∙ 평생 비흡연<br>∙ 혈압(수축기/이완기) 120/80mmHg 미만<br>∙ BMI 20.0이상 ~ 25.0 미만<br>∙ 당뇨 이력이 없으면서 식전혈당 110 미만',3)}
       </div>
-      <p class="insight-text">슈퍼건강체 기준: BMI 18.5~24.9, 혈압 정상, 공복혈당 100mg/dL 미만, 총콜레스테롤 200mg/dL 미만 등 종합 건강지표를 충족해야 합니다.</p>
-    </div>`;
+    </div>
+    ${botFollowup(`
+      <div class="insight-card">
+        <div class="insight-icon">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <p class="insight-text">건강체와 슈퍼건강체에 해당하는 경우, 가입완료 후 건강검진결과서를 제출하셔야 합니다.</p>
+      </div>`)}`;
 }
 
-function stepDiagnosisAmount() {
-  const pct = ((wizardData.diagnosisAmount - 1000) / (10000 - 1000)) * 100;
-  const quickAmts = [1000, 3000, 5000, 7000, 10000];
+function stepMonthlyLivingCost() {
+  const costOptions = [100,200,300,400,500,600,700,800,900,1000];
   return `
-    <div class="q-emoji">💰</div>
-    <h1 class="q-title">진단보험금을 선택해 주세요</h1>
-    <p class="q-sub">암 진단 시 일시금으로 지급되는 금액입니다</p>
-
-    <div class="slider-display">
-      <span class="slider-value" id="diag-display">${fmt(wizardData.diagnosisAmount)}만원</span>
-    </div>
-    <div class="slider-wrap">
-      <div class="slider-track">
-        <div class="slider-fill" id="diag-fill" style="width:${pct}%"></div>
+    ${botMain('💰', '평소 월 생활비는 얼마인가요?', '치료에 전념할 1년 동안의 소득 단절을 보전하기 위해 월 생활비를 기준으로 계산합니다')}
+    <div class="reply-zone">
+      <div class="cost-grid">
+        ${costOptions.map(v => `<button class="cost-btn${wizardData.monthlyLivingCost===v?' selected':''}${v>=1000?' full':''}" onclick="selectMonthlyCost(${v})">${v>=1000?'1,000만원 이상':fmt(v)+'만원'}</button>`).join('')}
       </div>
-      <div class="slider-thumb" id="diag-thumb" style="left:${pct}%"></div>
-      <input type="range" min="1000" max="10000" step="1000" value="${wizardData.diagnosisAmount}"
-        id="diag-slider" oninput="updateSlider('diagnosisAmount',this.value,1000,10000,'diag-display','diag-fill','diag-thumb',v=>fmt(v)+'만원')">
-      <div class="slider-labels"><span>1,000만원</span><span>1억원</span></div>
     </div>
-    <div class="quick-btns">
-      ${quickAmts.map(a=>`<button class="quick-btn${wizardData.diagnosisAmount===a?' active':''}" onclick="setDiag(${a})">${a>=10000?'1억':a/1000+'천'}</button>`).join('')}
-    </div>
-    <div class="info-card amber">
-      <div class="info-card-title">💡 전문가 권고</div>
-      <div class="info-card-body">암 치료 평균 비용은 <strong>3,000~5,000만원</strong> 수준입니다. 소득 대체 및 생활비를 고려하면 <strong>5,000만원 이상</strong>을 권장합니다.</div>
-    </div>
+    ${botFollowup(renderSubqPanel(4))}`;
+}
 
-    ${renderSubqPanel(4)}
-
-    <button class="step-confirm-btn active" id="confirm-btn-4" onclick="confirmStep(4)">다음 →</button>`;
+function stepFamilyHistory() {
+  return `
+    ${botMain('👪', '가족 중 암에 걸리신 분이 있으세요?', '• 가족력이 있다면 보장을 15% 더 넉넉하게 준비합니다<br>• 가족력은 고지 의무가 없어 보험료에 영향을 주지 않아요. 진단비를 넉넉히 잡기 위한 참고용이에요')}
+    <div class="reply-zone">
+      <div class="cost-grid">
+        ${CANCER_TYPES.map(t => `<button class="cost-btn${wizardData.familyCancerTypes.includes(t)?' selected':''}" onclick="selectFamilyCancerType('${t}')">${t}</button>`).join('')}
+        <button class="cost-btn full${wizardData.familyCancerTypes.includes('없음')?' selected':''}" onclick="selectFamilyCancerType('없음')">해당 없음</button>
+      </div>
+    </div>`;
 }
 
 function stepRefund() {
   return `
-    <div class="q-emoji">🔄</div>
-    <h1 class="q-title">전체 보험료 환급 특약을<br>원하시나요?</h1>
-    <p class="q-sub">암 진단 확정 시 보험료 전액을 돌려받는 옵션입니다</p>
-
-    <div class="choice-list">
-      ${choiceBtn('yes','refundOption','💵','환급 특약 선택','암 진단 확정 시 기납입 보험료 + 잔여 납입 보험료 전액 페이백 — 보험료 약 18% 추가',5)}
-      ${choiceBtn('no','refundOption','🛡️','환급 특약 없음','보장에만 집중 — 보험료 최소화',5)}
-    </div>
-    <div class="info-card green">
-      <div class="info-card-title">💡 환급 특약 작동 구조</div>
-      <div class="info-card-body">암 진단이 <strong>확정</strong>되는 순간, 아래 두 가지가 동시에 지급됩니다:
-        <div class="refund-steps">
-          <div class="refund-step">
-            <span class="refund-step-num">①</span>
-            <span><strong>기납입 보험료 전액</strong> — 지금까지 납입한 보험료 합계를 돌려받습니다</span>
-          </div>
-          <div class="refund-step">
-            <span class="refund-step-num">②</span>
-            <span><strong>잔여 납입 보험료 전액</strong> — 앞으로 납입해야 할 보험료도 면제(페이백)됩니다</span>
-          </div>
-        </div>
-        <div class="refund-note">즉, 진단 시점에 관계없이 <strong>총 납입 보험료 전액</strong>이 환급되어 실질적인 보험료 부담이 0원이 됩니다.</div>
+    ${botMain('🔄', '전체 보험료 환급 특약을<br>원하시나요?', '암 진단 확정 시 보험료 전액을 돌려받는 옵션입니다')}
+    <div class="reply-zone">
+      <div class="choice-list">
+        ${choiceBtn('yes','refundOption','💵','환급 특약 선택','암 진단 확정 시 기납입 보험료 + 잔여 납입 보험료 전액 페이백 — 보험료 약 18% 추가',6)}
+        ${choiceBtn('no','refundOption','🛡️','환급 특약 없음','보장에만 집중 — 보험료 최소화',6)}
       </div>
     </div>
-
-    ${renderSubqPanel(5)}`;
+    ${botFollowup(`
+      <div class="info-card green">
+        <div class="info-card-title">💡 환급 특약 작동 구조</div>
+        <div class="info-card-body">암 진단이 <strong>확정</strong>되는 순간, 아래 두 가지가 동시에 지급됩니다:
+          <div class="refund-steps">
+            <div class="refund-step">
+              <span class="refund-step-num">①</span>
+              <span>지금까지 납입한 보험료 합계를 돌려받습니다</span>
+            </div>
+            <div class="refund-step">
+              <span class="refund-step-num">②</span>
+              <span>앞으로 납입해야 할 보험료도 면제(페이백)됩니다</span>
+            </div>
+          </div>
+          <div class="refund-note">즉, 진단 시점에 관계없이 <strong>총 납입 보험료 전액</strong>이 환급되어 실질적인 보험료 부담이 0원이 됩니다.</div>
+        </div>
+      </div>`)}
+    ${botFollowup(renderSubqPanel(6))}`;
 }
 
 function stepInsuranceType() {
   return `
-    <div class="q-emoji">📋</div>
-    <h1 class="q-title">보험 유형을 선택해 주세요</h1>
-    <p class="q-sub">보장 방식과 만기 지급 여부를 결정합니다</p>
-
-    <div class="choice-list">
-      ${choiceBtn('pure','insuranceType','🎯','순수보장형','보장에만 집중 — 가장 낮은 보험료, 만기 환급 없음',6)}
-      ${choiceBtn('maturity','insuranceType','🏦','만기지급형','만기 시 일정 금액 지급 — 보험료 약 35% 추가',6)}
-    </div>
-    <div class="insight-card">
-      <div class="insight-icon">
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
+    ${botMain('📋', '보험 유형을 선택해 주세요', '보장 방식과 만기 지급 여부를 결정합니다')}
+    <div class="reply-zone">
+      <div class="choice-list">
+        ${choiceBtn('pure','insuranceType','🎯','순수보장형','보장에만 집중 — 가장 낮은 보험료, 만기 환급 없음',7)}
+        ${choiceBtn('maturity','insuranceType','🏦','만기지급형','만기 시 일정 금액 지급 — 보험료 약 35% 추가',7)}
       </div>
-      <p class="insight-text">순수보장형은 동일 보험료 대비 더 높은 보장을 받을 수 있습니다. 만기지급형은 저축 기능이 있지만 순수 보장 효율은 낮습니다.</p>
     </div>
-
-    ${renderSubqPanel(6)}`;
+    ${botFollowup(`
+      <div class="insight-card">
+        <div class="insight-icon">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <p class="insight-text">순수보장형은 동일 보험료 대비 더 높은 보장을 받을 수 있습니다. 만기지급형은 저축 기능이 있지만 순수 보장 효율은 낮습니다.</p>
+      </div>`)}
+    ${botFollowup(renderSubqPanel(7))}`;
 }
 
 function stepCoveragePeriod() {
   const opts = [
     {v:80,l:'80세 만기',s:'기본 보장 기간'},
     {v:90,l:'90세 만기',s:'연장 보장 — 보험료 약 7% 추가'},
-    {v:100,l:'100세 만기',s:'종신 수준 보장 — 보험료 약 14% 추가'},
+    {v:100,l:'100세 만기',s:'종신 수준 보장 — 보험료 약 14% 추가',flag:'추천'},
   ];
   return `
-    <div class="q-emoji">📅</div>
-    <h1 class="q-title">보험 기간을 선택해 주세요</h1>
-    <p class="q-sub">언제까지 보장을 받을지 결정합니다</p>
-    <div class="choice-list">
-      ${opts.map(o=>choiceBtn(o.v,'coveragePeriod','📆',''+o.l,o.s,7)).join('')}
-    </div>
-    <div class="insight-card">
-      <div class="insight-icon">
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
+    ${botMain('📅', '보험 기간을 선택해 주세요', '언제까지 보장을 받을지 결정합니다')}
+    <div class="reply-zone">
+      <div class="choice-list">
+        ${opts.map(o=>choiceBtn(o.v,'coveragePeriod','📆',''+o.l,o.s,8,o.flag||null)).join('')}
       </div>
-      <p class="insight-text">한국인 평균 수명은 83.6세(2024년 기준)입니다. 100세 만기는 보험료가 다소 높지만, 고령에서의 암 발병 위험을 완전히 커버합니다.</p>
-    </div>`;
+    </div>
+    ${botFollowup(`
+      <div class="insight-card">
+        <div class="insight-icon">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <p class="insight-text">한국인 평균 수명은 83.6세(2024년 기준)입니다. 100세 만기는 보험료가 다소 높지만, 고령에서의 암 발병 위험을 완전히 커버합니다.</p>
+      </div>`)}`;
 }
 
 function stepPaymentPeriod() {
-  const opts = [
-    {v:10,l:'10년납',s:'단기 집중 납입 — 월 보험료 가장 높음'},
-    {v:15,l:'15년납',s:'중기 납입 — 균형적인 선택'},
-    {v:20,l:'20년납',s:'표준 납입 기간 — 가장 일반적'},
-    {v:30,l:'30년납',s:'장기 분산 납입 — 월 보험료 가장 낮음'},
-  ];
   return `
-    <div class="q-emoji">💳</div>
-    <h1 class="q-title">납입 기간을 선택해 주세요</h1>
-    <p class="q-sub">보험료를 얼마나 오래 납입할지 결정합니다</p>
-
-    <div class="choice-list">
-      ${opts.map(o=>choiceBtn(o.v,'paymentPeriod','💳',''+o.l,o.s,8)).join('')}
-    </div>
-    <div class="insight-card">
-      <div class="insight-icon">
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
+    ${botMain('💳', '납입 기간을 선택해 주세요', '보험료를 얼마나 오래 납입할지 결정합니다')}
+    <div class="reply-zone">
+      <div class="choice-list">
+        ${choiceBtn(20,'paymentPeriod','💳','20년납','경제활동 기간동안',9,'추천')}
+        <button class="choice-btn${wizardData.paymentPeriod==='full'?' selected':''}" onclick="selectFullTermPayment(9)">
+          <span class="choice-icon">💳</span>
+          <div class="choice-text">
+            <div class="choice-main">보험기간 동안</div>
+            <div class="choice-sub">보험료 부담 없이 길게</div>
+          </div>
+          <div class="choice-radio">
+            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="3">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+            </svg>
+          </div>
+        </button>
       </div>
-      <p class="insight-text">총 납입 보험료는 납입 기간이 길수록 많아지지만, 월 부담은 줄어듭니다. 은퇴 전에 납입을 완료하는 것이 일반적으로 유리합니다.</p>
     </div>
-
-    ${renderSubqPanel(8)}`;
+    ${botFollowup(`
+      <div class="insight-card">
+        <div class="insight-icon">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <p class="insight-text">총 납입 보험료는 납입 기간이 길수록 많아지지만, 월 부담은 줄어듭니다. 은퇴 전에 납입을 완료하는 것이 일반적으로 유리합니다.</p>
+      </div>`)}
+    ${botFollowup(renderSubqPanel(9))}`;
 }
 
 function stepBirthDate() {
   return `
-    <div class="q-emoji">🎂</div>
-    <h1 class="q-title">마지막으로 생년월일을<br>알려주세요</h1>
-    <p class="q-sub">입력하신 정보를 바탕으로 보험료를 즉시 산출합니다</p>
-
-    <div class="birth-grid">
+    ${botMain('🎂', '마지막으로 생년월일을<br>알려주세요', '입력하신 정보를 바탕으로 보험료를 즉시 산출합니다')}
+    <div class="reply-zone">
       <div>
-        <label class="birth-label">출생연도</label>
-        <input class="birth-input" type="number" placeholder="1990" min="1940" max="2010"
-          value="${wizardData.birthYear}" id="birth-year"
-          oninput="wizardData.birthYear=this.value;checkAgeBadge();updateConfirmBtn(9)">
+        <label class="birth-label">생년월일 8자리</label>
+        <input class="birth-input" type="tel" inputmode="numeric" maxlength="8" placeholder="19900101"
+          value="${birthDateInputValue()}" id="birth-date"
+          oninput="onBirthDateInput(this.value)">
       </div>
-      <div>
-        <label class="birth-label">월</label>
-        <input class="birth-input" type="number" placeholder="1" min="1" max="12"
-          value="${wizardData.birthMonth}" id="birth-month"
-          oninput="wizardData.birthMonth=this.value;updateConfirmBtn(9)">
-      </div>
-      <div>
-        <label class="birth-label">일</label>
-        <input class="birth-input" type="number" placeholder="1" min="1" max="31"
-          value="${wizardData.birthDay}" id="birth-day"
-          oninput="wizardData.birthDay=this.value;updateConfirmBtn(9)">
+      <div class="age-badge${wizardData.birthYear.length===4?' visible':''}" id="age-badge">
+        현재 나이: <strong>${wizardData.birthYear.length===4?2026-parseInt(wizardData.birthYear):'?'}세</strong>
       </div>
     </div>
-    <div class="age-badge${wizardData.birthYear.length===4?' visible':''}" id="age-badge">
-      현재 나이: <strong>${wizardData.birthYear.length===4?2026-parseInt(wizardData.birthYear):'?'}세</strong>
-    </div>
-    <div class="insight-card">
-      <div class="insight-icon">
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
-      </div>
-      <p class="insight-text">나이는 암보험료에 가장 큰 영향을 미치는 요소입니다. 지금까지 입력하신 모든 조건을 반영하여 예상 보험료를 즉시 산출해 드립니다.</p>
-    </div>
+    ${botFollowup(`
+      <div class="insight-card">
+        <div class="insight-icon">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <p class="insight-text">나이는 암보험료에 가장 큰 영향을 미치는 요소입니다. 지금까지 입력하신 모든 조건을 반영하여 예상 보험료를 즉시 산출해 드립니다.</p>
+      </div>`)}
 
-    ${renderSubqPanel(9)}
-
-    <button class="step-confirm-btn disabled" id="confirm-btn-9" onclick="confirmStep(9)">설계 결과 보기 →</button>`;
+    <div class="confirm-row">
+      <button class="step-confirm-btn ${canProceedFor(10)?'active':'disabled'}" id="confirm-btn-10" onclick="confirmStep(10)">설계 결과 보기 →</button>
+    </div>`;
 }
 
 // ══════════════════════════════════════════════════
@@ -1173,42 +1273,61 @@ function selectChoice(field, value, step) {
   setTimeout(() => advanceFromStep(step), 260);
 }
 
-function updateSlider(field, val, min, max, displayId, fillId, thumbId, fmt2) {
-  wizardData[field] = parseInt(val);
-  const pct = ((val - min) / (max - min)) * 100;
-  document.getElementById(displayId).textContent = fmt2(parseInt(val));
-  document.getElementById(fillId).style.width = pct + '%';
-  document.getElementById(thumbId).style.left = pct + '%';
-  document.querySelectorAll('.quick-btn').forEach(btn => {
-    btn.classList.toggle('active', parseInt(btn.dataset.val || btn.textContent) === parseInt(val));
-  });
-  updateConfirmBtn(4);
+// 납입 기간 = 보험기간 동안(전기납) 선택 — 실제 납입연수는 나이를 알아야 하는 결과 화면에서 환산
+function selectFullTermPayment(step) {
+  wizardData.paymentPeriod = 'full';
+  const card = document.getElementById('live-card-' + step);
+  if (card) card.innerHTML = getStepHTML(step);
+  setTimeout(() => advanceFromStep(step), 260);
 }
 
-function setDiag(amt) {
-  wizardData.diagnosisAmount = amt;
-  const pct = ((amt - 1000) / (10000 - 1000)) * 100;
-  const el = document.getElementById('diag-display');
-  const fill = document.getElementById('diag-fill');
-  const thumb = document.getElementById('diag-thumb');
-  const slider = document.getElementById('diag-slider');
-  if (el) el.textContent = fmt(amt) + '만원';
-  if (fill) fill.style.width = pct + '%';
-  if (thumb) thumb.style.left = pct + '%';
-  if (slider) slider.value = amt;
-  document.querySelectorAll('.quick-btn').forEach(btn => {
-    const btnAmt = [1000,3000,5000,7000,10000].find(a => btn.textContent === (a>=10000?'1억':a/1000+'천'));
-    btn.classList.toggle('active', btnAmt === amt);
-  });
-  updateConfirmBtn(4);
+function recalcDiagnosisAmount() {
+  if (wizardData.monthlyLivingCost === null) { wizardData.diagnosisAmount = 0; return; }
+  const base = wizardData.monthlyLivingCost * 12;
+  const hasFamilyHistory = wizardData.familyCancerTypes.length > 0 && !wizardData.familyCancerTypes.includes('없음');
+  wizardData.diagnosisAmount = hasFamilyHistory ? Math.round(base * 1.15) : base;
+}
+
+function selectMonthlyCost(value) {
+  wizardData.monthlyLivingCost = value;
+  recalcDiagnosisAmount();
+  const card = document.getElementById('live-card-4');
+  if (card) card.innerHTML = getStepHTML(4);
+  setTimeout(() => advanceFromStep(4), 260);
+}
+
+function selectFamilyCancerType(value) {
+  wizardData.familyCancerTypes = [value];
+  recalcDiagnosisAmount();
+  const card = document.getElementById('live-card-5');
+  if (card) card.innerHTML = getStepHTML(5);
+  setTimeout(() => advanceFromStep(5), 260);
+}
+
+// 8자리(YYYYMMDD) 입력칸에 표시할 값을 wizardData로부터 재구성
+function birthDateInputValue() {
+  if (!wizardData.birthYear) return '';
+  let v = wizardData.birthYear;
+  if (wizardData.birthMonth !== '') v += String(wizardData.birthMonth).padStart(2, '0');
+  if (wizardData.birthDay !== '') v += String(wizardData.birthDay).padStart(2, '0');
+  return v;
+}
+
+// 생년월일 단일 입력칸(YYYYMMDD)을 연/월/일로 분해해 wizardData에 저장
+function onBirthDateInput(value) {
+  const digits = value.replace(/[^0-9]/g, '').slice(0, 8);
+  wizardData.birthYear = digits.slice(0, 4);
+  wizardData.birthMonth = digits.length > 4 ? String(parseInt(digits.slice(4, 6), 10)) : '';
+  wizardData.birthDay = digits.length > 6 ? String(parseInt(digits.slice(6, 8), 10)) : '';
+  checkAgeBadge();
+  updateConfirmBtn(10);
 }
 
 function checkAgeBadge() {
-  const yr = document.getElementById('birth-year');
   const badge = document.getElementById('age-badge');
-  if (!yr || !badge) return;
-  const y = parseInt(yr.value);
-  if (yr.value.length === 4 && y >= 1940 && y <= 2010) {
+  if (!badge) return;
+  const y = parseInt(wizardData.birthYear);
+  if (wizardData.birthYear.length === 4 && y >= 1940 && y <= 2010) {
     badge.innerHTML = `현재 나이: <strong>${2026 - y}세</strong>`;
     badge.classList.add('visible');
   } else {
@@ -1232,117 +1351,161 @@ function showResult() {
   const smokingLabel = wizardData.smokingStatus === 'smoker' ? '흡연자'
     : wizardData.nonSmokerGrade === 'super-healthy' ? '슈퍼건강체'
     : wizardData.nonSmokerGrade === 'healthy' ? '건강체' : '비흡연체';
+  const insuranceTypeLabel = wizardData.insuranceType === 'pure' ? '순수보장형' : '만기지급형';
+  const costLabel = wizardData.monthlyLivingCost >= 1000 ? '1,000만원 이상' : fmt(wizardData.monthlyLivingCost) + '만원';
+  const hasRefund = wizardData.refundOption === 'yes';
 
-  const summaryRows = [
-    ['나이 / 성별', `${age}세 / ${genderLabel}`],
-    ['흡연 상태', smokingLabel],
-    ['진단보험금', `${fmt(wizardData.diagnosisAmount)}만원`],
-    ['환급 특약', wizardData.refundOption === 'yes' ? '진단 확정 시 전액 페이백' : '없음'],
-    ['보험 유형', wizardData.insuranceType === 'pure' ? '순수보장형' : '만기지급형'],
-    ['보험 기간', `${wizardData.coveragePeriod}세 만기`],
-    ['납입 기간', `${wizardData.paymentPeriod}년납`],
+  // ── 설계 근거 카드 4종 — 실제 선택값을 그대로 반영 (나이를 확인할 수 없으면 생략) ──
+  let reasonCardsHTML = '';
+  if (premium) {
+    const payEndAge = age + premium.paymentYears;
+    const featureCount = hasRefund ? 4 : 3;
+    reasonCardsHTML = `
+      <div class="reason-card">
+        <div class="reason-eyebrow">진단금의 역할</div>
+        <div class="reason-title">암 진단 시 <strong>${fmt(wizardData.diagnosisAmount)}만원</strong>이 생활을 지켜요</div>
+        <div class="reason-body">고객님의 월 생활비는 ${costLabel}이에요. 치료에 전념하는 1년 동안 ${fmt(wizardData.diagnosisAmount)}만원이 필요해요. 이 금액은 치료받는 동안 끊기는 소득을 대신하고, 대출금·생활비·교육비를 멈추지 않게 해주는 돈이에요.</div>
+      </div>
+      <div class="reason-card">
+        <div class="reason-eyebrow">보험료 납입 방식</div>
+        <div class="reason-title">고객님이 현재 나이 ${age}세에 맞게<br>${payEndAge}세까지만 납입하고 ${wizardData.coveragePeriod}세까지 보장돼요</div>
+        <div class="reason-body">원금 경제활동 기간을 고려해 ${payEndAge}세까지만 보험료를 내고 이후엔 단 1원도 내지 않아요. 평균 수명 ${wizardData.coveragePeriod}세 시대에 맞춰 ${wizardData.coveragePeriod}세까지 보장이 그대로 유지돼요.</div>
+      </div>
+      <div class="reason-card">
+        <div class="reason-eyebrow">특약 설정</div>
+        <div class="reason-title">암으로 진단받는 순간 ${featureCount}가지 특약이 한꺼번에 작동해요</div>
+        <div class="reason-body">설정한 진단금 전액이 즉시 지급되고,${hasRefund ? ' 그동안 낸 보험료를 100% 돌려받아요.' : ''} 앞으로 낼 보험료는 한 푼도 안 내도 되고, ${wizardData.coveragePeriod}세까지 보장이 무료로 유지돼요.</div>
+      </div>
+      <div class="reason-card">
+        <div class="reason-eyebrow">가입 형태</div>
+        <div class="reason-title">${insuranceTypeLabel}으로 ${wizardData.insuranceType === 'pure' ? '더 저렴하게' : '만기 시 자금까지'} 보장받아요</div>
+        <div class="reason-body">${wizardData.insuranceType === 'pure'
+          ? '더 낮은 보험료로 같은 보장을 받고 차액은 따로 저축하거나 투자하면 장기적으로 더 유리할 수 있어요.'
+          : '보험료가 조금 더 들지만, 보장이 끝나는 시점까지 유지하면 그동안 낸 보험료를 만기 시점에 한 번에 돌려받을 수 있어요.'}</div>
+      </div>`;
+  }
+
+  const paymentLabel = wizardData.paymentPeriod === 'full'
+    ? `${premium ? premium.paymentYears : '?'}년`
+    : `${wizardData.paymentPeriod}년`;
+
+  const tableRows = [
+    ['나이 · 성별', `만 ${age}세 · ${genderLabel}`],
+    ['보험기간', `${wizardData.coveragePeriod}세`],
+    ['납입기간', paymentLabel],
+    ['암 진단금', `${fmt(wizardData.diagnosisAmount)}만원`],
+    ['건강 할인 등급', smokingLabel],
+    ['가입 형태', insuranceTypeLabel],
+    [`납입면제 특약<span class="info-q" title="암 진단 확정 시 이후 납입할 보험료가 모두 면제됩니다">?</span>`, '보장'],
+    [`올페이백 특약<span class="info-q" title="암 진단 확정 시 그동안 납입한 보험료 전액을 돌려받습니다">?</span>`, hasRefund ? '보장' : '미보장'],
   ];
 
-  const premiumHTML = premium ? `
-    <div class="premium-card">
-      <div class="premium-label">예상 월 보험료</div>
-      <div>
-        <span class="premium-amount">${fmt(premium.monthly)}</span>
-        <span class="premium-unit">원</span>
-      </div>
-      <div class="premium-detail">연간 ${fmt(premium.annual)}원 · ${wizardData.paymentPeriod}년 총 ${fmt(premium.annual * wizardData.paymentPeriod)}원</div>
-      <div class="premium-notice">※ 예시 보험료이며 실제 보험료는 보험사 심사 결과에 따라 다를 수 있습니다</div>
-    </div>` : `
-    <div class="info-card amber">
-      <div class="info-card-title">⚠️ 보험료를 계산할 수 없습니다</div>
-      <div class="info-card-body">가입 가능 연령(15~70세)을 확인해 주세요.</div>
-    </div>`;
+  const discount = calcNonSmokerDiscount(premium);
 
-  // ★ 설계 근거 카드 — 자주하는 질문 보강 (위저드 흐름엔 직접 단계가 없던 질문)
-  const reasonCardsHTML = `
-    <div class="reason-card">
-      <div class="reason-eyebrow">자주하는 질문 · 실비보험과 중복 청구</div>
-      <div class="reason-title">실비보험과 암보험은 <strong>중복 보장</strong>이 가능해요</div>
-      <div class="reason-body">실비보험은 병원비를, 암보험 진단금은 생활비를 각각 대비합니다. 함께 가입하면 치료비와 생활비를 동시에 커버할 수 있어요.</div>
-    </div>
-    <div class="reason-card">
-      <div class="reason-eyebrow">자주하는 질문 · 유사암 보장</div>
-      <div class="reason-title">유방암·전립선암도 <strong>최대 2,000만원</strong>까지 보장해요</div>
-      <div class="reason-body">발생 빈도가 높은 유방암·전립선암을 타사처럼 소액암으로 축소하지 않고 크게 보장하는 것이 핵심 차별점입니다.</div>
-    </div>`;
+  const highAmt = wizardData.diagnosisAmount * COVERAGE_RATIOS.high * 10000;
+  const generalAmt = wizardData.diagnosisAmount * COVERAGE_RATIOS.general * 10000;
+  const breastProstateAmt = wizardData.diagnosisAmount * COVERAGE_RATIOS.breastProstate * 10000;
+  const minorAmt = wizardData.diagnosisAmount * COVERAGE_RATIOS.minor * 10000;
+  const refundAmt = (hasRefund && premium) ? premium.annual * premium.paymentYears : 0;
+  const scenarioTotal = highAmt + generalAmt + refundAmt;
+
+  const circleIcon = `<svg class="s-icon" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>`;
+  const plusIcon = `<svg class="s-icon" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 9v6M9 12h6"/></svg>`;
 
   document.getElementById('result-content').innerHTML = `
-    <div class="result-header">
-      <div class="result-check">
-        <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
-      </div>
-      <h1 class="result-title">암보험 설계가 완료되었습니다</h1>
-      <p class="result-sub">아래 결과를 확인하고 전문 설계사와 상담하세요</p>
-    </div>
-
-    ${premiumHTML}
+    <h1 class="result-hero-title">고객님을 위한 암보험입니다.</h1>
 
     ${reasonCardsHTML}
 
     <div class="summary-card">
-      <div class="card-header">설계 요약</div>
-      ${summaryRows.map(([k,v])=>`
+      <div class="card-header">가입 내용</div>
+      ${tableRows.map(([k,v])=>`
         <div class="summary-row">
           <span class="summary-key">${k}</span>
           <span class="summary-val">${v}</span>
         </div>`).join('')}
     </div>
+    <div class="edit-btn-wrap">
+      <button class="edit-btn" onclick="editFromResult()">수정하기</button>
+    </div>
 
-    <div class="coverage-card">
-      <div class="card-header">주요 보장 내용</div>
-      <div class="coverage-list">
-        ${[
-          ['일반암 진단', fmt(wizardData.diagnosisAmount)+'만원', true],
-          ['유사암 진단 (유방암·전립선암 등)', fmt(Math.min(wizardData.diagnosisAmount*0.4, 2000))+'만원', false],
-          ['소액암 진단 (갑상선암 등)', fmt(wizardData.diagnosisAmount*0.2)+'만원', false],
-          ['암 수술비', '회당 100만원', false],
-          ['암 입원비', '일당 3만원', false],
-        ].map(([l,v,h])=>`
-          <div class="coverage-item">
-            <div class="coverage-label">
-              <div class="coverage-dot" style="background:${h?'#0ea968':'#d1d5db'}"></div>
-              ${l}
-            </div>
-            <span class="coverage-val${h?' highlight':''}">${v}</span>
-          </div>`).join('')}
+    ${discount > 0 ? `
+    <div class="discount-banner">
+      <span class="discount-banner-icon">🙂</span>
+      <span>비흡연 할인으로 매달 ${fmt(discount)}원이 할인되요</span>
+    </div>` : ''}
+
+    <div class="section-label">상황별 보장금액</div>
+    <div class="scenario-card">
+      <div class="scenario-total-label">고액암으로 진단시</div>
+      <div class="scenario-total-amt">${fmt(scenarioTotal)}원</div>
+      <div class="scenario-row primary">
+        <span class="s-label">${circleIcon}고액암 진단보험금</span>
+        <span class="s-val">${fmt(highAmt)}원</span>
       </div>
-    </div>
-
-    <div class="insight-dark">
-      <div class="insight-dark-inner">
-        <div class="insight-dark-label">설계 프로세스 안내</div>
-        <p class="insight-dark-text">
-          이 설계는 <strong style="color:#fff">9단계 맞춤 입력</strong>과, 가입을 망설이게 만드는
-          <strong style="color:#fff">7가지 핵심 질문</strong>에 대한 답변을 함께 반영해 만들어졌습니다.
-          각 단계에서 "왜 필요한지"를 펼쳐보며 진행하셨기 때문에, 이 결과는 단순 견적이 아니라
-          고객님의 질문이 모두 해소된 상태에서 나온 <strong style="color:#fff">근거 있는 설계</strong>입니다.
-        </p>
+      <div class="scenario-row">
+        <span class="s-label">${plusIcon}일반암 진단보험금</span>
+        <span class="s-val">${fmt(generalAmt)}원</span>
       </div>
+      ${hasRefund ? `
+      <div class="scenario-row">
+        <span class="s-label">${plusIcon}선제 보험료 환급(특약)</span>
+        <span class="s-val">${fmt(refundAmt)}원</span>
+      </div>` : ''}
     </div>
 
-    <div class="result-btns">
-      <button class="result-btn-outline" onclick="resetWizard()">다시 설계하기</button>
-      <button class="result-btn-green" onclick="window.print()">결과 저장 / 인쇄</button>
+    <div class="section-label">항목별 보장금액</div>
+    <div class="item-list">
+      <div class="item-row"><span class="item-key"><span class="dot">•</span>고액암 진단보험금</span><span class="item-val">${fmt(highAmt)}원</span></div>
+      <div class="item-row"><span class="item-key"><span class="dot">•</span>일반암 진단보험금</span><span class="item-val">${fmt(generalAmt)}원</span></div>
+      <div class="item-row"><span class="item-key"><span class="dot">•</span>유방암 및 전립선암 진단보험금</span><span class="item-val">${fmt(breastProstateAmt)}원</span></div>
+      <div class="item-row"><span class="item-key"><span class="dot">•</span>소액암 및 유사암 진단보험금</span><span class="item-val">${fmt(minorAmt)}원</span></div>
     </div>
+    <p class="legal-note">자세한 내용은 [약관] 및 [상품설명서]를 통해 확인하실 수 있으며, 본 자료는 가입설계서 제공용 예시 화면입니다.<br>고객님의 주민등록번호, 휴대폰 및 주소정보 등의 개인 신용 정보가 유출되지 않도록 각별히 유의해주시기 바랍니다.</p>
   `;
+
+  document.getElementById('result-bottom-bar').innerHTML = premium ? `
+    <div class="bottom-bar">
+      <div class="bottom-bar-inner">
+        <div class="bottom-bar-row">
+          <span class="bottom-bar-label">맞춤 보험료</span>
+          <span class="bottom-bar-amount"><span class="unit-prefix">원</span>${fmt(premium.monthly)}원</span>
+        </div>
+        <div class="bottom-bar-btns">
+          <button class="result-btn-outline" onclick="document.querySelector('.summary-card').scrollIntoView({behavior:'smooth',block:'start'})">보장내용 확인하기</button>
+          <button class="result-btn-green" onclick="alert('실제 서비스에서는 가입 신청 단계로 연결됩니다.')">이대로 가입하기</button>
+        </div>
+      </div>
+    </div>` : `
+    <div class="bottom-bar">
+      <div class="bottom-bar-inner">
+        <div class="info-card amber" style="margin:0;max-width:100%;border-radius:0.75rem;">
+          <div class="info-card-title">⚠️ 보험료를 계산할 수 없습니다</div>
+          <div class="info-card-body">가입 가능 연령(15~70세)을 확인해 주세요.</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// 결과화면 ← 버튼/수정하기 버튼 — 위저드로 돌아가 마지막 단계부터 다시 편집
+function editFromResult() {
+  document.getElementById('result-screen').classList.remove('visible');
+  document.getElementById('wizard-screen').style.display = '';
+  window.scrollTo(0, 0);
+  reopenStep(9);
 }
 
 function resetWizard() {
   wizardData.gender = null;
   wizardData.smokingStatus = null;
   wizardData.nonSmokerGrade = null;
-  wizardData.diagnosisAmount = 5000;
+  wizardData.monthlyLivingCost = null;
+  wizardData.familyCancerTypes = [];
+  wizardData.diagnosisAmount = 0;
   wizardData.refundOption = null;
   wizardData.insuranceType = null;
-  wizardData.coveragePeriod = 100;
-  wizardData.paymentPeriod = 20;
+  wizardData.coveragePeriod = null;
+  wizardData.paymentPeriod = null;
   wizardData.birthYear = '';
   wizardData.birthMonth = '';
   wizardData.birthDay = '';
