@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>나트랑 여행 일정</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0E2A32;
+    --bg-deep:#081C22;
+    --surface:#153F49;
+    --surface-2:#1B4C58;
+    --line: rgba(245,241,230,0.12);
+    --text:#F5F1E6;
+    --muted:#9FC1C7;
+    --muted-2:#6F949B;
+    --coral:#FF7A56;
+    --coral-dark:#C94B2C;
+    --turquoise:#3CE0C4;
+    --turquoise-dark:#0E7A67;
+    --gold:#F2B84B;
+    --gold-dark:#8A5E15;
+    --indigo:#8B85D6;
+    --indigo-dark:#4A4590;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{margin:0; padding:0;}
+  body{
+    background: var(--bg-deep);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, sans-serif;
+    min-height:100vh;
+    padding-bottom: 60px;
+  }
+  .hero{
+    position:relative;
+    padding: 28px 20px 22px;
+    background: linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
+    overflow:hidden;
+  }
+  .hero svg{position:absolute; left:0; bottom:-2px; width:100%; height:46px; opacity:0.5;}
+  .eyebrow{
+    font-size:12px; letter-spacing:0.18em; color: var(--turquoise);
+    margin:0 0 6px; font-weight:600; text-transform:uppercase;
+  }
+  h1{
+    font-family:'Fraunces', serif; font-weight:600; font-size:28px;
+    margin:0 0 6px; letter-spacing:-0.01em;
+  }
+  .hero .dates{
+    margin:0; font-size:13px; color: var(--muted);
+  }
+  .day-tabs{
+    position: sticky; top:0; z-index:20;
+    display:flex; gap:6px; padding:10px 14px;
+    background: rgba(8,28,34,0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+    overflow-x:auto;
+    -ms-overflow-style:none; scrollbar-width:none;
+  }
+  .day-tabs::-webkit-scrollbar{display:none;}
+  .day-tab{
+    flex: 0 0 auto;
+    padding: 9px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight:600;
+    color: var(--muted);
+    background: transparent;
+    border: 1px solid var(--line);
+    white-space:nowrap;
+  }
+  .day-tab .d{display:block; font-size:10px; font-weight:500; opacity:0.75; margin-top:1px;}
+  .day-tab.active{
+    background: var(--coral);
+    color: #4A1B0C;
+    border-color: var(--coral);
+  }
+  .day-tab.today-marker::after{
+    content:'· 오늘';
+    color: var(--turquoise);
+  }
+  main{ padding: 18px 16px 12px; max-width: 560px; margin:0 auto; }
+  .panel{ display:none; }
+  .panel.active{ display:block; }
+  .timeline{ position:relative; padding-left: 22px; }
+  .timeline::before{
+    content:''; position:absolute; left:5px; top:6px; bottom:6px; width:2px;
+    background: var(--line);
+  }
+  .item{
+    position:relative;
+    margin-bottom: 16px;
+  }
+  .item .dot{
+    position:absolute; left:-22px; top:5px;
+    width:12px; height:12px; border-radius:50%;
+    border: 2px solid var(--bg-deep);
+  }
+  .dot-morning{ background: var(--gold); }
+  .dot-afternoon{ background: var(--turquoise); }
+  .dot-evening{ background: var(--coral); }
+  .dot-night{ background: var(--indigo); }
+
+  .card{
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 13px 14px;
+    border: 1px solid var(--line);
+  }
+  .card.flight{
+    background: linear-gradient(135deg, var(--surface-2), var(--surface));
+    border-color: rgba(60,224,196,0.35);
+  }
+  .row-top{ display:flex; align-items:flex-start; gap:10px; }
+  .time{
+    font-family:'Fraunces', serif; font-weight:600; font-size:15px;
+    color: var(--turquoise); min-width:48px; letter-spacing:-0.01em;
+  }
+  .titlewrap{ flex:1; min-width:0; }
+  .title{ font-size:15.5px; font-weight:600; margin:0; line-height:1.35; }
+  .tag{
+    display:inline-block; font-size:10.5px; font-weight:600;
+    padding: 2px 8px; border-radius:999px; margin-top:5px;
+    letter-spacing:0.02em;
+  }
+  .tag-meal{ background: rgba(242,184,75,0.16); color: var(--gold); }
+  .tag-spa{ background: rgba(60,224,196,0.16); color: var(--turquoise); }
+  .tag-stay{ background: rgba(139,133,214,0.2); color: var(--indigo); }
+  .tag-activity{ background: rgba(255,122,86,0.18); color: var(--coral); }
+  .tag-move{ background: rgba(159,193,199,0.15); color: var(--muted); }
+  .tag-night{ background: rgba(139,133,214,0.2); color: var(--indigo); }
+  .tag-flight{ background: rgba(60,224,196,0.2); color: var(--turquoise); }
+
+  .icon{
+    flex:0 0 auto; width:34px; height:34px; border-radius:10px;
+    display:flex; align-items:center; justify-content:center; font-size:17px;
+    background: rgba(245,241,230,0.06);
+  }
+  .meta{ margin-top:8px; font-size:12.5px; color: var(--muted); line-height:1.5; }
+  .meta .hours{ display:flex; align-items:center; gap:5px; }
+  .note{
+    margin-top:8px; font-size:12px; color: var(--gold);
+    background: rgba(242,184,75,0.1); border-radius:8px; padding:6px 9px;
+    line-height:1.5;
+  }
+  .actions{ display:flex; gap:8px; margin-top:10px; }
+  .btn{
+    flex:1; display:flex; align-items:center; justify-content:center; gap:6px;
+    font-size:12.5px; font-weight:600; padding:9px 10px; border-radius:9px;
+    border:1px solid var(--line); background: rgba(245,241,230,0.04);
+    color: var(--text); text-decoration:none; cursor:pointer;
+  }
+  .btn:active{ transform: scale(0.97); }
+  .btn svg{ width:14px; height:14px; flex:0 0 auto; }
+  .btn-map{ color:#DFF7F1; border-color: rgba(60,224,196,0.3); }
+  .btn-copy{ color: var(--muted); }
+
+  .address{ font-size:12.5px; color: var(--muted); }
+
+  .flight-route{
+    display:flex; align-items:center; gap:8px; margin-top:6px;
+    font-size:13px; color: var(--text); font-weight:600;
+  }
+  .flight-route .plane{ color: var(--turquoise); font-size:13px; }
+  .flight-code{ font-size:11.5px; color: var(--muted); margin-top:4px; }
+
+  .now-badge{
+    display:inline-block; font-size:10px; font-weight:700; color:#4A1B0C;
+    background: var(--coral); padding:2px 8px; border-radius:999px; margin-bottom:6px;
+    letter-spacing:0.03em;
+  }
+  .item.current .card{ border-color: var(--coral); }
+
+  .toast{
+    position: fixed; left:50%; bottom: 22px; transform: translateX(-50%) translateY(20px);
+    background: var(--text); color: var(--bg-deep); font-size:13px; font-weight:600;
+    padding:10px 16px; border-radius:999px; opacity:0; transition: all 0.25s ease;
+    pointer-events:none; z-index:50; white-space:nowrap;
+  }
+  .toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <p class="eyebrow">Nha Trang · 나트랑</p>
+  <h1>4박 5일 여행 일정</h1>
+  <p class="dates">2026.08.25 (화) — 08.29 (토)</p>
+  <svg viewBox="0 0 400 40" preserveAspectRatio="none"><path d="M0 25 Q50 5 100 25 T200 25 T300 25 T400 25 V40 H0 Z" fill="#3CE0C4" /></svg>
+</div>
+
+<nav class="day-tabs" id="dayTabs"></nav>
+
+<main id="timeline"></main>
+
+<div class="toast" id="toast">주소가 복사되었습니다</div>
+
+<script>
+const DATA = [
+  {
+    id:'d1', date:'2026-08-25', label:'8/25 (화)', short:'Day 1',
+    items:[
+      {time:'03:45', icon:'🛫', tag:'move', tagLabel:'공항', title:'인천공항 도착', note:'전자항공권 A/S 확인 후 탑승 수속'},
+      {time:'06:45', icon:'✈️', flight:true, tag:'flight', tagLabel:'항공편', title:'비엣젯항공 VJ0835', flightFrom:'인천 (ICN)', flightTo:'캄란 나트랑 (CXR)', flightSub:'출발 06:45 → 도착 09:35'},
+      {time:'10:00', icon:'🛬', tag:'move', tagLabel:'이동', title:'캄란(나트랑) 공항 도착'},
+      {time:'11:30', icon:'🚕', tag:'move', tagLabel:'이동', title:'시내 도착'},
+      {time:'12:00', icon:'🍜', tag:'meal', tagLabel:'점심', title:'바 또이', address:'68/4 Đống Đa, Nha Trang, Khánh Hòa 650000, 베트남', hours:'10:00–14:00 · 17:00–21:00'},
+      {time:'15:00', icon:'🏨', tag:'stay', tagLabel:'숙소', title:'보마 리조트 나트랑 체크인', address:'Phạm Văn Đồng, Bắc Nha Trang, Khánh Hòa 650000, 베트남', hours:'체크인 15:00 / 체크아웃 12:00', note:'바우처: 보마 리조트 나트랑 (한국어 / 베트남어 PDF)'},
+      {time:'17:00', icon:'💆', tag:'spa', tagLabel:'스파', title:'U SPA (유스파)', address:'Đại Lộ Phạm Văn Đồng, Khu vực Bãi Tiên, Nha Trang, Khánh Hòa, 베트남', hours:'10:00–22:00'},
+      {time:'19:00', icon:'🍽️', tag:'meal', tagLabel:'저녁', title:'씀 모이 가든', address:'144 Đ. Võ Trứ, Nha Trang, Khánh Hòa 650000, 베트남', hours:'06:30–22:30'},
+      {time:'21:00', icon:'🍹', tag:'night', tagLabel:'나이트라이프', title:'알티튜드 루프탑 바', subtitle:'쉐라톤 나짱', address:'Sheraton Nha Trang Hotel & Spa, 26-28 Trần Phú, Nha Trang, Khánh Hòa 650000, 베트남', hours:'15:00–24:00'},
+      {time:'23:00', icon:'🌙', tag:'move', tagLabel:'복귀', title:'숙소 복귀'}
+    ]
+  },
+  {
+    id:'d2', date:'2026-08-26', label:'8/26 (수)', short:'Day 2',
+    items:[
+      {time:'06:00', icon:'🍳', tag:'meal', tagLabel:'조식', title:'조식'},
+      {time:'12:00', icon:'🍜', tag:'meal', tagLabel:'점심', title:'바 또이', address:'68/4 Đống Đa, Nha Trang, Khánh Hòa 650000, 베트남', hours:'10:00–14:00 · 17:00–21:00'},
+      {time:'15:00', icon:'💆', tag:'spa', tagLabel:'스파', title:'아만 헤리티지 스파', address:'83 Tô Hiến Thành, Nha Trang, Khánh Hòa 65000, 베트남', hours:'10:00–22:00'},
+      {time:'18:00', icon:'🍲', tag:'meal', tagLabel:'저녁', title:'분 까 하이 까', subtitle:'오징어 어묵 쌀국수', address:'156 Nguyễn Thị Minh Khai, Nha Trang, Khánh Hòa 650000, 베트남', hours:'06:00–21:30'},
+      {time:'19:00', icon:'🛍️', tag:'activity', tagLabel:'액티비티', title:'야시장', address:'Trần Phú, Nha Trang, Khánh Hòa 650000, 베트남', hours:'17:00–23:00'},
+      {time:'21:00', icon:'🍹', tag:'night', tagLabel:'나이트라이프', title:'Sailing Club', address:'72-74 Trần Phú, Nha Trang, Khánh Hòa 570000, 베트남', hours:'07:00–02:00'},
+      {time:'23:00', icon:'🌙', tag:'move', tagLabel:'복귀', title:'숙소 복귀'}
+    ]
+  },
+  {
+    id:'d3', date:'2026-08-27', label:'8/27 (목)', short:'Day 3',
+    items:[
+      {time:'06:00', icon:'🍳', tag:'meal', tagLabel:'조식', title:'조식'},
+      {time:'11:00', icon:'🧳', tag:'move', tagLabel:'체크아웃', title:'짐 정리 및 체크아웃'},
+      {time:'12:00', icon:'🧳', tag:'stay', tagLabel:'짐보관', title:'하바나 나트랑 호텔 짐 보관', address:'38 Trần Phú, Nha Trang, Khánh Hòa 650000, 베트남', hours:'체크인 15:00 / 체크아웃 12:00'},
+      {time:'13:00', icon:'🍜', tag:'meal', tagLabel:'점심', title:'바 또이', address:'68/4 Đống Đa, Nha Trang, Khánh Hòa 650000, 베트남', hours:'10:00–14:00 · 17:00–21:00'},
+      {time:'15:00', icon:'🏨', tag:'stay', tagLabel:'숙소', title:'하바나 나트랑 호텔 체크인', address:'38 Trần Phú, Nha Trang, Khánh Hòa 650000, 베트남', hours:'체크인 15:00 / 체크아웃 12:00', note:'바우처: 하바나 나트랑 호텔 (한국어 / 베트남어 PDF)'},
+      {time:'15:30', icon:'🚤', tag:'activity', tagLabel:'액티비티', title:'패러세일링 + 제트스키'},
+      {time:'18:00', icon:'💆', tag:'spa', tagLabel:'스파', title:'Onsi Spa', address:'08 Nguyễn Thiện Thuật, Nha Trang, Khánh Hòa 650000, 베트남', hours:'09:00–22:00'},
+      {time:'21:00', icon:'🏖️', tag:'activity', tagLabel:'액티비티', title:'해피비치', subtitle:'호텔에서 바로 연결', address:'38 Trần Phú, Nha Trang, Khánh Hòa 650000, 베트남', hours:'08:00–23:30'},
+      {time:'23:00', icon:'🌙', tag:'move', tagLabel:'복귀', title:'숙소 복귀'}
+    ]
+  },
+  {
+    id:'d4', date:'2026-08-28', label:'8/28 (금)', short:'Day 4',
+    items:[
+      {time:'06:00', icon:'🏊', tag:'meal', tagLabel:'조식', title:'조식 및 호텔 수영장'},
+      {time:'11:00', icon:'🧳', tag:'move', tagLabel:'정리', title:'짐 정리'},
+      {time:'11:30', icon:'🧳', tag:'move', tagLabel:'체크아웃', title:'체크아웃 및 짐 보관 요청'},
+      {time:'12:00', icon:'🥖', tag:'meal', tagLabel:'간식', title:'반미 판', subtitle:'저녁 전 간단하게', address:'164 Bạch Đằng, Nha Trang, Khánh Hòa 650000, 베트남', hours:'07:00–21:30'},
+      {time:'16:00', icon:'🦐', tag:'meal', tagLabel:'저녁', title:'라라 씨푸드', address:'109B Đ. Hồng Bàng, Nha Trang, Khánh Hòa 650000, 베트남', hours:'10:00–23:00'},
+      {time:'18:00', icon:'💆', tag:'spa', tagLabel:'스파', title:'웰 스파', address:'63 Tô Hiến Thành, Nha Trang, Khánh Hòa 650000, 베트남', hours:'10:00–22:00', note:'예약 시 공항 드랍 요청 필수!'},
+      {time:'20:00', icon:'🛬', tag:'move', tagLabel:'공항', title:'캄란(나트랑) 공항 도착'},
+      {time:'22:55', icon:'✈️', flight:true, tag:'flight', tagLabel:'항공편', title:'비엣젯항공 VJ0834', flightFrom:'캄란 나트랑 (CXR)', flightTo:'인천 (ICN)', flightSub:'출발 22:55 → 익일 05:35 도착'}
+    ]
+  }
+];
+
+function timeOfDay(t){
+  const h = parseInt(t.split(':')[0],10);
+  if(h>=6 && h<11) return 'morning';
+  if(h>=11 && h<17) return 'afternoon';
+  if(h>=17 && h<20) return 'evening';
+  return 'night';
+}
+function tagClass(tag){
+  return {meal:'tag-meal', spa:'tag-spa', stay:'tag-stay', activity:'tag-activity', move:'tag-move', night:'tag-night', flight:'tag-flight'}[tag] || 'tag-move';
+}
+function mapUrl(address){
+  return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(address);
+}
+function escapeHtml(s){
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function renderItem(day, item, idx, isToday, nowMin){
+  const dot = 'dot-' + timeOfDay(item.time);
+  let currentClass = '';
+  if(isToday){
+    const [h,m] = item.time.split(':').map(Number);
+    const itemMin = h*60+m;
+    const next = day.items[idx+1];
+    let nextMin = 24*60;
+    if(next){ const [h2,m2]=next.time.split(':').map(Number); nextMin=h2*60+m2; if(nextMin<itemMin) nextMin=24*60; }
+    if(nowMin>=itemMin && nowMin<nextMin) currentClass=' current';
+  }
+  let inner = '';
+  if(item.flight){
+    inner = `
+      <div class="row-top">
+        <div class="time">${item.time}</div>
+        <div class="icon">${item.icon}</div>
+        <div class="titlewrap">
+          <p class="title">${escapeHtml(item.title)}</p>
+          <span class="tag ${tagClass(item.tag)}">${escapeHtml(item.tagLabel)}</span>
+        </div>
+      </div>
+      <div class="flight-route"><span class="plane">${escapeHtml(item.flightFrom)} → ${escapeHtml(item.flightTo)}</span></div>
+      <div class="flight-code">${escapeHtml(item.flightSub)} · 전자항공권 A/S 확인</div>
+    `;
+  } else {
+    const meta = item.hours ? `<div class="meta"><div class="hours">🕒 ${escapeHtml(item.hours)}</div></div>` : '';
+    const addr = item.address ? `<div class="address" style="margin-top:6px;">📍 ${escapeHtml(item.address)}</div>` : '';
+    const note = item.note ? `<div class="note">💡 ${escapeHtml(item.note)}</div>` : '';
+    const actions = item.address ? `
+      <div class="actions">
+        <a class="btn btn-map" href="${mapUrl(item.address)}" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-7.5 8-13a8 8 0 1 0-16 0c0 5.5 8 13 8 13Z"/><circle cx="12" cy="9" r="3"/></svg>
+          지도 열기
+        </a>
+        <button class="btn btn-copy" onclick="copyAddress(this, '${item.address.replace(/'/g,"\\'")}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+          주소 복사
+        </button>
+      </div>` : '';
+    const subtitle = item.subtitle ? `<div style="font-size:12.5px;color:var(--muted);margin-top:2px;">${escapeHtml(item.subtitle)}</div>` : '';
+    inner = `
+      <div class="row-top">
+        <div class="time">${item.time}</div>
+        <div class="icon">${item.icon}</div>
+        <div class="titlewrap">
+          <p class="title">${escapeHtml(item.title)}</p>
+          ${subtitle}
+          <span class="tag ${tagClass(item.tag)}">${escapeHtml(item.tagLabel)}</span>
+        </div>
+      </div>
+      ${addr}
+      ${meta}
+      ${note}
+      ${actions}
+    `;
+  }
+  const badge = currentClass ? `<span class="now-badge">지금</span><br/>` : '';
+  return `<div class="item${currentClass}">
+      <div class="dot ${dot}"></div>
+      <div class="card${item.flight?' flight':''}">${badge}${inner}</div>
+    </div>`;
+}
+
+function render(){
+  const tabsEl = document.getElementById('dayTabs');
+  const mainEl = document.getElementById('timeline');
+  const today = new Date();
+  const todayStr = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+  const nowMin = today.getHours()*60+today.getMinutes();
+  let activeIdx = DATA.findIndex(d=>d.date===todayStr);
+  if(activeIdx===-1) activeIdx = 0;
+
+  tabsEl.innerHTML = DATA.map((d,i)=>`
+    <button class="day-tab${i===activeIdx?' active':''}${d.date===todayStr?' today-marker':''}" data-idx="${i}">
+      ${d.short}<span class="d">${d.label}</span>
+    </button>`).join('');
+
+  mainEl.innerHTML = DATA.map((d,i)=>`
+    <div class="panel${i===activeIdx?' active':''}" id="panel-${i}">
+      <div class="timeline">
+        ${d.items.map((item,idx)=>renderItem(d,item,idx, d.date===todayStr, nowMin)).join('')}
+      </div>
+    </div>`).join('');
+
+  tabsEl.querySelectorAll('.day-tab').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const idx = btn.dataset.idx;
+      tabsEl.querySelectorAll('.day-tab').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      mainEl.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+      document.getElementById('panel-'+idx).classList.add('active');
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
+  });
+}
+
+function copyAddress(btn, address){
+  const showToast = ()=>{
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), 1600);
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(address).then(showToast).catch(()=>{ fallbackCopy(address); showToast(); });
+  } else {
+    fallbackCopy(address);
+    showToast();
+  }
+}
+function fallbackCopy(text){
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta);
+  ta.focus(); ta.select();
+  try{ document.execCommand('copy'); }catch(e){}
+  document.body.removeChild(ta);
+}
+
+render();
+</script>
+</body>
+</html>
