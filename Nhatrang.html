@@ -159,6 +159,7 @@
   .btn svg{ width:14px; height:14px; flex:0 0 auto; }
   .btn-map{ color:#DFF7F1; border-color: rgba(60,224,196,0.3); }
   .btn-copy{ color: var(--muted); }
+  .btn-kakao{ color:#3A2E10; background: rgba(242,184,75,0.85); border-color: rgba(242,184,75,0.85); }
 
   .address{ font-size:12.5px; color: var(--muted); }
 
@@ -211,7 +212,7 @@ const DATA = [
       {time:'11:30', icon:'🚕', tag:'move', tagLabel:'이동', title:'시내 도착'},
       {time:'12:00', icon:'🍜', tag:'meal', tagLabel:'점심', title:'바 또이', address:'68/4 Đống Đa, Nha Trang, Khánh Hòa 650000, 베트남', hours:'10:00–14:00 · 17:00–21:00'},
       {time:'15:00', icon:'🏨', tag:'stay', tagLabel:'숙소', title:'보마 리조트 나트랑 체크인', address:'Phạm Văn Đồng, Bắc Nha Trang, Khánh Hòa 650000, 베트남', hours:'체크인 15:00 / 체크아웃 12:00', note:'바우처: 보마 리조트 나트랑 (한국어 / 베트남어 PDF)'},
-      {time:'17:00', icon:'💆', tag:'spa', tagLabel:'스파', title:'U SPA (유스파)', address:'Đại Lộ Phạm Văn Đồng, Khu vực Bãi Tiên, Nha Trang, Khánh Hòa, 베트남', hours:'10:00–22:00'},
+      {time:'17:00', icon:'💆', tag:'spa', tagLabel:'스파', title:'U SPA (유스파)', address:'Đại Lộ Phạm Văn Đồng, Khu vực Bãi Tiên, Nha Trang, Khánh Hòa, 베트남', hours:'10:00–22:00', kakao:'https://pf.kakao.com/_sEUZX'},
       {time:'19:00', icon:'🍽️', tag:'meal', tagLabel:'저녁', title:'씀 모이 가든', address:'144 Đ. Võ Trứ, Nha Trang, Khánh Hòa 650000, 베트남', hours:'06:30–22:30'},
       {time:'21:00', icon:'🍹', tag:'night', tagLabel:'나이트라이프', title:'알티튜드 루프탑 바', subtitle:'쉐라톤 나짱', address:'Sheraton Nha Trang Hotel & Spa, 26-28 Trần Phú, Nha Trang, Khánh Hòa 650000, 베트남', hours:'15:00–24:00'},
       {time:'23:00', icon:'🌙', tag:'move', tagLabel:'복귀', title:'숙소 복귀'}
@@ -222,7 +223,7 @@ const DATA = [
     items:[
       {time:'06:00', icon:'🍳', tag:'meal', tagLabel:'조식', title:'조식'},
       {time:'12:00', icon:'🍜', tag:'meal', tagLabel:'점심', title:'바 또이', address:'68/4 Đống Đa, Nha Trang, Khánh Hòa 650000, 베트남', hours:'10:00–14:00 · 17:00–21:00'},
-      {time:'15:00', icon:'💆', tag:'spa', tagLabel:'스파', title:'아만 헤리티지 스파', address:'83 Tô Hiến Thành, Nha Trang, Khánh Hòa 65000, 베트남', hours:'10:00–22:00'},
+      {time:'15:00', icon:'💆', tag:'spa', tagLabel:'스파', title:'아만 헤리티지 스파', address:'83 Tô Hiến Thành, Nha Trang, Khánh Hòa 65000, 베트남', hours:'10:00–22:00', kakao:'https://pf.kakao.com/_RxcPgT'},
       {time:'18:00', icon:'🍲', tag:'meal', tagLabel:'저녁', title:'분 까 하이 까', subtitle:'오징어 어묵 쌀국수', address:'156 Nguyễn Thị Minh Khai, Nha Trang, Khánh Hòa 650000, 베트남', hours:'06:00–21:30'},
       {time:'19:00', icon:'🛍️', tag:'activity', tagLabel:'액티비티', title:'야시장', address:'Trần Phú, Nha Trang, Khánh Hòa 650000, 베트남', hours:'17:00–23:00'},
       {time:'21:00', icon:'🍹', tag:'night', tagLabel:'나이트라이프', title:'Sailing Club', address:'72-74 Trần Phú, Nha Trang, Khánh Hòa 570000, 베트남', hours:'07:00–02:00'},
@@ -238,7 +239,7 @@ const DATA = [
       {time:'13:00', icon:'🍜', tag:'meal', tagLabel:'점심', title:'바 또이', address:'68/4 Đống Đa, Nha Trang, Khánh Hòa 650000, 베트남', hours:'10:00–14:00 · 17:00–21:00'},
       {time:'15:00', icon:'🏨', tag:'stay', tagLabel:'숙소', title:'하바나 나트랑 호텔 체크인', address:'38 Trần Phú, Nha Trang, Khánh Hòa 650000, 베트남', hours:'체크인 15:00 / 체크아웃 12:00', note:'바우처: 하바나 나트랑 호텔 (한국어 / 베트남어 PDF)'},
       {time:'15:30', icon:'🚤', tag:'activity', tagLabel:'액티비티', title:'패러세일링 + 제트스키'},
-      {time:'18:00', icon:'💆', tag:'spa', tagLabel:'스파', title:'Onsi Spa', address:'08 Nguyễn Thiện Thuật, Nha Trang, Khánh Hòa 650000, 베트남', hours:'09:00–22:00'},
+      {time:'18:00', icon:'💆', tag:'spa', tagLabel:'스파', title:'Onsi Spa', address:'08 Nguyễn Thiện Thuật, Nha Trang, Khánh Hòa 650000, 베트남', hours:'09:00–22:00', kakao:'https://pf.kakao.com/_cnBvb'},
       {time:'21:00', icon:'🏖️', tag:'activity', tagLabel:'액티비티', title:'해피비치', subtitle:'호텔에서 바로 연결', address:'38 Trần Phú, Nha Trang, Khánh Hòa 650000, 베트남', hours:'08:00–23:30'},
       {time:'23:00', icon:'🌙', tag:'move', tagLabel:'복귀', title:'숙소 복귀'}
     ]
@@ -251,7 +252,7 @@ const DATA = [
       {time:'11:30', icon:'🧳', tag:'move', tagLabel:'체크아웃', title:'체크아웃 및 짐 보관 요청'},
       {time:'12:00', icon:'🥖', tag:'meal', tagLabel:'간식', title:'반미 판', subtitle:'저녁 전 간단하게', address:'164 Bạch Đằng, Nha Trang, Khánh Hòa 650000, 베트남', hours:'07:00–21:30'},
       {time:'16:00', icon:'🦐', tag:'meal', tagLabel:'저녁', title:'라라 씨푸드', address:'109B Đ. Hồng Bàng, Nha Trang, Khánh Hòa 650000, 베트남', hours:'10:00–23:00'},
-      {time:'18:00', icon:'💆', tag:'spa', tagLabel:'스파', title:'웰 스파', address:'63 Tô Hiến Thành, Nha Trang, Khánh Hòa 650000, 베트남', hours:'10:00–22:00', note:'예약 시 공항 드랍 요청 필수!'},
+      {time:'18:00', icon:'💆', tag:'spa', tagLabel:'스파', title:'웰 스파', address:'63 Tô Hiến Thành, Nha Trang, Khánh Hòa 650000, 베트남', hours:'10:00–22:00', note:'예약 시 공항 드랍 요청 필수!', kakao:'https://pf.kakao.com/_zvPgT'},
       {time:'20:00', icon:'🛬', tag:'move', tagLabel:'공항', title:'캄란(나트랑) 공항 도착'},
       {time:'22:55', icon:'✈️', flight:true, tag:'flight', tagLabel:'항공편', title:'비엣젯항공 VJ0834', flightFrom:'캄란 나트랑 (CXR)', flightTo:'인천 (ICN)', flightSub:'출발 22:55 → 익일 05:35 도착'}
     ]
@@ -304,17 +305,23 @@ function renderItem(day, item, idx, isToday, nowMin){
     const meta = item.hours ? `<div class="meta"><div class="hours">🕒 ${escapeHtml(item.hours)}</div></div>` : '';
     const addr = item.address ? `<div class="address" style="margin-top:6px;">📍 ${escapeHtml(item.address)}</div>` : '';
     const note = item.note ? `<div class="note">💡 ${escapeHtml(item.note)}</div>` : '';
-    const actions = item.address ? `
+    const kakaoBtn = item.kakao ? `
+        <a class="btn btn-kakao" href="${item.kakao}" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.48 3 2 6.58 2 11c0 2.8 1.83 5.26 4.6 6.68-.2.75-.73 2.7-.84 3.13-.13.53.2.53.42.38.17-.12 2.7-1.83 3.8-2.58.65.09 1.32.14 2.02.14 5.52 0 10-3.58 10-8s-4.48-8-10-8Z"/></svg>
+          카카오 예약
+        </a>` : '';
+    const actions = (item.address || item.kakao) ? `
       <div class="actions">
-        <a class="btn btn-map" href="${mapUrl(item.address)}" target="_blank" rel="noopener">
+        ${item.address ? `<a class="btn btn-map" href="${mapUrl(item.address)}" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-7.5 8-13a8 8 0 1 0-16 0c0 5.5 8 13 8 13Z"/><circle cx="12" cy="9" r="3"/></svg>
           지도 열기
-        </a>
-        <button class="btn btn-copy" onclick="copyAddress(this, '${item.address.replace(/'/g,"\\'")}')">
+        </a>` : ''}
+        ${item.address ? `<button class="btn btn-copy" onclick="copyAddress(this, '${item.address.replace(/'/g,"\\'")}')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
           주소 복사
-        </button>
-      </div>` : '';
+        </button>` : ''}
+      </div>
+      ${kakaoBtn ? `<div class="actions" style="margin-top:8px;">${kakaoBtn}</div>` : ''}` : '';
     const subtitle = item.subtitle ? `<div style="font-size:12.5px;color:var(--muted);margin-top:2px;">${escapeHtml(item.subtitle)}</div>` : '';
     inner = `
       <div class="row-top">
