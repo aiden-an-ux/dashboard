@@ -3,17 +3,17 @@
 <title>보험 상품 퍼널 대시보드</title>
 <style>
 :root{--font-anthropic-sans:'Pretendard','Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',system-ui,sans-serif;--font-anthropic-serif:var(--font-anthropic-sans);
---cds-gap-xs:4px;--cds-gap-sm:8px;--cds-gap-md:16px;--cds-gap-lg:28px;--cds-pad-xs:4px;--cds-pad-sm:8px;--cds-pad-md:12px;--cds-pad-lg:16px;--cds-radius:8px;
---cds-font-size-title:28px;--cds-font-size-heading:16px;--cds-font-size-body:14px;--cds-font-size-caption:12px;--cds-font-weight-medium:600;--cds-dur-slow:.3s;
---color-fg:#1B2B30;--color-fg-muted:#5E6B6F;--color-bg:#F5F7F6;--color-panel:#FFFFFF;--color-border-line:#E1E6E4;--color-ok:#1E8E4E;--color-bad:#D14343;
+--cds-gap-xs:4px;--cds-gap-sm:8px;--cds-gap-md:16px;--cds-gap-lg:48px;--cds-pad-xs:4px;--cds-pad-sm:8px;--cds-pad-md:12px;--cds-pad-lg:16px;--cds-radius:8px;
+--cds-font-size-title:28px;--cds-font-size-heading:18px;--cds-font-size-body:14px;--cds-font-size-caption:12px;--cds-font-weight-medium:600;--cds-dur-slow:.3s;
+--color-fg:#1B2B30;--color-fg-muted:#56636A;--color-bg:#E4E9E7;--color-field:#F4F6F5;--color-panel:#FFFFFF;--color-border-line:#D5DCD9;--color-ok:#1E8E4E;--color-bad:#D14343;
 --cds-chart-grid:#EEF1F0;--cds-chart-axis:#C9D1CE;--cds-chart-muted:#CDD5D2;--cds-chart-reference:#8A9894;--cds-chart-reference-tint:#F0F3F2;--cds-chart-status-critical:#D14343;
---cds-surface-popover:#FFFFFF;--cds-border:#E1E6E4;--cds-shadow-popover:0 4px 16px rgba(0,0,0,.12);--cds-text-secondary:#5E6B6F;color-scheme:light}
-@media (prefers-color-scheme:dark){:root{--color-fg:#E8EDEB;--color-fg-muted:#9AA8A4;--color-bg:#111715;--color-panel:#19211F;--color-border-line:#2C3633;--color-ok:#4CC27E;--color-bad:#F07070;
+--cds-surface-popover:#FFFFFF;--cds-border:#D5DCD9;--cds-shadow-popover:0 4px 16px rgba(0,0,0,.12);--cds-text-secondary:#5E6B6F;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--color-fg:#E8EDEB;--color-fg-muted:#A3B0AC;--color-bg:#0A0E0D;--color-field:#141B19;--color-panel:#19211F;--color-border-line:#2C3633;--color-ok:#4CC27E;--color-bad:#F07070;
 --cds-chart-grid:#222B28;--cds-chart-axis:#3A4643;--cds-chart-muted:#3A4643;--cds-chart-reference:#7C8A86;--cds-chart-reference-tint:#1F2725;--cds-chart-status-critical:#F07070;
 --cds-surface-popover:#222B28;--cds-border:#2C3633;--cds-text-secondary:#9AA8A4;color-scheme:dark}}
 *{box-sizing:border-box}body{margin:0;background:var(--color-bg);color:var(--color-fg);font-family:var(--font-anthropic-sans)}
 main{max-width:1400px;margin:0 auto;padding:24px}
-.dash-select{font:inherit;font-size:var(--cds-font-size-body);color:var(--color-fg);background:var(--color-bg);border:1px solid var(--color-border-line);border-radius:var(--cds-radius);padding:5px 8px;min-width:8rem}
+.dash-select{font:inherit;font-size:var(--cds-font-size-body);color:var(--color-fg);background:var(--color-field);border:1px solid var(--color-border-line);border-radius:var(--cds-radius);padding:5px 8px;min-width:8rem}
 .load-status{margin:0 0 16px;padding:12px 16px;border-radius:8px;background:var(--color-panel);border:1px solid var(--color-border-line);font-size:14px}
 .load-status.is-error{border-color:var(--color-bad);color:var(--color-bad)}
 </style>
@@ -22,7 +22,7 @@ main{max-width:1400px;margin:0 auto;padding:24px}
 </head><body><main>
 <p id="load-status" class="load-status" hidden></p>
 <style>
-.fn { font-family: var(--font-anthropic-sans); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+.fn { font-family: var(--font-anthropic-sans); color: var(--color-fg); font-variant-numeric: tabular-nums; line-height: 150%;}
 .fn [hidden] { display: none !important; }
 .fn h1, .fn h2, .fn h3, .fn p { margin: 0; }
 .fn-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: var(--cds-gap-sm); margin-bottom: var(--cds-gap-md); }
@@ -31,19 +31,19 @@ main{max-width:1400px;margin:0 auto;padding:24px}
 .fn .fn-take b { color: var(--color-fg); font-weight: 600; }
 .fn-asof { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); white-space: nowrap; }
 .fn-tabs { display: flex; gap: var(--cds-gap-xs); border-bottom: 1px solid var(--color-border-line); margin-bottom: var(--cds-gap-md); overflow-x: auto; }
-.fn-tab { appearance: none; background: none; border: 0; border-bottom: 2px solid transparent; padding: var(--cds-pad-sm) var(--cds-pad-md); font: inherit; font-size: var(--cds-font-size-body); color: var(--color-fg-muted); cursor: pointer; white-space: nowrap; }
+.fn-tab { appearance: none; background: none; border: 0; border-bottom: 4px solid transparent; padding: var(--cds-pad-sm) var(--cds-pad-md); font: inherit; font-size: var(--cds-font-size-body); color: var(--color-fg-muted); cursor: pointer; white-space: nowrap; }
 .fn-tab[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--color-fg); font-weight: var(--cds-font-weight-medium); }
 .fn-filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--cds-gap-sm); margin-bottom: var(--cds-gap-md); padding: var(--cds-pad-md); background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); }
 .fn-f { display: flex; flex-direction: column; gap: 4px; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); min-width: 8rem; }
-.fn-f input { font: inherit; font-size: var(--cds-font-size-body); color: var(--color-fg); background: var(--color-bg); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 5px 8px; }
-.fn-btn { appearance: none; font: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg); background: var(--color-bg); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 6px 12px; cursor: pointer; }
+.fn-f input { font: inherit; font-size: var(--cds-font-size-body); color: var(--color-fg); background: var(--color-field); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 5px 8px; }
+.fn-btn { appearance: none; font: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg); background: var(--color-field); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 6px 12px; cursor: pointer; }
 .fn-section { margin-bottom: var(--cds-gap-lg); }
 .fn-h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin-bottom: var(--cds-gap-xs) !important; }
 .fn-sub { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); margin-bottom: var(--cds-gap-sm) !important; }
 .fn-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: var(--cds-gap-md); }
 .fn-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); min-width: 0; }
 .fn-card-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: var(--cds-gap-sm); margin-bottom: var(--cds-gap-sm); }
-.fn-card-title { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+.fn-card-title { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); line-height: 150%;}
 .fn-note { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); margin-top: 2px !important; }
 .fn-kpirow { display: grid; grid-template-columns: 4.5rem 1fr; gap: var(--cds-gap-md); align-items: stretch; margin-bottom: var(--cds-gap-md); }
 .fn-kpirow-label { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); padding-top: var(--cds-pad-lg); }
@@ -53,13 +53,13 @@ main{max-width:1400px;margin:0 auto;padding:24px}
 .fn-kv { display: block; font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); line-height: 1.2; margin: 4px 0; }
 .fn-kpi-foot { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
 .fn .fn-kpi-foot b { color: var(--color-fg); font-weight: 600; }
-.fn .fn-up { color: var(--color-ok); }
-.fn .fn-down { color: var(--color-bad); }
+.fn .fn-up, .fn .fn-kpi-foot b.fn-up, .fn .fn-take b.fn-up { color: var(--color-ok); }
+.fn .fn-down, .fn .fn-kpi-foot b.fn-down, .fn .fn-take b.fn-down { color: var(--color-bad); }
 .fn-seg { display: inline-flex; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); overflow: hidden; }
-.fn-seg button { appearance: none; font: inherit; font-size: var(--cds-font-size-caption); background: var(--color-bg); color: var(--color-fg-muted); border: 0; border-left: 1px solid var(--color-border-line); padding: 5px 10px; cursor: pointer; }
+.fn-seg button { appearance: none; font: inherit; font-size: var(--cds-font-size-caption); background: var(--color-field); color: var(--color-fg-muted); border: 0; border-left: 1px solid var(--color-border-line); padding: 5px 10px; cursor: pointer; }
 .fn-seg button:first-child { border-left: 0; }
-.fn-seg button[aria-pressed="true"] { background: var(--color-fg); color: var(--color-bg); }
-.fn-chart { position: relative; width: 100%; }
+.fn-seg button[aria-pressed="true"] { background: var(--color-fg); color: var(--color-panel); }
+.fn-chart { position: relative; width: 100%; padding-top: var(--cds-pad-lg);}
 .fn-chart svg { display: block; overflow: visible; }
 .fn-chart text { font-family: var(--font-anthropic-sans); font-size: var(--cds-font-size-caption); fill: var(--color-fg-muted); }
 .fn-chart .fn-strong { fill: var(--color-fg); }
@@ -68,9 +68,9 @@ main{max-width:1400px;margin:0 auto;padding:24px}
 .fn-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); white-space: nowrap; z-index: 2; }
 .fn-tip .fn-tip-h { color: var(--cds-text-secondary); margin-bottom: 2px; }
 .fn-chips { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr)); gap: var(--cds-gap-sm); }
-.fn-chip { border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-sm) var(--cds-pad-md); background: var(--color-bg); }
+.fn-chip { border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-sm) var(--cds-pad-md); background: var(--color-field); }
 .fn-chip .fn-kv { font-size: var(--cds-font-size-heading); font-family: var(--font-anthropic-serif); }
-.fn-tablebox { overflow: auto; max-height: 32rem; }
+.fn-tablebox { overflow: auto; max-height: 32rem; margin-top: var(--cds-pad-lg);} /* 위쪽 간격은 스크롤 영역 밖에 둡니다(padding이면 스크롤 시 고정 헤더 위로 행이 비침) */
 .fn table { width: 100%; border-collapse: collapse; font-size: var(--cds-font-size-caption); }
 .fn th { position: sticky; top: 0; background: var(--color-panel); text-align: right; font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); padding: 6px 8px; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; z-index: 1; }
 .fn th:first-child, .fn td:first-child { text-align: left; }
@@ -91,10 +91,12 @@ main{max-width:1400px;margin:0 auto;padding:24px}
 .fn-empty { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); padding: var(--cds-pad-sm) 0; }
 [data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
 @media (max-width: 40rem) { .fn-kpirow { grid-template-columns: 1fr; } .fn-kpirow-label { padding-top: 0; } }
+.fn-grid2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 40rem) { .fn-grid2 { grid-template-columns: minmax(0, 1fr); } }
 .fn-grid-wide { grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr)); }
 .fn-act-ctl { display: flex; gap: var(--cds-gap-xs); align-items: center; }
 .fn-acts { display: flex; flex-direction: column; gap: var(--cds-gap-sm); max-height: 34rem; overflow: auto; }
-.fn-act { border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-sm) var(--cds-pad-md); background: var(--color-bg); }
+.fn-act { border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-sm) var(--cds-pad-md); background: var(--color-field); }
 .fn-act.fn-act-on { border-color: var(--color-fg); }
 .fn-act-head { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
 .fn-act-type { display: inline-flex; align-items: center; gap: 5px; color: var(--color-fg); font-weight: var(--cds-font-weight-medium); }
@@ -102,6 +104,19 @@ main{max-width:1400px;margin:0 auto;padding:24px}
 .fn-act-title { font-size: var(--cds-font-size-body); font-weight: var(--cds-font-weight-medium); margin-top: 4px; }
 .fn-act-body { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); white-space: pre-wrap; margin-top: 2px !important; }
 .fn-act-img { display: block; max-width: 9rem; max-height: 14rem; margin-top: var(--cds-gap-xs); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); cursor: zoom-in; }
+.fn-lb { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); background: color-mix(in srgb, #000 62%, transparent); }
+.fn-lb[hidden], .fn-lb-img[hidden], .fn-lb-err[hidden] { display: none; }
+.fn-lb-panel { display: flex; flex-direction: column; max-width: min(960px, 100%); max-height: 100%; background: var(--color-panel); color: var(--color-fg); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); overflow: hidden; }
+.fn-lb-head { display: flex; align-items: center; justify-content: space-between; gap: var(--cds-gap-sm); padding: var(--cds-pad-sm) var(--cds-pad-md); border-bottom: 1px solid var(--color-border-line); font-size: var(--cds-font-size-body); font-weight: var(--cds-font-weight-medium); }
+.fn-lb-cap { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fn-lb-close { flex: none; appearance: none; font: inherit; font-size: 16px; line-height: 1; width: 32px; height: 32px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-field); color: var(--color-fg); cursor: pointer; }
+.fn-lb-close:focus-visible, .fn-act-img:focus-visible, .fn-act-imglink:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; }
+.fn-lb-body { min-height: 0; overflow: auto; padding: var(--cds-pad-md); display: flex; justify-content: center; }
+.fn-lb-img { display: block; max-width: 100%; max-height: calc(100vh - 140px); height: auto; border-radius: calc(var(--cds-radius) - 2px); }
+.fn-lb-err { margin: var(--cds-gap-lg) var(--cds-gap-md); font-size: var(--cds-font-size-body); color: var(--color-fg-muted); text-align: center; line-height: 1.7; }
+.fn-lb-err a { color: var(--color-fg); }
+.fn-act-imglink { display: inline-block; margin-top: var(--cds-gap-xs); padding: 3px 10px; font: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg); background: var(--color-field); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); cursor: pointer; }
+.fn-act-img { cursor: zoom-in; }
 .fn-act-img.fn-act-big { max-width: 100%; max-height: none; cursor: zoom-out; }
 .fn-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 34rem), 1fr)); gap: var(--cds-gap-lg); }
 .fn-group { display: flex; flex-direction: column; gap: var(--cds-gap-md); min-width: 0; padding: var(--cds-pad-lg); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: color-mix(in srgb, var(--color-panel) 50%, transparent); }
@@ -118,9 +133,9 @@ main{max-width:1400px;margin:0 auto;padding:24px}
   <header class="fn-head" id="top">
     <div>
       <h1 class="fn-title">보험 상품 퍼널 대시보드</h1>
-      <p class="fn-take">이번 달 보장성 청약은 전월 동기간 대비 <b class="fn-tk" data-draw="kv" data-source="kpi" data-field="청약건수_증감률" data-where="상품군=보장성" data-fmt="chg">—</b>, 월말 예상 목표 달성률 <b data-draw="kv" data-source="kpi" data-field="청약건수_예상달성률" data-where="상품군=보장성" data-fmt="pct0">—</b>입니다. 미니는 각각 <b data-draw="kv" data-source="kpi" data-field="청약건수_증감률" data-where="상품군=미니" data-fmt="chg">—</b>, <b data-draw="kv" data-source="kpi" data-field="청약건수_예상달성률" data-where="상품군=미니" data-fmt="pct0">—</b>입니다.</p>
+      <p class="fn-take">이번 달 보장성 청약은 전월 동기간 대비 <b class="fn-tk" data-draw="kv" data-source="kpi" data-field="청약건수_증감률" data-where="상품군=보장성" data-fmt="chg" data-tone="1">—</b>, 월말 예상 목표 달성률 <b data-draw="kv" data-source="kpi" data-field="청약건수_예상달성률" data-where="상품군=보장성" data-fmt="pct0">—</b>입니다. 미니는 각각 <b data-draw="kv" data-source="kpi" data-field="청약건수_증감률" data-where="상품군=미니" data-fmt="chg" data-tone="1">—</b>, <b data-draw="kv" data-source="kpi" data-field="청약건수_예상달성률" data-where="상품군=미니" data-fmt="pct0">—</b>입니다.</p>
     </div>
-    <p class="fn-asof">데이터 기준일 <span data-draw="kv" data-source="period" data-field="기준일" data-row="0">—</span> · 가상 데이터</p>
+    <p class="fn-asof">데이터 기준일 <span data-draw="kv" data-source="period" data-field="기준일" data-row="0">—</span></p>
   </header>
 
   <nav class="fn-tabs" role="tablist" aria-label="대시보드 탭">
@@ -149,7 +164,7 @@ main{max-width:1400px;margin:0 auto;padding:24px}
         <h2 class="fn-group-title">보장성</h2>
         <div class="fn-kpis2">
           <div class="fn-kpi"><div class="fn-kpi-label">청약 건수</div><span class="fn-kv" data-draw="kv" data-source="kpi" data-field="청약건수" data-where="상품군=보장성" data-fmt="count">—</span><div class="fn-kpi-foot"><b data-draw="kv" data-source="kpi" data-field="청약건수_증감률" data-where="상품군=보장성" data-fmt="chg" data-tone="1">—</b> 전월 대비 · 월말 예상 달성률 <b data-draw="kv" data-source="kpi" data-field="청약건수_예상달성률" data-where="상품군=보장성" data-fmt="pct0">—</b></div></div>
-          <div class="fn-kpi"><div class="fn-kpi-label">월P</div><span class="fn-kv" data-draw="kv" data-source="kpi" data-field="월P_천원" data-where="상품군=보장성" data-fmt="chun">—</span><div class="fn-kpi-foot"><b data-draw="kv" data-source="kpi" data-field="월P_증감률" data-where="상품군=보장성" data-fmt="chg" data-tone="1">—</b> 전월 대비 · 월말 예상 달성률 <b data-draw="kv" data-source="kpi" data-field="월P_예상달성률" data-where="상품군=보장성" data-fmt="pct0">—</b></div></div>
+          <div class="fn-kpi"><div class="fn-kpi-label">월P</div><span class="fn-kv" data-draw="kv" data-source="kpi" data-field="월P" data-where="상품군=보장성" data-fmt="won">—</span><div class="fn-kpi-foot"><b data-draw="kv" data-source="kpi" data-field="월P_증감률" data-where="상품군=보장성" data-fmt="chg" data-tone="1">—</b> 전월 대비 · 월말 예상 달성률 <b data-draw="kv" data-source="kpi" data-field="월P_예상달성률" data-where="상품군=보장성" data-fmt="pct0">—</b></div></div>
           <div class="fn-kpi"><div class="fn-kpi-label">랜딩 기준 청약 전환율</div><span class="fn-kv" data-draw="kv" data-source="kpi" data-field="랜딩기준전환율" data-where="상품군=보장성" data-fmt="pct">—</span><div class="fn-kpi-foot"><b data-draw="kv" data-source="kpi" data-field="랜딩기준전환율_증감" data-where="상품군=보장성" data-fmt="pp" data-tone="1">—</b> 전월 대비</div></div>
           <div class="fn-kpi"><div class="fn-kpi-label">상품랜딩 방문수</div><span class="fn-kv" data-draw="kv" data-source="kpi" data-field="랜딩유저수" data-where="상품군=보장성" data-fmt="count">—</span><div class="fn-kpi-foot"><b data-draw="kv" data-source="kpi" data-field="랜딩유저수_증감률" data-where="상품군=보장성" data-fmt="chg" data-tone="1">—</b> 전월 대비</div></div>
         </div>
@@ -193,7 +208,7 @@ main{max-width:1400px;margin:0 auto;padding:24px}
         </div>
         <div class="fn-card" id="movers">
           <div class="fn-card-title">전환율 변동 세그먼트</div>
-          <p class="fn-note">상품 × 채널 중 표본이 충분하고 랜딩 기준 청약 전환율이 크게 변한 상위 5개입니다. 기준은 지표 정의 탭에 있습니다.</p>
+          <p class="fn-note">상품 × 채널 중 표본이 충분하고 랜딩 기준 청약 전환율이 크게 변한 상위 5개입니다. 행을 누르면 그 상품·채널로 필터한 퍼널 진단으로 이동합니다. 기준은 지표 정의 탭에 있습니다.</p>
           <div class="fn-tablebox">
             <table data-source="movers" data-row-key="세그먼트">
               <thead><tr><th data-field="세그먼트">세그먼트</th><th data-field="랜딩유저수">랜딩</th><th data-field="랜딩기준전환율">이번 달</th><th data-field="랜딩기준전환율_전월">전월</th><th data-field="변화율">변화율</th></tr></thead>
@@ -223,10 +238,10 @@ main{max-width:1400px;margin:0 auto;padding:24px}
       </div>
     </div>
     <div class="fn-section fn-grid fn-grid-wide" id="activity-area">
-      <div class="fn-card" id="daily">
-        <div class="fn-card-title">일별 청약 건수와 활동</div>
-        <p class="fn-note">막대를 누르면 그날의 활동을, 위쪽 활동 표시를 누르면 그 활동만 봅니다. 색은 활동유형입니다.</p>
-        <div class="fn-chart" data-draw="daily" data-source="funnel period activities" style="min-height:280px"></div>
+      <div class="fn-card" id="weekly-count">
+        <div class="fn-card-title">주별 청약 건수와 활동</div>
+        <p class="fn-note">최근 12주를 데이터 기준일까지 7일 단위로 묶었습니다. 기간 필터는 적용하지 않고 나머지 필터는 적용합니다. 막대를 누르면 그 주의 활동을, 위쪽 활동 표시를 누르면 그 활동만 봅니다. 색은 활동유형이고, 흐린 막대는 데이터가 일부 날짜만 있는 주입니다.</p>
+        <div class="fn-chart" data-draw="weekbars" data-source="funnel period activities" style="min-height:280px"></div>
       </div>
       <div class="fn-card" id="activity">
         <div class="fn-card-head">
@@ -242,6 +257,23 @@ main{max-width:1400px;margin:0 auto;padding:24px}
         <div class="fn-acts" data-draw="act-list" data-source="activities funnel period"></div>
         <p class="fn-empty fn-acts-none" hidden>이 범위에 현재 필터와 맞는 활동이 없습니다.</p>
         <span data-draw="act-empty" data-source="activities funnel period"></span>
+      </div>
+    </div>
+    <div class="fn-section" id="weekly">
+      <div class="fn-card-head">
+        <div>
+          <h2 class="fn-h2">전환율 추이</h2>
+          <p class="fn-sub">기간 필터는 적용하지 않고 데이터 기준일까지 묶었습니다. 일별은 최근 84일, 주별은 최근 12주(기준일까지 7일 단위), 월별은 최근 12개월(달력 월, 이번 달은 기준일까지)이며 데이터가 시작되기 전 구간은 뺍니다. 나머지 필터는 적용됩니다. 위쪽 숫자는 그 구간에 겹치는 활동 수이며, 차트를 누르면 그 구간의 활동을 봅니다.</p>
+        </div>
+        <div class="fn-seg" data-param="tunit" data-default="week" role="group" aria-label="추이 단위">
+          <button type="button" data-value="day">일별</button><button type="button" data-value="week">주별</button><button type="button" data-value="month">월별</button>
+        </div>
+      </div>
+      <div class="fn-grid fn-grid2">
+        <div class="fn-card"><div class="fn-card-title">랜딩 기준 청약 전환율</div><div class="fn-chart" data-draw="weekly" data-metric="rL" data-source="funnel period activities" style="min-height:176px"></div></div>
+        <div class="fn-card"><div class="fn-card-title">설계 단계 전환율</div><div class="fn-chart" data-draw="weekly" data-metric="r1" data-source="funnel period activities" style="min-height:176px"></div></div>
+        <div class="fn-card"><div class="fn-card-title">청약 단계 전환율</div><div class="fn-chart" data-draw="weekly" data-metric="r2" data-source="funnel period activities" style="min-height:176px"></div></div>
+        <div class="fn-card"><div class="fn-card-title">청약 완료율</div><div class="fn-chart" data-draw="weekly" data-metric="r3" data-source="funnel period activities" style="min-height:176px"></div></div>
       </div>
     </div>
     <div class="fn-section fn-grid">
@@ -268,16 +300,6 @@ main{max-width:1400px;margin:0 auto;padding:24px}
         </div>
       </div>
     </div>
-    <div class="fn-section" id="weekly">
-      <h2 class="fn-h2">최근 12주 단계 전환율 추이</h2>
-      <p class="fn-sub">기간 필터는 적용하지 않고, 데이터 기준일까지 7일 단위로 묶었습니다. 나머지 필터는 적용됩니다. 위쪽 숫자는 그 주에 겹치는 활동 수이며, 차트를 누르면 그 주의 활동을 봅니다.</p>
-      <div class="fn-grid">
-        <div class="fn-card"><div class="fn-card-title">설계 단계 전환율</div><div class="fn-chart" data-draw="weekly" data-metric="r1" data-source="funnel period activities" style="min-height:176px"></div></div>
-        <div class="fn-card"><div class="fn-card-title">청약 단계 전환율</div><div class="fn-chart" data-draw="weekly" data-metric="r2" data-source="funnel period activities" style="min-height:176px"></div></div>
-        <div class="fn-card"><div class="fn-card-title">청약 완료율</div><div class="fn-chart" data-draw="weekly" data-metric="r3" data-source="funnel period activities" style="min-height:176px"></div></div>
-        <div class="fn-card"><div class="fn-card-title">랜딩 기준 청약 전환율</div><div class="fn-chart" data-draw="weekly" data-metric="rL" data-source="funnel period activities" style="min-height:176px"></div></div>
-      </div>
-    </div>
   </section>
 
   <section class="fn-page" id="segment" role="tabpanel" aria-labelledby="tab-segment" hidden>
@@ -285,7 +307,7 @@ main{max-width:1400px;margin:0 auto;padding:24px}
       <div class="fn-card-head">
         <div>
           <h2 class="fn-h2">세그먼트 테이블</h2>
-          <p class="fn-sub">행으로 펼칠 축을 고르세요. 대분류 행을 누르면 하위 항목이 열리고, 디광은 BS·SA·DA 중분류를 한 번 더 엽니다. 헤더를 누르면 정렬됩니다.</p>
+          <p class="fn-sub">행으로 펼칠 축을 고르세요. 대분류 행을 누르면 하위 항목이 열리고, 중분류(BS·SA·DA)가 있는 채널은 한 번 더 엽니다. 헤더를 누르면 정렬됩니다.</p>
         </div>
         <div class="fn-seg" data-param="axis" data-default="상품" role="group" aria-label="행 축">
           <button type="button" data-value="상품">상품</button><button type="button" data-value="채널">채널</button>
@@ -322,39 +344,42 @@ main{max-width:1400px;margin:0 auto;padding:24px}
     <div class="fn-section fn-card">
       <h2 class="fn-h2">지표</h2>
       <dl>
-        <dt>상품랜딩 방문수</dt><dd>상품 랜딩 페이지에 진입한 고유 유저 수. 같은 날 같은 상품 재방문은 1회로 셉니다.</dd>
+        <dt>상품랜딩 방문수</dt><dd>상품 랜딩 페이지에 진입한 유저 수. 원본은 일자·상품·세부채널별 고유 유저 수이고, 대시보드는 이를 더해서 씁니다. 그래서 여러 날·여러 상품·여러 채널로 들어온 같은 사람은 여러 번 셉니다. 유저 수 기반 전환율은 실제보다 조금 낮게 나올 수 있고, 청약 건수와 월P는 영향이 없습니다.</dd>
         <dt>설계 단계 전환율</dt><dd>설계 단계 진입 유저 ÷ 랜딩 방문자수</dd>
         <dt>청약 단계 전환율</dt><dd>청약 단계 진입 유저 ÷ 설계 단계 진입 유저</dd>
         <dt>청약 완료율</dt><dd>청약 완료 유저 ÷ 청약 단계 진입 유저. 퍼널 진단용 보조 지표입니다.</dd>
-        <dt>랜딩 기준 청약 전환율</dt><dd>청약 완료 유저 ÷ 랜딩 방문자수. 설계 단계 × 청약 단계 × 청약 완료율과 같습니다.</dd>
+        <dt>랜딩 기준 청약 전환율</dt><dd>청약 완료 유저 ÷ 랜딩 방문자수. 설계 단계 × 청약 단계 × 청약 완료율과 같습니다. 보장성 GSM은 제외합니다(아래 표시 규칙 참고).</dd>
         <dt>청약 건수</dt><dd>청약 완료된 계약 수. 한 유저가 여러 건을 청약할 수 있어 청약 완료 유저 수보다 많을 수 있습니다.</dd>
-        <dt>월P</dt><dd>청약 완료 계약의 월납 환산 보험료 합, 천원 단위. 보장성과 미니는 합산하지 않습니다.</dd>
+        <dt>월P</dt><dd>청약 완료 계약의 월납 환산 보험료 합, 원 단위. 보장성과 미니는 합산하지 않습니다.</dd>
         <dt>월말 예상 달성률</dt><dd>이번 달 누적 실적 ÷ 경과 일수 × 월 일수 ÷ 월 목표</dd>
       </dl>
     </div>
     <div class="fn-section fn-card">
       <h2 class="fn-h2">표시 규칙</h2>
       <dl>
-        <dt>최소 표본</dt><dd>전환율의 분모가 <b data-draw="const" data-key="MIN">—</b>명 미만이면 숫자 대신 표본 부족으로 표시합니다.</dd>
+        <dt>작은 표본</dt><dd>분모가 작아도 전환율을 그대로 표시하고, 분모가 0일 때만 —로 둡니다. 랜딩이 수십 명인 세그먼트나 하루치 값은 몇 명 차이로 크게 흔들리니 랜딩 수와 함께 보세요.</dd>
         <dt>전환율 변동 세그먼트</dt><dd>상품 × 채널 중 이번 달과 전월 동기간 모두 랜딩 <b data-draw="const" data-key="MOVER_L">—</b>명 이상이고, 랜딩 기준 청약 전환율이 <b data-draw="const" data-key="MOVER_CHG">—</b> 이상 변한 세그먼트</dd>
-        <dt>비교 기간</dt><dd>선택 구간의 시작일과 종료일을 각각 한 달 앞으로 옮긴 구간</dd>
-        <dt>채널 구분</dt><dd>랜딩 시점 유입 소스 기준. 앱(내부광고)·디광·오가닉·제휴·GSM으로 나누고, 디광은 BS·SA·DA 중분류를 거쳐 세부채널로 펼칩니다.</dd>
+        <dt>데이터 정리</dt><dd>일자·상품군·상품·채널·중분류·세부채널이 같은 행이 여러 번 있으면 파일에서 뒤에 있는 행만 씁니다. 일자를 읽지 못한 행은 뺍니다.</dd>
+        <dt>비교 기간</dt><dd>선택 구간의 시작일과 종료일을 각각 한 달 앞으로 옮긴 구간. 시작일이 종료일보다 늦으면 두 날짜를 바꿔 적용합니다.</dd>
+        <dt>상품군 분류</dt><dd>같은 상품명이 보장성과 미니 양쪽에 있으면 랜딩 유저가 더 많은 상품군으로 그 상품의 모든 행을 옮겨 셉니다(예: 정기(순수보장)·암보험(순수보장)의 미니 랜딩 행은 보장성으로 셈). 상품명이 빈 행은 ‘(상품명 없음)’으로 표시합니다.</dd>
+        <dt>보장성 GSM</dt><dd>GSM(하이브리드·URL 발송)은 상담을 거쳐 들어오는 채널이라 랜딩 대비 완료율이 다른 채널보다 훨씬 높고, 한 사람이 여러 건을 청약하기도 합니다. 그래서 보장성 GSM은 청약 건수와 월P에는 포함하고, 상품랜딩 방문수·단계별 유저 수·전환율에서는 뺍니다. 채널을 GSM으로 고르거나 채널별 행으로 볼 때는 GSM 자체 수치를 그대로 보여 줍니다. 미니의 GSM은 그대로 포함합니다.</dd>
+        <dt>채널 구분</dt><dd>랜딩 시점 유입 소스 기준. 앱(내부광고)·디광·오가닉·제휴·GSM·기타로 나눕니다. 중분류(BS·SA·DA)가 있는 채널은 중분류를 거쳐 세부채널로 펼칩니다. 같은 이름의 중분류·세부채널(예: DA, 기타, 메인팝업)도 채널별로 따로 셉니다. 세부채널이 빈 행은 ‘(미지정)’으로 표시합니다.</dd>
       </dl>
     </div>
     <div class="fn-section fn-card">
       <h2 class="fn-h2">활동 기록</h2>
       <dl>
-        <dt>활동유형</dt><dd>메시지, UI, 내부광고채널1~4, 기타. 내부광고채널 번호별 지면 이름.</dd>
-        <dt>적용 범위</dt><dd>상품군·상품·채널·세부채널 칸이 비어 있으면 전체에 적용된 활동으로 봅니다. 채워진 칸이 현재 필터와 다르면 목록에서 빠집니다.</dd>
+        <dt>활동유형</dt><dd>활동 파일의 활동유형 값을 그대로 씁니다(예: 내부광고 팝업, 신상품, UI 변경, 안내장). 색은 유형별로 자동 배정합니다. 적용 범위 규칙은 아래와 같습니다.</dd>
+        <dt>적용 범위</dt><dd>상품이 ‘공통’인 활동은 어떤 필터에서도 차트와 목록에 표시합니다. 그 밖의 활동은 빈 칸이나 ‘공통’인 칸을 그 항목 전체로 보고, 채워진 칸이 현재 필터와 다르면 빠집니다.</dd>
         <dt>기간</dt><dd>시작일과 종료일 사이에 보는 범위와 하루라도 겹치면 표시합니다. 하루짜리 활동은 종료일을 시작일과 같게 적습니다.</dd>
-        <dt>이미지</dt><dd>UI 캡처는 대시보드에 올린 이미지 파일의 주소로 연결합니다.</dd>
+        <dt>이미지</dt><dd>활동 파일의 이미지 경로(파일명 또는 https 주소)를 씁니다. 썸네일이나 ‘이미지 열기’를 누르면 페이지 안 레이어로 크게 보여 줍니다.</dd>
       </dl>
     </div>
   </section>
 </div>
 <script>(() => {
 const funnelLoader = {
-  description: '엑셀에서 CSV UTF-8로 저장한 파일을 읽습니다. 따옴표 칸, 천 단위 쉼표, 여러 날짜 표기를 정리하고 빈 숫자 칸은 0으로, 지표가 모두 0인 행은 뺍니다.',
+  description: 'CSV(UTF-8 또는 엑셀 기본 CP949)를 읽습니다. 열 이름 상품명→상품, 월p→월P로 맞추고, 같은 상품명이 두 상품군에 있으면 랜딩이 많은 상품군으로 행을 옮기고, 20261001 같은 날짜를 포함한 여러 날짜 표기와 따옴표 칸, 천 단위 쉼표를 정리하고 빈 숫자 칸은 0으로, 지표가 모두 0인 행은 뺍니다.',
   fn: ({ answer }) => {
     const text = String(answer).replace(/^\uFEFF/, '');
     const out = [];
@@ -368,13 +393,19 @@ const funnelLoader = {
       else cell += ch;
     }
     if (cell || row.length) { row.push(cell); out.push(row); }
-    const columns = out[0].map((c) => c.trim());
+    const ALIAS = { 상품명: '상품', 월p: '월P', 월p_원: '월P' };
+    const columns = out[0].map((c) => { const k = c.trim(); return ALIAS[k] || k; });
+    const need = ['일자', '상품군', '상품', '채널', '랜딩유저수', '설계진입유저수', '청약진입유저수', '청약완료유저수', '청약건수', '월P'];
+    const miss = need.filter((k) => !columns.includes(k));
+    if (miss.length) throw new Error(`funnel.csv에 필요한 열이 없습니다: ${miss.join(', ')}. 첫 줄의 열 이름을 확인해 주세요.`);
     const nums = ['랜딩유저수', '설계진입유저수', '청약진입유저수', '청약완료유저수', '청약건수', '월P'];
     const pad = (n) => String(n).padStart(2, '0');
     const day = (v) => {
       const s = String(v).trim();
       let m = s.match(/^(\d{4})[-./](\d{1,2})[-./](\d{1,2})/);
       if (m) return `${m[1]}-${pad(m[2])}-${pad(m[3])}`;
+      m = s.match(/^(\d{4})(\d{2})(\d{2})$/);
+      if (m) return `${m[1]}-${m[2]}-${m[3]}`;
       m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
       if (m) return `${m[3]}-${pad(m[1])}-${pad(m[2])}`;
       if (/^\d{5}$/.test(s)) return new Date(Date.UTC(1899, 11, 30) + Number(s) * 864e5).toISOString().slice(0, 10);
@@ -388,14 +419,41 @@ const funnelLoader = {
       if (!o.일자) continue;
       o.일자 = day(o.일자);
       if (nums.every((k) => !o[k])) continue;
+      if (!o.세부채널) o.세부채널 = '(미지정)';
+      if (!o.상품) o.상품 = '(상품명 없음)';
+      // 같은 이름의 중분류·세부채널이 여러 채널에 있으므로 채널을 붙인 키로 묶습니다.
+      o.채널세부 = `${o.채널}|${o.채널중분류 || ''}|${o.세부채널}`;
+      o.채널중 = o.채널중분류 ? `${o.채널}|${o.채널중분류}` : '';
       rows.push(o);
     }
+    // 일자를 읽지 못한 행은 빼고, 같은 일자·상품군·상품·채널·중분류·세부채널 행이 여러 번 있으면 마지막 행만 씁니다.
+    const uniq = new Map();
+    let badN = 0, badEx = '';
+    for (const r of rows) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(r.일자)) { badN++; badEx = badEx || r.일자; continue; }
+      uniq.set([r.일자, r.상품군, r.상품, r.채널, r.채널중분류 || '', r.세부채널].join('|'), r);
+    }
+    if (badN) console.warn(`funnel.csv: 날짜를 읽지 못한 ${badN}행을 뺐습니다. 예: ${badEx}`);
+    if (uniq.size < rows.length - badN) console.warn(`funnel.csv: 중복 행 ${rows.length - badN - uniq.size}개는 마지막 행만 썼습니다.`);
+    rows.length = 0;
+    for (const r of uniq.values()) rows.push(r);
+    if (!rows.length) throw new Error('funnel.csv에서 읽을 수 있는 행이 없습니다. 일자 형식(예: 20261001, 2026-10-01)을 확인해 주세요.');
+    // 같은 상품명이 두 상품군에 있으면 랜딩 유저가 더 많은 상품군으로 모든 행을 옮깁니다.
+    // (예: 정기(순수보장)·암보험(순수보장) 등 보장성 상품이 미니 랜딩에도 소량 잡힌 경우)
+    const land = new Map();
+    for (const r of rows) {
+      if (!land.has(r.상품)) land.set(r.상품, new Map());
+      const m = land.get(r.상품);
+      m.set(r.상품군, (m.get(r.상품군) ?? 0) + r.랜딩유저수);
+    }
+    const home = new Map([...land].map(([p, m]) => [p, [...m].sort((a, b) => b[1] - a[1])[0][0]]));
+    for (const r of rows) { const g = home.get(r.상품); if (g && r.상품군 !== g) { r.원래상품군 = r.상품군; r.상품군 = g; } }
     return { columns, rows };
   },
 };
 dash.loader('funnel', funnelLoader);
 dash.loader('targets', {
-  description: '엑셀에서 CSV UTF-8로 저장한 목표 파일을 읽습니다. 월 표기를 YYYY-MM으로 맞추고 빈 목표는 0으로 둡니다.',
+  description: '목표 파일을 읽습니다. “2026년 10월” 같은 월 표기를 YYYY-MM으로 맞추고 빈 목표는 0으로 둡니다. 같은 월·상품군 행이 여러 번 있으면 마지막 행만 씁니다.',
   fn: ({ answer }) => {
     const text = String(answer).replace(/^\uFEFF/, '');
     const out = [];
@@ -413,19 +471,22 @@ dash.loader('targets', {
     const pad = (n) => String(n).padStart(2, '0');
     const month = (v) => {
       const s = String(v).trim();
-      const m = s.match(/^(\d{4})[-./](\d{1,2})/);
+      const m = s.match(/^(\d{4})\s*(?:[-./]|년)\s*(\d{1,2})/);
       if (m) return `${m[1]}-${pad(m[2])}`;
       if (/^\d{5}$/.test(s)) return new Date(Date.UTC(1899, 11, 30) + Number(s) * 864e5).toISOString().slice(0, 7);
       return s;
     };
     const num = (v) => { const n = Number(String(v ?? '').replace(/[,\s원]/g, '')); return Number.isFinite(n) ? n : 0; };
+    const tmiss = ['월', '상품군', '청약건수목표', '월P목표'].filter((k) => !columns.includes(k));
+    if (tmiss.length) throw new Error(`targets.csv에 필요한 열이 없습니다: ${tmiss.join(', ')}.`);
     const rows = out.slice(1).filter((r) => (r[0] ?? '').trim()).map((r) => {
       const o = {};
       columns.forEach((k, i) => { o[k] = k === '청약건수목표' || k === '월P목표' ? num(r[i]) : (r[i] ?? '').trim(); });
       o.월 = month(o.월);
       return o;
     });
-    return { columns, rows };
+    const last = new Map(rows.map((o) => [o.월 + '|' + o.상품군, o]));
+    return { columns, rows: rows.filter((o) => last.get(o.월 + '|' + o.상품군) === o) };
   },
 });
 dash.loader('activities', {
@@ -446,7 +507,7 @@ dash.loader('activities', {
       } else cell += ch;
     }
     if (cell || row.length) { row.push(cell); out.push(row); }
-    const columns = out[0].map((s) => s.trim());
+    const columns = out[0].map((s) => { const k = s.trim(); return k === '이미지 경로' || k === '이미지경로' ? '이미지' : k; });
     const pad = (n) => String(n).padStart(2, '0');
     const day = (v) => {
       const t = String(v).trim();
@@ -455,8 +516,16 @@ dash.loader('activities', {
       if (/^\d{5}$/.test(t)) return new Date(Date.UTC(1899, 11, 30) + Number(t) * 864e5).toISOString().slice(0, 10);
       return t;
     };
+    const amiss = ['활동ID', '시작일', '제목'].filter((k) => !columns.includes(k));
+    if (amiss.length) throw new Error(`activities.csv에 필요한 열이 없습니다: ${amiss.join(', ')}.`);
     const rows = out.slice(1).filter((r) => r.some((c) => c.trim())).map((r) => Object.fromEntries(columns.map((k, i) => [k, (r[i] ?? '').trim()])))
-      .filter((o) => o.시작일 || o.제목).map((o) => ({ ...o, 시작일: day(o.시작일), 종료일: o.종료일 ? day(o.종료일) : '' }));
+      .filter((o) => o.시작일 || o.제목).map((o) => ({ ...o, 시작일: day(o.시작일), 종료일: o.종료일 ? day(o.종료일) : '' }))
+      .map((o) => {
+        o.공통필드 = ['상품군', '상품', '채널', '세부채널'].filter((k) => o[k] === '공통');
+        o.공통 = o.상품 === '공통'; // 상품이 ‘공통’인 활동만 어떤 필터에서도 표시
+        for (const k of o.공통필드) o[k] = '';
+        return o;
+      });
     return { columns, rows };
   },
 });
@@ -482,7 +551,7 @@ dash.calc('period', {
 dash.calc('kpi', {
   inputs: ['funnel', 'targets', 'period'],
   title: '이번 달 KPI (상품군별)',
-  description: '이번 달 실적, 전월 동기간 대비 증감, 경과 일수로 환산한 월말 예상 목표 달성률',
+  description: '이번 달 실적, 전월 동기간 대비 증감, 경과 일수로 환산한 월말 예상 목표 달성률. 보장성 GSM은 청약 건수·월P에는 넣고 방문수·전환율에서는 뺍니다.',
   fn: (funnel, targets, period) => {
     const p = period[0];
     const agg = {};
@@ -490,7 +559,9 @@ dash.calc('kpi', {
       const k = r.일자 >= p.기간시작 && r.일자 <= p.기준일 ? 'c' : r.일자 >= p.전월시작 && r.일자 <= p.전월종료 ? 'p' : null;
       if (!k) continue;
       const a = (agg[r.상품군 + k] ??= { L: 0, C: 0, N: 0, P: 0 });
-      a.L += r.랜딩유저수; a.C += r.청약완료유저수; a.N += r.청약건수; a.P += r.월P;
+      a.N += r.청약건수; a.P += r.월P;
+      if (r.채널 === 'GSM' && r.상품군 === '보장성') continue; // 보장성 GSM은 전환율·방문수에서 제외
+      a.L += r.랜딩유저수; a.C += r.청약완료유저수;
     }
     const pace = p.월일수 / p.경과일수;
     return ['보장성', '미니'].map((g) => {
@@ -501,7 +572,7 @@ dash.calc('kpi', {
       return {
         상품군: g,
         청약건수: c.N, 청약건수_증감률: q.N ? c.N / q.N - 1 : null, 청약건수_예상달성률: tN ? (c.N * pace) / tN : null,
-        월P_천원: Math.round(c.P / 1e3), 월P_증감률: q.P ? c.P / q.P - 1 : null, 월P_예상달성률: tP ? (c.P * pace) / tP : null,
+        월P: Math.round(c.P), 월P_증감률: q.P ? c.P / q.P - 1 : null, 월P_예상달성률: tP ? (c.P * pace) / tP : null,
         랜딩기준전환율: c.L ? c.C / c.L : null, 랜딩기준전환율_증감: c.L && q.L ? c.C / c.L - q.C / q.L : null,
         랜딩유저수: c.L, 랜딩유저수_증감률: q.L ? c.L / q.L - 1 : null,
       };
@@ -531,7 +602,7 @@ dash.calc('pacing', {
         const day = `${p.월}-${String(d).padStart(2, '0')}`;
         cum += daily[g + '|' + day] ?? 0;
         cumP += dailyP[g + '|' + day] ?? 0;
-        out.push({ 키: `${g}|${day}`, 상품군: g, 일자: day, 누적청약건수: cum, 목표페이스: t ? Math.round((t.청약건수목표 * d) / p.월일수) : null, 월목표: t ? t.청약건수목표 : null, 누적월P_천원: Math.round(cumP / 1e3), 월P목표페이스_천원: t && t.월P목표 ? Math.round((t.월P목표 * d) / p.월일수 / 1e3) : null, 월P목표_천원: t && t.월P목표 ? Math.round(t.월P목표 / 1e3) : null });
+        out.push({ 키: `${g}|${day}`, 상품군: g, 일자: day, 누적청약건수: cum, 목표페이스: t ? Math.round((t.청약건수목표 * d) / p.월일수) : null, 월목표: t ? t.청약건수목표 : null, 누적월P: Math.round(cumP), 월P목표페이스: t && t.월P목표 ? Math.round((t.월P목표 * d) / p.월일수) : null, 월P목표: t && t.월P목표 ? Math.round(t.월P목표) : null });
       }
     }
     return out;
@@ -552,8 +623,11 @@ dash.calc('mix', {
       for (const g of ['전체', r.상품군]) { add(`${g}|${r.채널}|${k}`, r.청약건수); add(`${g}||${k}`, r.청약건수); }
     }
     const out = [];
+    const pref = ['앱', '디광', '오가닉', '제휴', 'GSM', '기타'];
+    const found = [...new Set(funnel.map((r) => r.채널))];
+    const chans = [...pref.filter((c) => found.includes(c)), ...found.filter((c) => !pref.includes(c)).sort()];
     for (const g of ['전체', '보장성', '미니']) {
-      for (const ch of ['앱', '디광', '오가닉', '제휴', 'GSM']) {
+      for (const ch of chans) {
         const c = n[`${g}|${ch}|c`] ?? 0, q = n[`${g}|${ch}|p`] ?? 0;
         const tc = n[`${g}||c`] ?? 0, tq = n[`${g}||p`] ?? 0;
         out.push({ 키: `${g}|${ch}`, 상품군: g, 채널: ch, 청약건수: c, 청약건수_전월: q, 비중: tc ? c / tc : null, 비중_전월: tq ? q / tq : null });
@@ -570,15 +644,18 @@ dash.calc('movers', {
   fn: (funnel, period) => {
     const p = period[0];
     const a = {};
+    const land = {};
+    for (const r of funnel) land[r.상품] = { ...(land[r.상품] || {}), [r.상품군]: ((land[r.상품] || {})[r.상품군] || 0) + r.랜딩유저수 };
+    const groupOf = (pr) => Object.entries(land[pr] || {}).sort((x, y) => y[1] - x[1])[0]?.[0];
     for (const r of funnel) {
       const k = r.일자 >= p.기간시작 && r.일자 <= p.기준일 ? 'c' : r.일자 >= p.전월시작 && r.일자 <= p.전월종료 ? 'p' : null;
       if (!k) continue;
-      const s = (a[`${r.상품} · ${r.채널}`] ??= { 상품군: r.상품군, Lc: 0, Cc: 0, Lp: 0, Cp: 0 });
+      const s = (a[`${r.상품} · ${r.채널}`] ??= { 상품군: groupOf(r.상품), 상품: r.상품, 채널: r.채널, Lc: 0, Cc: 0, Lp: 0, Cp: 0 });
       s['L' + k] += r.랜딩유저수; s['C' + k] += r.청약완료유저수;
     }
     return Object.entries(a)
       .filter(([, s]) => s.Lc >= 300 && s.Lp >= 300 && s.Cp > 0)
-      .map(([seg, s]) => ({ 세그먼트: seg, 상품군: s.상품군, 랜딩유저수: s.Lc, 랜딩기준전환율: s.Cc / s.Lc, 랜딩기준전환율_전월: s.Cp / s.Lp, 변화율: (s.Cc / s.Lc) / (s.Cp / s.Lp) - 1 }))
+      .map(([seg, s]) => ({ 세그먼트: seg, 상품군: s.상품군, 상품: s.상품, 채널: s.채널, 랜딩유저수: s.Lc, 랜딩기준전환율: s.Cc / s.Lc, 랜딩기준전환율_전월: s.Cp / s.Lp, 변화율: (s.Cc / s.Lc) / (s.Cp / s.Lp) - 1 }))
       .filter((s) => Math.abs(s.변화율) >= 0.2)
       .sort((x, y) => Math.abs(y.변화율) - Math.abs(x.변화율));
   },
@@ -586,18 +663,23 @@ dash.calc('movers', {
 
 const F = (window.FN = window.FN || {});
 F.CONST = { MIN: 100, MOVER_L: 300, MOVER_CHG: 0.2 };
-F.GROUPS = ['보장성', '미니'];
-F.CHANNELS = ['앱', '디광', '오가닉', '제휴', 'GSM'];
+// 표시 순서. 데이터에 다른 상품군·채널이 있으면 뒤에 붙여 보여 줍니다.
+F.GROUP_ORDER = ['보장성', '미니'];
+F.CHANNEL_ORDER = ['앱', '디광', '오가닉', '제휴', 'GSM', '기타'];
+F.ordered = (pref, found) => [...pref.filter((x) => found.includes(x)), ...found.filter((x) => !pref.includes(x)).sort((a, b) => a.localeCompare(b, 'ko'))];
+Object.defineProperty(F, 'GROUPS', { get: () => (F.rowsOf() ? F.memo('groups', (rows) => F.ordered(F.GROUP_ORDER, [...new Set(rows.map((r) => r.상품군))])) : F.GROUP_ORDER) });
+Object.defineProperty(F, 'CHANNELS', { get: () => (F.rowsOf() ? F.memo('channels', (rows) => F.ordered(F.CHANNEL_ORDER, [...new Set(rows.map((r) => r.채널))])) : F.CHANNEL_ORDER) });
 F.fmt = {
   count: (v) => d3.format(',')(Math.round(v)),
-  pct: (v) => d3.format('.1%')(v),
+  pct: (v) => (Math.abs(v) < 0.01 && v !== 0 ? d3.format('.2%')(v) : d3.format('.1%')(v)),
   pct0: (v) => d3.format('.0%')(v),
   chg: (v) => (v > 0 ? '+' : '') + d3.format('.1%')(v),
-  pp: (v) => (v > 0 ? '+' : '') + (v * 100).toFixed(1) + '%p',
+  pp: (v) => { const x = v * 100, a = Math.abs(x); return (x > 0 ? '+' : '') + (a === 0 ? '0.0' : a < 0.01 ? x.toFixed(3) : a < 1 ? x.toFixed(2) : x.toFixed(1)).replace('-', '−') + '%p'; },
   chun: (v) => d3.format(',')(Math.round(v)) + '천원',
-  won: (v) => d3.format(',')(Math.round(v / 1e3)) + '천원',
+  won: (v) => d3.format(',')(Math.round(v)) + '원',
   raw: (v) => String(v),
 };
+F.axisPct = (lo, hi) => d3.format(hi - lo < 0.03 ? '.2%' : hi - lo < 0.3 ? '.1%' : '.0%');
 F.pad = (n) => String(n).padStart(2, '0');
 F.shiftMonth = (s, k) => {
   let y = +s.slice(0, 4), m = +s.slice(5, 7) + k;
@@ -612,8 +694,10 @@ F.rowsOf = () => { const g = dash.data('funnel'); return g.status === 'ok' ? g.d
 F.ready = () => !!(F.rowsOf() && F.period());
 F.state = () => {
   const p = dash.params(), per = F.period();
+  let start = p.start || (per ? per.기간시작 : ''), end = p.end || (per ? per.기준일 : '');
+  if (start && end && start > end) [start, end] = [end, start];
   return {
-    start: p.start || (per ? per.기간시작 : ''), end: p.end || (per ? per.기준일 : ''),
+    start, end,
     group: p.group || '', product: p.product || '', channel: p.channel || '', subch: p.subch || '',
   };
 };
@@ -624,33 +708,52 @@ F.memo = (key, make) => {
   if (!F._c.has(key)) F._c.set(key, make(rows));
   return F._c.get(key);
 };
+F.short = (k) => String(k).split('|').pop() || '(미지정)';
 F.zero = () => ({ L: 0, S: 0, A: 0, C: 0, N: 0, P: 0 });
-F.add = (a, r) => { a.L += r.랜딩유저수; a.S += r.설계진입유저수; a.A += r.청약진입유저수; a.C += r.청약완료유저수; a.N += r.청약건수; a.P += r.월P; return a; };
-F.rate = (n, d) => (d >= F.CONST.MIN ? n / d : null);
+// 보장성 GSM(상담 연계 채널)은 청약 건수·월P에는 넣고, 유저 단계 수와 전환율에서는 뺍니다.
+// keep이 참이면(GSM만 보는 경우·채널별 행) GSM 유저도 셉니다.
+F.gsmEx = (r) => r.채널 === 'GSM' && r.상품군 === '보장성';
+F.keepGsm = (st) => st.channel === 'GSM';
+F.add = (a, r, keep) => { if (!keep && F.gsmEx(r)) { a.N += r.청약건수; a.P += r.월P; return a; } a.L += r.랜딩유저수; a.S += r.설계진입유저수; a.A += r.청약진입유저수; a.C += r.청약완료유저수; a.N += r.청약건수; a.P += r.월P; return a; };
+F.rate = (n, d) => (d > 0 ? n / d : null);
 F.rates = (a) => ({ r1: F.rate(a.S, a.L), r2: F.rate(a.A, a.S), r3: F.rate(a.C, a.A), rL: F.rate(a.C, a.L) });
 F.cut = (st, dim) => F.memo(`cut|${dim}|${JSON.stringify(st)}`, (rows) => {
   const ps = F.shiftMonth(st.start, -1), pe = F.shiftMonth(st.end, -1);
   const out = { cur: new Map(), prev: new Map(), tc: F.zero(), tp: F.zero(), ps, pe };
+  const keepT = F.keepGsm(st), keepD = keepT || ['채널', '채널세부', '채널중'].includes(dim);
   for (const r of rows) {
     const d = r.일자;
     const k = d >= st.start && d <= st.end ? 'cur' : d >= ps && d <= pe ? 'prev' : null;
     if (!k || !F.match(r, st)) continue;
-    F.add(k === 'cur' ? out.tc : out.tp, r);
+    F.add(k === 'cur' ? out.tc : out.tp, r, keepT);
     if (dim) {
       const m = out[k];
       if (!m.has(r[dim])) m.set(r[dim], F.zero());
-      F.add(m.get(r[dim]), r);
+      F.add(m.get(r[dim]), r, keepD);
     }
   }
   return out;
 });
 F.parents = () => F.memo('parents', (rows) => {
-  const 상품 = new Map(), 세부채널 = new Map(), 채널중분류 = new Map(), 세부중분류 = new Map();
+  const 상품 = new Map(), 세부채널 = new Map(), 채널세부 = new Map(), 채널중 = new Map(), 세부중분류 = new Map(), 채널별세부 = new Map();
+  const land = new Map(), subCh = new Map();
   for (const r of rows) {
-    상품.set(r.상품, r.상품군); 세부채널.set(r.세부채널, r.채널); 세부중분류.set(r.세부채널, r.채널중분류 || '');
-    if (r.채널중분류) 채널중분류.set(r.채널중분류, r.채널);
+    const k = r.상품 + '\u0000' + r.상품군;
+    land.set(k, (land.get(k) ?? 0) + r.랜딩유저수 + 1e-6);
+    채널세부.set(r.채널세부, r.채널); 세부중분류.set(r.채널세부, r.채널중);
+    if (r.채널중) 채널중.set(r.채널중, r.채널);
+    if (!채널별세부.has(r.채널)) 채널별세부.set(r.채널, new Set());
+    채널별세부.get(r.채널).add(r.세부채널);
+    if (!subCh.has(r.세부채널)) subCh.set(r.세부채널, new Set());
+    subCh.get(r.세부채널).add(r.채널);
   }
-  return { 상품, 세부채널, 채널중분류, 세부중분류 };
+  // 세부채널 이름 → 채널은 한 채널에만 있는 이름일 때만 정합니다(기타·메인팝업 등은 여러 채널에 있음).
+  for (const [n, set] of subCh) 세부채널.set(n, set.size === 1 ? [...set][0] : null);
+  // 같은 상품명이 두 상품군에 있으면 랜딩 유저가 더 많은 상품군으로 분류합니다.
+  const best = new Map();
+  for (const [k, v] of land) { const [p, g] = k.split('\u0000'); if (!best.has(p) || v > best.get(p).v) best.set(p, { g, v }); }
+  for (const [p, b] of best) 상품.set(p, b.g);
+  return { 상품, 세부채널, 채널세부, 채널중, 세부중분류, 채널별세부 };
 });
 F.weekly = (st) => F.memo(`wk|${JSON.stringify({ ...st, start: '', end: '' })}`, (rows) => {
   const end = Date.parse(F.period().기준일 + 'T00:00:00Z');
@@ -658,9 +761,33 @@ F.weekly = (st) => F.memo(`wk|${JSON.stringify({ ...st, start: '', end: '' })}`,
   for (const r of rows) {
     if (!F.match(r, st)) continue;
     const i = Math.floor((end - Date.parse(r.일자 + 'T00:00:00Z')) / 864e5 / 7);
-    if (i >= 0 && i < 12) F.add(weeks[11 - i], r);
+    if (i >= 0 && i < 12) F.add(weeks[11 - i], r, F.keepGsm(st));
   }
-  return weeks.map((a, j) => ({ 주차끝: new Date(end - (11 - j) * 7 * 864e5), ...F.rates(a) }));
+  return weeks.map((a, j) => ({ 주차끝: new Date(end - (11 - j) * 7 * 864e5), ...F.rates(a), N: a.N, L: a.L, C: a.C }));
+});
+F.trend = (st, unit) => F.memo(`tr|${unit}|${JSON.stringify({ ...st, start: '', end: '' })}`, (rows) => {
+  const endS = F.period().기준일, end = Date.parse(endS + 'T00:00:00Z');
+  const first = rows.reduce((m, r) => (r.일자 < m ? r.일자 : m), '9999');
+  let buckets;
+  if (unit === 'day') buckets = d3.range(84).map((j) => { const d = F.iso(new Date(end - (83 - j) * 864e5)); return { from: d, to: d }; });
+  else if (unit === 'month') {
+    buckets = d3.range(12).map((j) => {
+      const s = F.shiftMonth(endS.slice(0, 8) + '01', -(11 - j));
+      const e = F.iso(new Date(Date.UTC(+s.slice(0, 4), +s.slice(5, 7), 0)));
+      return { from: s, to: e > endS ? endS : e, open: e > endS };
+    });
+  } else buckets = d3.range(12).map((j) => ({ from: F.iso(new Date(end - ((11 - j) * 7 + 6) * 864e5)), to: F.iso(new Date(end - (11 - j) * 7 * 864e5)) }));
+  const acc = buckets.map(() => F.zero());
+  for (const r of rows) {
+    if (!F.match(r, st) || r.일자 < buckets[0].from || r.일자 > endS) continue;
+    let i;
+    if (unit === 'day') i = 83 - Math.round((end - Date.parse(r.일자 + 'T00:00:00Z')) / 864e5);
+    else if (unit === 'month') i = buckets.findIndex((b) => r.일자 >= b.from && r.일자 <= b.to);
+    else i = 11 - Math.floor((end - Date.parse(r.일자 + 'T00:00:00Z')) / 864e5 / 7);
+    if (i >= 0 && i < buckets.length) F.add(acc[i], r, F.keepGsm(st));
+  }
+  const out = buckets.map((b, j) => ({ ...b, d: new Date(Date.parse((unit === 'month' ? b.from : b.to) + 'T00:00:00Z')), part: b.from < first, ...F.rates(acc[j]), N: acc[j].N, L: acc[j].L }));
+  return out.filter((b) => b.to >= first);
 });
 F.tip = (el) => {
   let t = el.querySelector(':scope > .fn-tip');
@@ -681,9 +808,15 @@ F.tipLines = (tip, head, lines) => {
 };
 F.iso = d3.utcFormat('%Y-%m-%d');
 F.ATYPES = ['메시지', 'UI', '내부광고채널1', '내부광고채널2', '내부광고채널3', '내부광고채널4', '기타'];
-F.typeColor = (t) => { const i = F.ATYPES.indexOf(t); return i < 0 ? 'var(--cds-chart-muted)' : dash.colors[(i + 1) % dash.colors.length]; };
+F.typeColor = (t) => {
+  const rows = F.actRows() || [];
+  const all = F.ATYPES.filter((x) => rows.some((a) => a.활동유형 === x)).concat([...new Set(rows.map((a) => a.활동유형))].filter((x) => x && !F.ATYPES.includes(x)));
+  const i = all.indexOf(t);
+  return i < 0 ? 'var(--cds-chart-muted)' : dash.colors[(i + 1) % dash.colors.length];
+};
 F.actRows = () => { const g = dash.data('activities'); return g.status === 'ok' ? g.data : null; };
-F.actScope = (a, st) => [['상품군', 'group'], ['상품', 'product'], ['채널', 'channel'], ['세부채널', 'subch']].every(([col, key]) => !st[key] || !a[col] || a[col] === st[key]);
+F.sameName = (x, y) => x === y || x.replace(/\s*보험$/, '') === y || y.replace(/\s*보험$/, '') === x;
+F.actScope = (a, st) => a.공통 || [['상품군', 'group'], ['상품', 'product'], ['채널', 'channel'], ['세부채널', 'subch']].every(([col, key]) => !st[key] || !a[col] || F.sameName(a[col], st[key]));
 F.acts = (st) => {
   const rows = F.actRows() || [];
   const t = dash.params().atype || '';
@@ -697,7 +830,47 @@ F.sel = () => {
   if (s.startsWith('a:')) return { id: s.slice(2), label: s.slice(2), kind: 'a' };
   return { from: st.start, to: st.end, label: `${st.start} ~ ${st.end}`, kind: '' };
 };
-F.imgSrc = (v) => { const s = String(v || '').trim(); if (/^[\w.()\- 가-힣]+\.(png|jpe?g|gif|webp)$/i.test(s)) return 'data/images/' + encodeURIComponent(s); return s.startsWith('data:image/') ? s : ''; };
+F.imgSrc = (v) => {
+  const s = String(v || '').trim();
+  if (/^[\w.()\- 가-힣]+\.(png|jpe?g|gif|webp)$/i.test(s)) return 'data/images/' + encodeURIComponent(s);
+  if (/^https?:\/\/\S+\.(png|jpe?g|gif|webp)(\?\S*)?$/i.test(s)) return s;
+  return s.startsWith('data:image/') ? s : '';
+};
+// 이미지 레이어 팝업: 페이지 안에서 크게 보여 주고 Esc·배경 클릭·닫기 버튼으로 닫습니다.
+F.lightbox = (src, caption) => {
+  let box = document.getElementById('fn-lightbox');
+  if (!box) {
+    box = document.createElement('div');
+    box.id = 'fn-lightbox'; box.className = 'fn-lb'; box.hidden = true;
+    box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', '활동 이미지');
+    box.innerHTML = '<div class="fn-lb-panel"><div class="fn-lb-head"><span class="fn-lb-cap"></span><button type="button" class="fn-lb-close" aria-label="닫기">✕</button></div><div class="fn-lb-body"><img class="fn-lb-img" alt=""><p class="fn-lb-err" hidden>이미지를 불러오지 못했습니다. 주소가 맞는지, 이 화면에서 그 주소에 접근할 수 있는지 확인해 주세요.<br><a class="fn-lb-link" target="_blank" rel="noopener noreferrer">새 창에서 열기 ↗</a></p></div></div>';
+    document.body.appendChild(box);
+    const close = () => { box.hidden = true; document.documentElement.style.overflow = ''; F._lbFrom?.focus?.(); };
+    box.querySelector('.fn-lb-close').addEventListener('click', close);
+    box.addEventListener('click', (e) => { if (e.target === box) close(); });
+    document.addEventListener('keydown', (e) => { if (!box.hidden && e.key === 'Escape') close(); });
+    const im = box.querySelector('.fn-lb-img');
+    im.addEventListener('error', () => { im.hidden = true; box.querySelector('.fn-lb-err').hidden = false; });
+    im.addEventListener('load', () => { im.hidden = false; box.querySelector('.fn-lb-err').hidden = true; });
+  }
+  F._lbFrom = document.activeElement;
+  const im = box.querySelector('.fn-lb-img');
+  box.querySelector('.fn-lb-cap').textContent = caption || '';
+  box.querySelector('.fn-lb-link').href = src;
+  box.querySelector('.fn-lb-err').hidden = true;
+  im.hidden = false; im.alt = caption || '활동 이미지'; im.src = src;
+  box.hidden = false;
+  document.documentElement.style.overflow = 'hidden';
+  box.querySelector('.fn-lb-close').focus();
+};
+F.fitTicks = (axisG, W) => axisG.selectAll('.tick').each(function () {
+  const m = /translate\(([-\d.]+)/.exec(this.getAttribute('transform') || '');
+  const t = this.querySelector('text');
+  if (!m || !t) return;
+  const x = +m[1], w = t.getComputedTextLength();
+  if (x + w / 2 > W - 2) t.setAttribute('text-anchor', 'end');
+  else if (x - w / 2 < 0) t.setAttribute('text-anchor', 'start');
+});
 F.TABS = ['summary', 'funnel', 'segment', 'defs'];
 F.showTab = (id) => {
   if (!F.TABS.includes(id)) id = 'summary';
@@ -730,6 +903,7 @@ dash.onData(() => {
   });
 });
 F.showTab(location.hash.slice(1));
+window.addEventListener('hashchange', () => F.showTab(location.hash.slice(1)));
 })();</script>
 <script>(() => {
 const F = window.FN;
@@ -762,15 +936,24 @@ dash.draw('pace', (el) => {
   const rows = g.data.filter((r) => r.상품군 === el.dataset.group);
   if (!rows.length || !per) { el.textContent = '—'; return; }
   const isP = el.dataset.metric === 'P';
-  const fA = isP ? '누적월P_천원' : '누적청약건수', fT = isP ? '월P목표페이스_천원' : '목표페이스', fG = isP ? '월P목표_천원' : '월목표', unit = isP ? '천원' : '건';
+  const fA = isP ? '누적월P' : '누적청약건수', fT = isP ? '월P목표페이스' : '목표페이스', fG = isP ? '월P목표' : '월목표', unit = isP ? '원' : '건';
   const goal = rows[0][fG];
   const dim = per.월일수;
   const W = Math.max(280, el.clientWidth), H = +(el.dataset.h || 220), m = { t: 14, r: 70, b: 24, l: 8 };
+  {
+    const probe = d3.select(el).append('svg').attr('width', 0).attr('height', 0).style('position', 'absolute');
+    const lab = goal ? '목표 ' + (isP ? d3.format('.1f')(goal / 1e8) + '억' : d3.format(',')(goal)) : '';
+    const lastLab = isP ? d3.format('.1f')(rows[rows.length - 1][fA] / 1e8) + '억' : d3.format(',')(rows[rows.length - 1][fA]);
+    const w1 = lab ? probe.append('text').text(lab).node().getComputedTextLength() : 0;
+    const w2 = probe.append('text').attr('class', 'fn-strong').text(lastLab).node().getComputedTextLength();
+    probe.remove();
+    m.r = Math.max(w1 + 12, w2 + 14, 40);
+  }
   const last = rows[rows.length - 1];
   const yMax = Math.max(goal ?? 0, last[fA]) * 1.08;
   const y = d3.scaleLinear([0, yMax], [H - m.b, m.t]).nice();
   const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`);
-  const yAxis = svg.append('g').call(d3.axisLeft(y).ticks(4).tickFormat(isP ? (v) => (v === 0 ? '0' : d3.format('~')(v / 1e5) + '억') : d3.format('~s')).tickSize(0)).attr('font-size', null).attr('font-family', null);
+  const yAxis = svg.append('g').call(d3.axisLeft(y).ticks(4).tickFormat(isP ? (v) => (v === 0 ? '0' : d3.format('~')(v / 1e8) + '억') : d3.format('~s')).tickSize(0)).attr('font-size', null).attr('font-family', null);
   yAxis.select('.domain').remove();
   let lw = 0;
   yAxis.selectAll('text').each(function () { lw = Math.max(lw, this.getComputedTextLength()); });
@@ -778,16 +961,16 @@ dash.draw('pace', (el) => {
   yAxis.attr('transform', `translate(${m.l - 6},0)`);
   const x = d3.scaleLinear([1, dim], [m.l, W - m.r]);
   svg.append('g').selectAll('line').data(y.ticks(4)).join('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', (d) => y(d)).attr('y2', (d) => y(d)).attr('stroke', 'var(--cds-chart-grid)');
-  svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).tickValues([1, 8, 15, 22, dim]).tickFormat((d) => d + '일').tickSizeOuter(0)).attr('font-size', null).attr('font-family', null);
+  svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).tickValues([1, 8, 15, 22, dim]).tickFormat((d) => d + '일').tickSizeOuter(0)).attr('font-size', null).attr('font-family', null).call((g) => F.fitTicks(g, W));
   if (goal) {
     svg.append('line').attr('x1', x(1)).attr('y1', y(goal / dim)).attr('x2', x(dim)).attr('y2', y(goal)).attr('stroke', 'var(--cds-chart-reference)').attr('stroke-width', 1.5).attr('stroke-dasharray', '4 4');
-    svg.append('text').attr('x', x(dim) + 6).attr('y', y(goal) + 4).text('목표 ' + (isP ? d3.format('.1f')(goal / 1e5) + '억' : d3.format(',')(goal)));
+    svg.append('text').attr('x', x(dim) + 6).attr('y', y(goal) + 4).text('목표 ' + (isP ? d3.format('.1f')(goal / 1e8) + '억' : d3.format(',')(goal)));
   }
   const pts = rows.map((r) => [x(+r.일자.slice(8, 10)), y(r[fA])]);
   svg.append('path').attr('d', d3.line()(pts)).attr('fill', 'none').attr('stroke', dash.colors[0]).attr('stroke-width', 2).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
   const lp = pts[pts.length - 1];
   svg.append('circle').attr('cx', lp[0]).attr('cy', lp[1]).attr('r', 3.5).attr('fill', dash.colors[0]);
-  svg.append('text').attr('class', 'fn-strong').attr('x', lp[0] + 8).attr('y', lp[1] + 4).text(isP ? d3.format('.1f')(last[fA] / 1e5) + '억' : d3.format(',')(last[fA]));
+  svg.append('text').attr('class', 'fn-strong').attr('x', lp[0] + 8).attr('y', lp[1] + 4).text(isP ? d3.format('.1f')(last[fA] / 1e8) + '억' : d3.format(',')(last[fA]));
   const dot = svg.append('circle').attr('r', 4).attr('fill', dash.colors[0]).attr('visibility', 'hidden');
   const tip = F.tip(el);
   svg.append('rect').attr('x', m.l).attr('y', m.t).attr('width', W - m.l - m.r).attr('height', H - m.t - m.b).attr('fill', 'transparent')
@@ -832,10 +1015,10 @@ dash.draw('mix', (el) => {
   gs.append('rect').attr('x', 0).attr('y', 0).attr('width', W).attr('height', rh).attr('fill', 'transparent');
   gs.append('text').attr('class', 'fn-strong').attr('x', 0).attr('y', 20).text((r) => r.채널);
   gs.append('rect').attr('x', x0).attr('y', 8).attr('height', 16).attr('rx', 3).attr('width', (r) => Math.max(1, x(r.비중 ?? 0) - x0)).attr('fill', dash.colors[0]);
-  gs.append('rect').attr('x', x0).attr('y', 28).attr('height', 4).attr('rx', 2).attr('width', (r) => Math.max(1, x(r.비중_전월 ?? 0) - x0)).attr('fill', 'var(--cds-chart-muted)');
+  gs.append('rect').attr('x', x0).attr('y', 28).attr('height', 8).attr('rx', 3).attr('width', (r) => Math.max(1, x(r.비중_전월 ?? 0) - x0)).attr('fill', 'var(--cds-chart-muted)');
   const lab = gs.append('text').attr('x', x1 + 8).attr('y', 20);
   lab.append('tspan').attr('class', 'fn-strong').text((r) => F.fmt.pct(r.비중 ?? 0));
-  lab.append('tspan').attr('dx', 6).style('fill', (r) => (r.비중 - r.비중_전월 > 0 ? 'var(--color-ok)' : 'var(--color-bad)')).text((r) => (r.비중 != null && r.비중_전월 != null ? F.fmt.pp(r.비중 - r.비중_전월) : ''));
+  lab.append('tspan').attr('dx', 6).style('fill', (r) => (r.비중 - r.비중_전월 > 0 ? 'var(--color-ok)' : r.비중 - r.비중_전월 < 0 ? 'var(--color-bad)' : 'var(--color-fg-muted)')).text((r) => (r.비중 != null && r.비중_전월 != null ? F.fmt.pp(r.비중 - r.비중_전월) : ''));
 });
 
 dash.draw('movers-body', (tb) => {
@@ -847,6 +1030,15 @@ dash.draw('movers-body', (tb) => {
   for (const r of rows) {
     const tr = tb.insertRow();
     tr.dataset.key = r.세그먼트;
+    tr.className = 'fn-click';
+    tr.tabIndex = 0;
+    tr.title = '퍼널 진단에서 보기';
+    const open = () => {
+      const group = F.parents().상품.get(r.상품) || r.상품군;
+      F.go('funnel', { start: null, end: null, group, product: r.상품, channel: r.채널, subch: null, asel: null });
+    };
+    tr.onclick = open;
+    tr.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } };
     [r.세그먼트, F.fmt.count(r.랜딩유저수), F.fmt.pct(r.랜딩기준전환율), F.fmt.pct(r.랜딩기준전환율_전월), F.fmt.chg(r.변화율)].forEach((t, i) => {
       const td = tr.insertCell(); td.textContent = t;
       if (i === 4) td.className = r.변화율 > 0 ? 'fn-up' : 'fn-down';
@@ -871,7 +1063,7 @@ dash.draw('opt', (sel) => {
     if (dim === 'group') values = F.GROUPS;
     else if (dim === 'channel') values = F.CHANNELS;
     else if (dim === 'product') values = [...F.parents().상품].filter(([, g]) => !p.group || g === p.group).map(([k]) => k);
-    else if (dim === 'subch') values = [...F.parents().세부채널].filter(([, c]) => !p.channel || c === p.channel).map(([k]) => k);
+    else if (dim === 'subch') values = p.channel ? [...(F.parents().채널별세부.get(p.channel) || [])] : [...F.parents().세부채널.keys()];
   }
   sel.replaceChildren(new Option('전체', ''), ...values.map((v) => new Option(v, v)));
   const cur = p[dim] || '';
@@ -881,7 +1073,7 @@ dash.draw('opt', (sel) => {
     if (dim === 'group') dash.setParams({ group: v, product: null });
     else if (dim === 'channel') dash.setParams({ channel: v, subch: null });
     else if (dim === 'product') dash.setParams({ product: v, group: v ? F.parents().상품.get(v) : p.group || null });
-    else if (dim === 'subch') dash.setParams({ subch: v, channel: v ? F.parents().세부채널.get(v) : p.channel || null });
+    else if (dim === 'subch') dash.setParams({ subch: v, channel: v ? F.parents().세부채널.get(v) || p.channel || null : p.channel || null });
     else dash.setParams({ [dim]: v });
   };
 });
@@ -907,7 +1099,7 @@ dash.draw('f-chip', (el) => {
     if (part === 'val') { v = a; fmt = F.fmt.pct; }
     else { v = a != null && b != null ? a - b : null; fmt = F.fmt.pp; }
   }
-  if (v == null) { el.textContent = part === 'val' ? '표본 부족' : '—'; return; }
+  if (v == null) { el.textContent = '—'; return; }
   el.textContent = fmt(v);
   if (part === 'delta') { if (v > 0) el.classList.add('fn-up'); else if (v < 0) el.classList.add('fn-down'); }
 });
@@ -938,14 +1130,14 @@ dash.draw('funnel-chart', (el) => {
     const g = svg.append('g').attr('transform', `translate(0,${gy})`);
     g.append('text').attr('class', 'fn-strong').attr('x', 0).attr('y', 18).text(n);
     g.append('rect').attr('x', x0).attr('y', 4).attr('height', 20).attr('rx', 3).attr('width', Math.max(1, x(cur[i]) - x0)).attr('fill', dash.colors[0]);
-    g.append('rect').attr('x', x0).attr('y', 28).attr('height', 4).attr('rx', 2).attr('width', Math.max(1, x(prev[i]) - x0)).attr('fill', 'var(--cds-chart-muted)');
+    g.append('rect').attr('x', x0).attr('y', 28).attr('height', 8).attr('rx', 3).attr('width', Math.max(1, x(prev[i]) - x0)).attr('fill', 'var(--cds-chart-muted)');
     g.append('text').attr('class', 'fn-strong').attr('x', x(cur[i]) + 8).attr('y', 18).text(d3.format(',')(cur[i]));
     if (i > 0) {
       const t = g.append('text').attr('x', x0).attr('y', -14);
       t.text(`↓ ${F.fmt.pct(1 - loss[i - 1])} 진행 · ${F.fmt.pct(loss[i - 1])} 이탈`);
       if (i - 1 === worst) t.style('fill', 'var(--cds-chart-status-critical)');
     }
-    g.append('rect').attr('x', 0).attr('y', 0).attr('width', W).attr('height', 36).attr('fill', 'transparent')
+    g.append('rect').attr('x', 0).attr('y', 0).attr('width', W).attr('height', 40).attr('fill', 'transparent')
       .on('pointermove', (ev) => {
         F.tipLines(tip, n, ['선택 구간 ' + d3.format(',')(cur[i]) + '명', '전월 동기간 ' + d3.format(',')(prev[i]) + '명', prev[i] ? '증감 ' + F.fmt.chg(cur[i] / prev[i] - 1) : '']);
         const [px, py] = d3.pointer(ev, el); F.place(el, tip, px, py);
@@ -972,7 +1164,7 @@ dash.draw('heat-body', (tb) => {
     const r = F.rates(a);
     for (const k of ['r1', 'r2', 'r3', 'rL']) {
       const td = tr.insertCell();
-      if (r[k] == null) { td.textContent = '표본 부족'; td.className = 'fn-na'; continue; }
+      if (r[k] == null) { td.textContent = '—'; td.className = 'fn-na'; continue; }
       td.textContent = F.fmt.pct(r[k]);
       if (!isTotal && total[k]) {
         const dev = r[k] / total[k] - 1;
@@ -992,7 +1184,8 @@ dash.draw('weekly', (el) => {
   if (!F.ready()) { el.textContent = '—'; return; }
   const k = el.dataset.metric;
   const st = F.state();
-  const series = F.weekly(st).map((w) => ({ d: w.주차끝, v: w[k], to: F.iso(w.주차끝), from: F.iso(new Date(+w.주차끝 - 6 * 864e5)) }));
+  const unit = ['day', 'week', 'month'].includes(dash.params().tunit) ? dash.params().tunit : 'week';
+  const series = F.trend(st, unit).map((w) => ({ d: w.d, v: w[k], to: w.to, from: w.from, open: w.open, part: w.part }));
   const vals = series.filter((s) => s.v != null);
   if (!vals.length) { el.textContent = '—'; return; }
   const acts = F.acts(st);
@@ -1003,21 +1196,24 @@ dash.draw('weekly', (el) => {
   const pad = (ext[1] - ext[0]) * 0.25 || ext[1] * 0.1;
   const y = d3.scaleLinear([Math.max(0, ext[0] - pad), ext[1] + pad], [H - m.b, m.t]);
   const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`);
-  const ya = svg.append('g').call(d3.axisLeft(y).ticks(3).tickFormat(d3.format('.0%')).tickSize(0)).attr('font-size', null).attr('font-family', null);
+  const ya = svg.append('g').call(d3.axisLeft(y).ticks(3).tickFormat(F.axisPct(...y.domain())).tickSize(0)).attr('font-size', null).attr('font-family', null);
   ya.select('.domain').remove();
   let lw = 0; ya.selectAll('text').each(function () { lw = Math.max(lw, this.getComputedTextLength()); });
   m.l = lw + 12; ya.attr('transform', `translate(${m.l - 6},0)`);
   const x = d3.scaleUtc(d3.extent(series, (s) => s.d), [m.l + 8, W - m.r]);
   const step = series.length > 1 ? x(series[1].d) - x(series[0].d) : 20;
-  if (sel.kind === 'w') {
-    const s = series.find((q) => q.to === sel.to);
+  if (sel.kind === 'w' || sel.kind === 'd') {
+    const s = series.find((q) => q.from === sel.from && q.to === sel.to);
     if (s) svg.append('rect').attr('x', x(s.d) - step / 2).attr('y', 0).attr('width', step).attr('height', H - m.b).attr('rx', 4).attr('fill', 'var(--cds-chart-grid)');
   }
   svg.append('g').selectAll('line').data(y.ticks(3)).join('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', (d) => y(d)).attr('y2', (d) => y(d)).attr('stroke', 'var(--cds-chart-grid)');
-  svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(4).tickFormat(d3.utcFormat('%-m/%-d')).tickSizeOuter(0)).attr('font-size', null).attr('font-family', null);
+  const xt = unit === 'month' ? series.map((s) => s.d) : null;
+  svg.append('g').attr('transform', `translate(0,${H - m.b})`).call((xt ? d3.axisBottom(x).tickValues(xt.length > 6 ? xt.filter((_, i) => (xt.length - 1 - i) % 2 === 0) : xt) : d3.axisBottom(x).ticks(Math.max(2, Math.floor((W - m.l - m.r) / 72)))).tickFormat(d3.utcFormat(unit === 'month' ? '%y.%m' : '%-m/%-d')).tickSizeOuter(0)).attr('font-size', null).attr('font-family', null).call((g) => F.fitTicks(g, W));
   const mk = svg.append('g').selectAll('g').data(series.filter((s) => s.n > 0)).join('g').attr('transform', (s) => `translate(${x(s.d)},11)`);
-  mk.append('rect').attr('x', -9).attr('y', -8).attr('width', 18).attr('height', 16).attr('rx', 8).attr('fill', 'var(--cds-chart-reference)').attr('fill-opacity', 0.25);
-  mk.append('text').attr('class', 'fn-strong').attr('text-anchor', 'middle').attr('y', 4).text((s) => s.n);
+  if (step >= 20) {
+    mk.append('rect').attr('x', -9).attr('y', -8).attr('width', 18).attr('height', 16).attr('rx', 8).attr('fill', 'var(--cds-chart-reference)').attr('fill-opacity', 0.25);
+    mk.append('text').attr('class', 'fn-strong').attr('text-anchor', 'middle').attr('y', 4).text((s) => s.n);
+  } else mk.append('circle').attr('r', 3).attr('fill', 'var(--cds-chart-reference)');
   const line = d3.line().defined((s) => s.v != null).x((s) => x(s.d)).y((s) => y(s.v));
   svg.append('path').attr('d', line(series)).attr('fill', 'none').attr('stroke', dash.colors[0]).attr('stroke-width', 2).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
   const lastV = vals[vals.length - 1];
@@ -1031,36 +1227,33 @@ dash.draw('weekly', (el) => {
       const s = near(d3.pointer(ev)[0]);
       if (s.v == null) { tip.hidden = true; dot.attr('visibility', 'hidden'); return; }
       dot.attr('cx', x(s.d)).attr('cy', y(s.v)).attr('visibility', 'visible');
-      F.tipLines(tip, `${s.from.slice(5).replace('-', '/')} ~ ${s.to.slice(5).replace('-', '/')}`, [F.fmt.pct(s.v), `활동 ${s.n}건`]);
+      const md = (d) => d.slice(5).replace('-', '/');
+      const head = unit === 'day' ? md(s.from) : unit === 'month' ? `${+s.from.slice(5, 7)}월${s.open ? ` (${md(s.to)}까지)` : ''}` : `${md(s.from)} ~ ${md(s.to)}`;
+      F.tipLines(tip, head + (s.part ? ' · 데이터 일부' : ''), [F.fmt.pct(s.v), `활동 ${s.n}건`]);
       const [px, py] = d3.pointer(ev, el); F.place(el, tip, px, py);
     })
     .on('pointerleave', () => { tip.hidden = true; dot.attr('visibility', 'hidden'); })
-    .on('click', (ev) => { const s = near(d3.pointer(ev)[0]); dash.setParams({ asel: `w:${s.from}~${s.to}` }); });
+    .on('click', (ev) => { const s = near(d3.pointer(ev)[0]); dash.setParams({ asel: s.from === s.to ? `d:${s.from}` : `w:${s.from}~${s.to}` }); });
 });
 
-dash.draw('daily', (el) => {
+dash.draw('weekbars', (el) => {
   el.replaceChildren();
   if (!F.ready()) { el.textContent = '—'; return; }
   const st = F.state();
-  const by = F.memo(`day|${JSON.stringify(st)}`, (rows) => {
-    const mm = new Map();
-    for (const r of rows) {
-      if (r.일자 < st.start || r.일자 > st.end || !F.match(r, st)) continue;
-      if (!mm.has(r.일자)) mm.set(r.일자, F.zero());
-      F.add(mm.get(r.일자), r);
-    }
-    return mm;
+  const first = F.memo('firstDay', (rows) => rows.reduce((m, r) => (r.일자 < m ? r.일자 : m), '9999'));
+  const weeks = F.weekly(st).map((w) => {
+    const to = F.iso(w.주차끝), from = F.iso(new Date(+w.주차끝 - 6 * 864e5));
+    return { ...w, to, from, partial: from < first && to >= first, empty: to < first };
   });
-  const days = [];
-  for (let t = Date.parse(st.start + 'T00:00:00Z'); t <= Date.parse(st.end + 'T00:00:00Z'); t += 864e5) days.push(F.iso(new Date(t)));
-  if (!days.length) { el.textContent = '—'; return; }
-  const acts = F.acts(st).filter((a) => F.overlap(a, st.start, st.end)).sort((a, b) => (a.시작일 < b.시작일 ? -1 : 1));
+  const lo = weeks[0].from, hi = weeks[weeks.length - 1].to;
+  const idxOf = (d) => weeks.findIndex((w) => d >= w.from && d <= w.to);
+  const acts = F.acts(st).filter((a) => F.overlap(a, lo, hi)).sort((a, b) => (a.시작일 < b.시작일 ? -1 : 1));
   const MAXL = 4, lanes = [];
   let overflow = 0;
   const placed = [];
   for (const a of acts) {
-    const s = a.시작일 < st.start ? st.start : a.시작일;
-    const e0 = a.종료일 || a.시작일, e = e0 > st.end ? st.end : e0;
+    const s = Math.max(0, idxOf(a.시작일 < lo ? lo : a.시작일));
+    const e0 = a.종료일 || a.시작일, e = idxOf(e0 > hi ? hi : e0);
     let i = lanes.findIndex((end) => end < s);
     if (i < 0) i = lanes.length;
     if (i >= MAXL) { overflow++; continue; }
@@ -1068,49 +1261,62 @@ dash.draw('daily', (el) => {
     placed.push({ a, s, e, i });
   }
   const sel = F.sel();
-  const W = Math.max(280, el.clientWidth), laneH = 14, legendH = 22;
+  const W = Math.max(280, el.clientWidth), laneH = 14, m = { r: 8, b: 24, l: 8 };
+  const svg = d3.select(el).append('svg').attr('width', '100%');
+  const types = F.ATYPES.filter((t) => placed.some((p) => p.a.활동유형 === t)).concat([...new Set(placed.map((p) => p.a.활동유형))].filter((t) => !F.ATYPES.includes(t)));
+  // 범례: 카드 폭을 넘으면 다음 줄로
+  let lx = 0, ly = 8, lrows = types.length ? 1 : 0;
+  const legendRight = W - m.r - (overflow ? 130 : 0);
+  types.forEach((t) => {
+    const g = svg.append('g');
+    g.append('circle').attr('cx', 4).attr('cy', 0).attr('r', 4).attr('fill', F.typeColor(t));
+    const tx = g.append('text').attr('x', 12).attr('y', 4).text(t || '유형 미지정');
+    const iw = 12 + tx.node().getComputedTextLength() + 12;
+    if (lx > 0 && lx + iw > legendRight) { lx = 0; ly += 18; lrows++; }
+    g.attr('transform', `translate(${lx},${ly})`);
+    lx += iw;
+  });
+  const legendH = Math.max(1, lrows) * 18 + 4;
   const top = legendH + Math.max(1, lanes.length) * laneH + 10;
-  const H = top + 190, m = { r: 8, b: 24, l: 8 };
-  const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`);
-  const yMax = d3.max(days, (d) => (by.get(d) || F.zero()).N) || 1;
+  const H = top + 190;
+  svg.attr('viewBox', `0 0 ${W} ${H}`);
+  const yMax = d3.max(weeks, (w) => w.N) || 1;
   const y = d3.scaleLinear([0, yMax * 1.1], [H - m.b, top]).nice();
   const ya = svg.append('g').call(d3.axisLeft(y).ticks(4).tickFormat(d3.format('~s')).tickSize(0)).attr('font-size', null).attr('font-family', null);
   ya.select('.domain').remove();
   let lw = 0; ya.selectAll('text').each(function () { lw = Math.max(lw, this.getComputedTextLength()); });
   m.l = lw + 12; ya.attr('transform', `translate(${m.l - 6},0)`);
-  const x = d3.scaleBand(days, [m.l, W - m.r]).padding(0.2);
-  const types = F.ATYPES.filter((t) => placed.some((p) => p.a.활동유형 === t)).concat([...new Set(placed.map((p) => p.a.활동유형))].filter((t) => !F.ATYPES.includes(t)));
-  let lx = m.l;
-  types.forEach((t) => {
-    const g = svg.append('g').attr('transform', `translate(${lx},8)`);
-    g.append('circle').attr('cx', 4).attr('cy', 0).attr('r', 4).attr('fill', F.typeColor(t));
-    const tx = g.append('text').attr('x', 12).attr('y', 4).text(t);
-    lx += 12 + tx.node().getComputedTextLength() + 12;
-  });
+  const x = d3.scaleBand(weeks.map((w) => w.to), [m.l, W - m.r]).padding(0.25);
+  const xs = (i) => x(weeks[i].to);
   if (overflow) svg.append('text').attr('x', W - m.r).attr('y', 12).attr('text-anchor', 'end').text(`+${overflow}건은 목록에서 확인`);
   svg.append('g').selectAll('line').data(y.ticks(4)).join('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', (d) => y(d)).attr('y2', (d) => y(d)).attr('stroke', 'var(--cds-chart-grid)');
-  const every = Math.max(1, Math.ceil(days.length / Math.max(2, Math.floor((W - m.l) / 52))));
-  svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).tickValues(days.filter((_, i) => i % every === 0)).tickFormat((d) => `${+d.slice(5, 7)}/${+d.slice(8)}`).tickSizeOuter(0)).attr('font-size', null).attr('font-family', null);
-  const inSel = (d) => (sel.kind === 'd' || sel.kind === 'w' ? d >= sel.from && d <= sel.to : true);
-  svg.append('g').selectAll('rect').data(days).join('rect')
-    .attr('x', (d) => x(d)).attr('width', x.bandwidth())
-    .attr('y', (d) => y((by.get(d) || F.zero()).N)).attr('height', (d) => y(0) - y((by.get(d) || F.zero()).N))
-    .attr('rx', Math.min(3, x.bandwidth() / 2)).attr('fill', dash.colors[0]).attr('fill-opacity', (d) => (inSel(d) ? 1 : 0.3));
+  const every = Math.max(1, Math.ceil(weeks.length / Math.max(2, Math.floor((W - m.l) / 74))));
+  svg.append('g').attr('transform', `translate(0,${H - m.b})`)
+    .call(d3.axisBottom(x).tickValues(weeks.filter((_, i) => (weeks.length - 1 - i) % every === 0).map((w) => w.to)).tickFormat((d) => { const w = weeks.find((q) => q.to === d); return `${+w.from.slice(5, 7)}/${+w.from.slice(8)}~`; }).tickSizeOuter(0))
+    .attr('font-size', null).attr('font-family', null).call((g) => F.fitTicks(g, W));
+  const inSel = (w) => (sel.kind === 'w' || sel.kind === 'd' ? w.to >= sel.from && w.from <= sel.to : true);
+  svg.append('g').selectAll('rect').data(weeks.filter((w) => !w.empty)).join('rect')
+    .attr('x', (w) => x(w.to)).attr('width', x.bandwidth())
+    .attr('y', (w) => y(w.N)).attr('height', (w) => y(0) - y(w.N))
+    .attr('rx', Math.min(3, x.bandwidth() / 2)).attr('fill', dash.colors[0])
+    .attr('fill-opacity', (w) => (!inSel(w) ? 0.3 : w.partial ? 0.5 : 1));
+  svg.append('g').selectAll('text').data(weeks.filter((w) => w.empty)).join('text')
+    .attr('x', (w) => x(w.to) + x.bandwidth() / 2).attr('y', y(0) - 6).attr('text-anchor', 'middle').attr('fill', 'var(--color-fg-muted)').text('—');
   const tip = F.tip(el);
   const showTip = (ev, head, lines) => { F.tipLines(tip, head, lines); const [px, py] = d3.pointer(ev, el); F.place(el, tip, px, py); };
-  svg.append('g').selectAll('rect').data(days).join('rect')
-    .attr('x', (d) => x(d) - (x.step() - x.bandwidth()) / 2).attr('width', x.step()).attr('y', top - 4).attr('height', H - m.b - top + 4)
+  svg.append('g').selectAll('rect').data(weeks).join('rect')
+    .attr('x', (w) => x(w.to) - (x.step() - x.bandwidth()) / 2).attr('width', x.step()).attr('y', top - 4).attr('height', H - m.b - top + 4)
     .attr('fill', 'transparent').style('cursor', 'pointer')
-    .on('pointermove', (ev, d) => {
-      const a = by.get(d) || F.zero();
-      const r = F.rate(a.C, a.L);
-      const here = acts.filter((q) => F.overlap(q, d, d));
-      showTip(ev, d, [`청약 ${d3.format(',')(a.N)}건`, `랜딩 기준 전환율 ${r == null ? '표본 부족' : F.fmt.pct(r)}`, `활동 ${here.length}건`, ...here.slice(0, 3).map((q) => `· ${q.제목}`), ...(here.length > 3 ? [`· 외 ${here.length - 3}건`] : [])]);
+    .on('pointermove', (ev, w) => {
+      const here = acts.filter((q) => F.overlap(q, w.from, w.to));
+      const head = `${w.from.slice(5).replace('-', '/')} ~ ${w.to.slice(5).replace('-', '/')}`;
+      if (w.empty) { showTip(ev, head, ['데이터 없음']); return; }
+      showTip(ev, head, [`청약 ${d3.format(',')(w.N)}건${w.partial ? ' (일부 날짜만)' : ''}`, `랜딩 기준 전환율 ${w.rL == null ? '—' : F.fmt.pct(w.rL)}`, `활동 ${here.length}건`, ...here.slice(0, 3).map((q) => `· ${q.제목}`), ...(here.length > 3 ? [`· 외 ${here.length - 3}건`] : [])]);
     })
     .on('pointerleave', () => { tip.hidden = true; })
-    .on('click', (_, d) => dash.setParams({ asel: `d:${d}` }));
+    .on('click', (_, w) => dash.setParams({ asel: `w:${w.from}~${w.to}` }));
   svg.append('g').selectAll('rect').data(placed).join('rect')
-    .attr('x', (p) => x(p.s)).attr('width', (p) => Math.max(8, x(p.e) - x(p.s) + x.bandwidth()))
+    .attr('x', (p) => xs(p.s)).attr('width', (p) => Math.max(8, xs(p.e) - xs(p.s) + x.bandwidth()))
     .attr('y', (p) => legendH + p.i * laneH + 3).attr('height', 8).attr('rx', 4)
     .attr('fill', (p) => F.typeColor(p.a.활동유형)).attr('fill-opacity', (p) => (sel.kind === 'a' && sel.id !== p.a.활동ID ? 0.3 : 1))
     .style('cursor', 'pointer')
@@ -1144,7 +1350,7 @@ dash.draw('act-list', (el) => {
   el.replaceChildren();
   if (!F.ready() || !F.actRows()) return;
   const sel = F.sel();
-  const scope = (a) => ['상품군', '상품', '채널', '세부채널'].map((k) => a[k]).filter(Boolean).join(' · ') || '전체 적용';
+  const scope = (a) => ['상품군', '상품', '채널', '세부채널'].map((k) => a[k] || ((a.공통필드 || []).includes(k) ? '공통' : '')).filter(Boolean).join(' · ') || '전체 적용';
   for (const a of F.actList()) {
     const art = document.createElement('article');
     art.className = 'fn-act' + (sel.kind === 'a' ? ' fn-act-on' : '');
@@ -1162,7 +1368,16 @@ dash.draw('act-list', (el) => {
     if (src) {
       const img = document.createElement('img');
       img.className = 'fn-act-img'; img.src = src; img.alt = a.제목 || a.활동ID; img.loading = 'lazy';
-      img.addEventListener('click', () => img.classList.toggle('fn-act-big'));
+      const cap = `${a.활동ID} ${a.제목 || ''}`.trim();
+      img.tabIndex = 0; img.setAttribute('role', 'button'); img.title = '크게 보기';
+      img.addEventListener('click', () => F.lightbox(src, cap));
+      img.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); F.lightbox(src, cap); } });
+      img.addEventListener('error', () => {
+        const btn = document.createElement('button');
+        btn.type = 'button'; btn.className = 'fn-act-imglink'; btn.textContent = '이미지 열기';
+        btn.addEventListener('click', () => F.lightbox(src, cap));
+        img.replaceWith(btn);
+      });
       art.append(img);
     }
     el.append(art);
@@ -1187,7 +1402,7 @@ document.querySelectorAll('#seg-table th[data-sort]').forEach((th) => th.querySe
   });
   dash.draw('seg-body');
 }));
-F.AXES = { 상품: ['상품군', '상품'], 채널: ['채널', '세부채널'] };
+F.AXES = { 상품: ['상품군', '상품'], 채널: ['채널', '채널세부'] };
 F.segRow = (name, a, b) => {
   const r = F.rates(a), q = F.rates(b || F.zero());
   return { name, L: a.L, r1: r.r1, r2: r.r2, r3: r.r3, rL: r.rL, dL: r.rL != null && q.rL != null ? r.rL - q.rL : null, N: a.N, P: a.P };
@@ -1212,7 +1427,7 @@ dash.draw('seg-body', (tb) => {
   const st = F.state();
   const pc = F.cut(st, pd);
   const cc = cd ? F.cut(st, cd) : null;
-  const md = axis === '채널' ? '채널중분류' : null;
+  const md = axis === '채널' ? '채널중' : null;
   const mc = md ? F.cut(st, md) : null;
   const par = F.parents();
   const parentOf = cd ? par[cd] : null;
@@ -1221,7 +1436,7 @@ dash.draw('seg-body', (tb) => {
     tr.insertCell().textContent = F.fmt.count(r.L);
     for (const k of ['r1', 'r2', 'rL']) {
       const td = tr.insertCell();
-      if (r[k] == null) { td.textContent = '표본 부족'; td.className = 'fn-na'; } else td.textContent = F.fmt.pct(r[k]);
+      if (r[k] == null) { td.textContent = '—'; td.className = 'fn-na'; } else td.textContent = F.fmt.pct(r[k]);
     }
     const d = tr.insertCell();
     if (r.dL == null) d.textContent = '—'; else { d.textContent = F.fmt.pp(r.dL); d.className = r.dL > 0 ? 'fn-up' : r.dL < 0 ? 'fn-down' : ''; }
@@ -1240,17 +1455,17 @@ dash.draw('seg-body', (tb) => {
     tr.className = 'fn-click';
     tr.onclick = () => { const key = axis + '|' + p.name; if (F.open.has(key)) F.open.delete(key); else F.open.add(key); dash.draw('seg-body'); };
     if (!open) continue;
-    const kidsOf = (mid) => F.sortRows([...cc.cur].filter(([k]) => parentOf.get(k) === p.name && (!md || par.세부중분류.get(k) === mid)).map(([k, a]) => F.segRow(k, a, cc.prev.get(k))));
-    const mids = md ? F.sortRows([...mc.cur].filter(([k]) => k && par.채널중분류.get(k) === p.name).map(([k, a]) => F.segRow(k, a, mc.prev.get(k)))) : [];
+    const kidsOf = (mid) => F.sortRows([...cc.cur].filter(([k]) => parentOf.get(k) === p.name && (!md || (par.세부중분류.get(k) || '') === mid)).map(([k, a]) => ({ ...F.segRow(F.short(k), a, cc.prev.get(k)), key: k })));
+    const mids = md ? F.sortRows([...mc.cur].filter(([k]) => k && par.채널중.get(k) === p.name).map(([k, a]) => ({ ...F.segRow(F.short(k), a, mc.prev.get(k)), key: k }))) : [];
     for (const m of mids) {
-      const mkey = `${axis}|${p.name}|${m.name}`;
+      const mkey = `${axis}|${m.key}`;
       const mopen = F.open.has(mkey);
-      const mr = tb.insertRow(); mr.className = 'fn-mid fn-click'; mr.dataset.key = m.name;
+      const mr = tb.insertRow(); mr.className = 'fn-mid fn-click'; mr.dataset.key = m.key;
       cells(mr, { ...m, name: (mopen ? '▾ ' : '▸ ') + m.name });
       mr.onclick = () => { if (F.open.has(mkey)) F.open.delete(mkey); else F.open.add(mkey); dash.draw('seg-body'); };
-      if (mopen) for (const k of kidsOf(m.name)) { const cr = tb.insertRow(); cr.className = 'fn-child fn-child2'; cr.dataset.key = k.name; cells(cr, k); }
+      if (mopen) for (const k of kidsOf(m.key)) { const cr = tb.insertRow(); cr.className = 'fn-child fn-child2'; cr.dataset.key = k.key; cells(cr, k); }
     }
-    for (const k of kidsOf('')) { const cr = tb.insertRow(); cr.className = 'fn-child'; cr.dataset.key = k.name; cells(cr, k); }
+    for (const k of kidsOf('')) { const cr = tb.insertRow(); cr.className = 'fn-child'; cr.dataset.key = k.key; cells(cr, k); }
   }
 });
 
@@ -1258,7 +1473,7 @@ dash.draw('scatter', (el) => {
   el.replaceChildren();
   if (!F.ready()) { el.textContent = '—'; return; }
   const axis = dash.params().axis || '상품';
-  const cd = axis === '상품' ? '상품' : '세부채널';
+  const cd = axis === '상품' ? '상품' : '채널세부';
   const pd = axis === '상품' ? '상품군' : '채널';
   const c = F.cut(F.state(), cd);
   const parentOf = F.parents()[cd];
@@ -1269,7 +1484,7 @@ dash.draw('scatter', (el) => {
   const W = Math.max(280, el.clientWidth), H = 340, m = { t: 30, r: 16, b: 34, l: 8 };
   const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`);
   const y = d3.scaleLinear([0, d3.max(pts, (d) => d.r) * 1.12], [H - m.b, m.t]).nice();
-  const ya = svg.append('g').call(d3.axisLeft(y).ticks(5).tickFormat(d3.format('.0%')).tickSize(0)).attr('font-size', null).attr('font-family', null);
+  const ya = svg.append('g').call(d3.axisLeft(y).ticks(5).tickFormat(F.axisPct(...y.domain())).tickSize(0)).attr('font-size', null).attr('font-family', null);
   ya.select('.domain').remove();
   let lw = 0; ya.selectAll('text').each(function () { lw = Math.max(lw, this.getComputedTextLength()); });
   m.l = lw + 12; ya.attr('transform', `translate(${m.l - 6},0)`);
@@ -1294,7 +1509,7 @@ dash.draw('scatter', (el) => {
     .attr('cx', (d) => x(d.L)).attr('cy', (d) => y(d.r)).attr('r', (d) => rr(d.P))
     .attr('fill', (d) => color(d.p)).attr('fill-opacity', 0.55).attr('stroke', (d) => color(d.p)).attr('stroke-width', 1)
     .on('pointermove', (ev, d) => {
-      F.tipLines(tip, `${d.k} · ${d.p}`, ['랜딩 ' + F.fmt.count(d.L) + '명', '랜딩 기준 전환율 ' + F.fmt.pct(d.r), '월P ' + F.fmt.won(d.P)]);
+      F.tipLines(tip, `${F.short(d.k)} · ${d.p}`, ['랜딩 ' + F.fmt.count(d.L) + '명', '랜딩 기준 전환율 ' + F.fmt.pct(d.r), '월P ' + F.fmt.won(d.P)]);
       const [px, py] = d3.pointer(ev, el); F.place(el, tip, px, py);
     })
     .on('pointerleave', () => { tip.hidden = true; });
