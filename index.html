@@ -29,6 +29,9 @@ main{max-width:1400px;margin:0 auto;padding:24px}
 .fn-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); }
 .fn-take { margin-top: var(--cds-gap-xs); color: var(--color-fg-muted); font-size: var(--cds-font-size-body); max-width: 60rem; }
 .fn .fn-take b { color: var(--color-fg); font-weight: 600; }
+.fn-asof-note { display: block; margin-top: 2px; color: var(--color-bad); white-space: normal; text-align: right; max-width: 28rem; }
+.fn-asof-note:empty { display: none; }
+@media (max-width: 40rem) { .fn-asof-note { text-align: left; } }
 .fn-asof { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); white-space: nowrap; }
 .fn-tabs { display: flex; gap: var(--cds-gap-xs); border-bottom: 1px solid var(--color-border-line); margin-bottom: var(--cds-gap-md); overflow-x: auto; }
 .fn-tab { appearance: none; background: none; border: 0; border-bottom: 4px solid transparent; padding: var(--cds-pad-sm) var(--cds-pad-md); font: inherit; font-size: var(--cds-font-size-body); color: var(--color-fg-muted); cursor: pointer; white-space: nowrap; }
@@ -135,7 +138,7 @@ main{max-width:1400px;margin:0 auto;padding:24px}
       <h1 class="fn-title">보험 상품 퍼널 대시보드</h1>
       <p class="fn-take">이번 달 보장성 청약은 전월 동기간 대비 <b class="fn-tk" data-draw="kv" data-source="kpi" data-field="청약건수_증감률" data-where="상품군=보장성" data-fmt="chg" data-tone="1">—</b>, 월말 예상 목표 달성률 <b data-draw="kv" data-source="kpi" data-field="청약건수_예상달성률" data-where="상품군=보장성" data-fmt="pct0">—</b>입니다. 미니는 각각 <b data-draw="kv" data-source="kpi" data-field="청약건수_증감률" data-where="상품군=미니" data-fmt="chg" data-tone="1">—</b>, <b data-draw="kv" data-source="kpi" data-field="청약건수_예상달성률" data-where="상품군=미니" data-fmt="pct0">—</b>입니다.</p>
     </div>
-    <p class="fn-asof">데이터 기준일 <span data-draw="kv" data-source="period" data-field="기준일" data-row="0">—</span></p>
+    <p class="fn-asof">데이터 기준일 <span data-draw="kv" data-source="period" data-field="기준일" data-row="0">—</span><span class="fn-asof-note" data-draw="asof-note" data-source="period"></span></p>
   </header>
 
   <nav class="fn-tabs" role="tablist" aria-label="대시보드 탭">
@@ -533,9 +536,19 @@ dash.loader('activities', {
 dash.calc('period', {
   inputs: ['funnel'],
   title: '이번 달 기간',
-  description: '데이터의 마지막 일자를 기준일로, 그 달 1일부터와 전월 같은 날짜 구간을 정합니다.',
+  description: '데이터의 마지막 일자를 기준일로, 그 달 1일부터와 전월 같은 날짜 구간을 정합니다. 마지막 날의 랜딩이 직전 7일 중앙값의 20%에도 못 미치면 아직 덜 들어온 날로 보고 그 전날을 기준일로 씁니다.',
   fn: (funnel) => {
-    const end = funnel.reduce((m, r) => (r.일자 > m ? r.일자 : m), '');
+    const byDay = new Map();
+    for (const r of funnel) byDay.set(r.일자, (byDay.get(r.일자) ?? 0) + r.랜딩유저수);
+    const days = [...byDay.keys()].sort();
+    const skipped = [];
+    while (days.length > 8 && skipped.length < 3) {
+      const last = days[days.length - 1];
+      const prev = days.slice(-8, -1).map((d) => byDay.get(d)).sort((a, b) => a - b);
+      if (byDay.get(last) >= prev[3] * 0.2) break;
+      skipped.unshift(last); days.pop();
+    }
+    const end = days[days.length - 1];
     const y = +end.slice(0, 4), m = +end.slice(5, 7), day = +end.slice(8, 10);
     const pad = (n) => String(n).padStart(2, '0');
     const py = m === 1 ? y - 1 : y, pm = m === 1 ? 12 : m - 1;
@@ -544,6 +557,7 @@ dash.calc('period', {
       기준일: end, 기간시작: `${end.slice(0, 7)}-01`,
       전월시작: `${py}-${pad(pm)}-01`, 전월종료: `${py}-${pad(pm)}-${pad(Math.min(day, pDim))}`,
       월: end.slice(0, 7), 경과일수: day, 월일수: new Date(Date.UTC(y, m, 0)).getUTCDate(),
+      제외일: skipped, 제외안내: skipped.length ? `${skipped.map((d) => `${+d.slice(5, 7)}/${+d.slice(8)}`).join(', ')} 데이터는 랜딩 ${skipped.map((d) => d3.format(',')(byDay.get(d))).join(', ')}명뿐이라 덜 들어온 날로 보고 집계에서 뺐습니다` : '',
     }];
   },
 });
@@ -786,7 +800,7 @@ F.trend = (st, unit) => F.memo(`tr|${unit}|${JSON.stringify({ ...st, start: '', 
     else i = 11 - Math.floor((end - Date.parse(r.일자 + 'T00:00:00Z')) / 864e5 / 7);
     if (i >= 0 && i < buckets.length) F.add(acc[i], r, F.keepGsm(st));
   }
-  const out = buckets.map((b, j) => ({ ...b, d: new Date(Date.parse((unit === 'month' ? b.from : b.to) + 'T00:00:00Z')), part: b.from < first, ...F.rates(acc[j]), N: acc[j].N, L: acc[j].L }));
+  const out = buckets.map((b, j) => ({ ...b, d: new Date(Date.parse((unit === 'month' ? b.from : b.to) + 'T00:00:00Z')), part: b.from < first, ...F.rates(acc[j]), N: acc[j].N, L: acc[j].L, S: acc[j].S, A: acc[j].A }));
   return out.filter((b) => b.to >= first);
 });
 F.tip = (el) => {
@@ -921,6 +935,11 @@ dash.draw('kv', (el) => {
   if (v == null || (typeof v === 'number' && !Number.isFinite(v))) { el.textContent = '—'; return; }
   el.textContent = F.fmt[el.dataset.fmt || 'raw'](v);
   if (el.dataset.tone) { if (v > 0) el.classList.add('fn-up'); else if (v < 0) el.classList.add('fn-down'); }
+});
+
+dash.draw('asof-note', (el) => {
+  const p = F.period();
+  el.textContent = p && p.제외안내 ? p.제외안내 : '';
 });
 
 dash.draw('const', (el) => {
@@ -1185,8 +1204,14 @@ dash.draw('weekly', (el) => {
   const k = el.dataset.metric;
   const st = F.state();
   const unit = ['day', 'week', 'month'].includes(dash.params().tunit) ? dash.params().tunit : 'week';
-  const series = F.trend(st, unit).map((w) => ({ d: w.d, v: w[k], to: w.to, from: w.from, open: w.open, part: w.part }));
-  const vals = series.filter((s) => s.v != null);
+  const denKey = { rL: 'L', r1: 'L', r2: 'S', r3: 'A' }[k];
+  const denLab = { L: '랜딩', S: '설계 진입', A: '청약 진입' }[denKey];
+  const series = F.trend(st, unit).map((w) => ({ d: w.d, v: w[k], den: w[denKey], to: w.to, from: w.from, open: w.open, part: w.part }));
+  const all = series.filter((s) => s.v != null);
+  // 분모가 평소의 10%도 안 되는 점(예: 덜 들어온 날)은 축 범위를 정할 때 빼고 가장자리에 빈 점으로 표시합니다.
+  const medDen = d3.median(all, (s) => s.den) || 0;
+  all.forEach((s) => { s.thin = s.den < medDen * 0.1; });
+  const vals = all.filter((s) => !s.thin).length ? all.filter((s) => !s.thin) : all;
   if (!vals.length) { el.textContent = '—'; return; }
   const acts = F.acts(st);
   series.forEach((s) => { s.n = acts.filter((a) => F.overlap(a, s.from, s.to)).length; });
@@ -1214,8 +1239,12 @@ dash.draw('weekly', (el) => {
     mk.append('rect').attr('x', -9).attr('y', -8).attr('width', 18).attr('height', 16).attr('rx', 8).attr('fill', 'var(--cds-chart-reference)').attr('fill-opacity', 0.25);
     mk.append('text').attr('class', 'fn-strong').attr('text-anchor', 'middle').attr('y', 4).text((s) => s.n);
   } else mk.append('circle').attr('r', 3).attr('fill', 'var(--cds-chart-reference)');
-  const line = d3.line().defined((s) => s.v != null).x((s) => x(s.d)).y((s) => y(s.v));
-  svg.append('path').attr('d', line(series)).attr('fill', 'none').attr('stroke', dash.colors[0]).attr('stroke-width', 2).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
+  const [y0, y1] = y.domain();
+  const yc = (v) => y(Math.max(y0, Math.min(y1, v)));
+  const line = d3.line().defined((s) => s.v != null && !s.thin).x((s) => x(s.d)).y((s) => y(s.v));
+  svg.append('g').selectAll('circle').data(all.filter((s) => s.thin)).join('circle').attr('cx', (s) => x(s.d)).attr('cy', (s) => yc(s.v)).attr('r', 3.5)
+    .attr('fill', 'var(--color-panel)').attr('stroke', 'var(--cds-chart-reference)').attr('stroke-width', 1.5);
+  svg.append('path').attr('d', line(series.filter((s) => !s.thin))).attr('fill', 'none').attr('stroke', dash.colors[0]).attr('stroke-width', 2).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
   const lastV = vals[vals.length - 1];
   svg.append('circle').attr('cx', x(lastV.d)).attr('cy', y(lastV.v)).attr('r', 3.5).attr('fill', dash.colors[0]);
   svg.append('text').attr('class', 'fn-strong').attr('x', x(lastV.d) + 8).attr('y', y(lastV.v) + 4).text(F.fmt.pct(lastV.v));
@@ -1226,10 +1255,10 @@ dash.draw('weekly', (el) => {
     .on('pointermove', (ev) => {
       const s = near(d3.pointer(ev)[0]);
       if (s.v == null) { tip.hidden = true; dot.attr('visibility', 'hidden'); return; }
-      dot.attr('cx', x(s.d)).attr('cy', y(s.v)).attr('visibility', 'visible');
+      dot.attr('cx', x(s.d)).attr('cy', yc(s.v)).attr('visibility', s.thin ? 'hidden' : 'visible');
       const md = (d) => d.slice(5).replace('-', '/');
       const head = unit === 'day' ? md(s.from) : unit === 'month' ? `${+s.from.slice(5, 7)}월${s.open ? ` (${md(s.to)}까지)` : ''}` : `${md(s.from)} ~ ${md(s.to)}`;
-      F.tipLines(tip, head + (s.part ? ' · 데이터 일부' : ''), [F.fmt.pct(s.v), `활동 ${s.n}건`]);
+      F.tipLines(tip, head + (s.part ? ' · 데이터 일부' : ''), [`${F.fmt.pct(s.v)} (${denLab} ${d3.format(',')(s.den)}명)`, ...(s.thin ? ['표본이 평소보다 매우 적어 축 범위에서 뺐습니다'] : []), `활동 ${s.n}건`]);
       const [px, py] = d3.pointer(ev, el); F.place(el, tip, px, py);
     })
     .on('pointerleave', () => { tip.hidden = true; dot.attr('visibility', 'hidden'); })
