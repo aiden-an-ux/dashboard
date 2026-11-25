@@ -16,6 +16,9 @@ main{max-width:1400px;margin:0 auto;padding:24px}
 .dash-select{font:inherit;font-size:var(--cds-font-size-body);color:var(--color-fg);background:var(--color-field);border:1px solid var(--color-border-line);border-radius:var(--cds-radius);padding:5px 8px;min-width:8rem}
 .load-status{margin:0 0 16px;padding:12px 16px;border-radius:8px;background:var(--color-panel);border:1px solid var(--color-border-line);font-size:14px}
 .load-status.is-error{border-color:var(--color-bad);color:var(--color-bad)}
+.fn .fn-th-sub{display:block;font-weight:400;font-size:0.92em;color:var(--color-fg-muted);white-space:nowrap}
+.fn .fn-lab-sub{display:block;white-space:nowrap;color:var(--color-fg-muted)}
+.fn .fn-title-sub{white-space:nowrap;font-weight:400;color:var(--color-fg-muted)}
 </style>
 <script src="lib/d3.v7.9.0.min.js"></script>
 <script src="lib/dashboard-runtime.js"></script>
@@ -168,7 +171,7 @@ main{max-width:1400px;margin:0 auto;padding:24px}
         <div class="fn-kpis2">
           <div class="fn-kpi"><div class="fn-kpi-label">청약 건수</div><span class="fn-kv" data-draw="kv" data-source="kpi" data-field="청약건수" data-where="상품군=보장성" data-fmt="count">—</span><div class="fn-kpi-foot"><b data-draw="kv" data-source="kpi" data-field="청약건수_증감률" data-where="상품군=보장성" data-fmt="chg" data-tone="1">—</b> 전월 대비 · 월말 예상 달성률 <b data-draw="kv" data-source="kpi" data-field="청약건수_예상달성률" data-where="상품군=보장성" data-fmt="pct0">—</b></div></div>
           <div class="fn-kpi"><div class="fn-kpi-label">월P</div><span class="fn-kv" data-draw="kv" data-source="kpi" data-field="월P" data-where="상품군=보장성" data-fmt="won">—</span><div class="fn-kpi-foot"><b data-draw="kv" data-source="kpi" data-field="월P_증감률" data-where="상품군=보장성" data-fmt="chg" data-tone="1">—</b> 전월 대비 · 월말 예상 달성률 <b data-draw="kv" data-source="kpi" data-field="월P_예상달성률" data-where="상품군=보장성" data-fmt="pct0">—</b></div></div>
-          <div class="fn-kpi"><div class="fn-kpi-label">랜딩 기준 청약 전환율</div><span class="fn-kv" data-draw="kv" data-source="kpi" data-field="랜딩기준전환율" data-where="상품군=보장성" data-fmt="pct">—</span><div class="fn-kpi-foot"><b data-draw="kv" data-source="kpi" data-field="랜딩기준전환율_증감" data-where="상품군=보장성" data-fmt="pp" data-tone="1">—</b> 전월 대비</div></div>
+          <div class="fn-kpi"><div class="fn-kpi-label">랜딩 기준 청약 전환율<span class="fn-lab-sub">(랜딩 → 청약완료)</span></div><span class="fn-kv" data-draw="kv" data-source="kpi" data-field="랜딩기준전환율" data-where="상품군=보장성" data-fmt="pct">—</span><div class="fn-kpi-foot"><b data-draw="kv" data-source="kpi" data-field="랜딩기준전환율_증감" data-where="상품군=보장성" data-fmt="pp" data-tone="1">—</b> 전월 대비</div></div>
           <div class="fn-kpi"><div class="fn-kpi-label">상품랜딩 방문수</div><span class="fn-kv" data-draw="kv" data-source="kpi" data-field="랜딩유저수" data-where="상품군=보장성" data-fmt="count">—</span><div class="fn-kpi-foot"><b data-draw="kv" data-source="kpi" data-field="랜딩유저수_증감률" data-where="상품군=보장성" data-fmt="chg" data-tone="1">—</b> 전월 대비</div></div>
         </div>
         <div class="fn-card" id="pace-cov">
@@ -181,7 +184,7 @@ main{max-width:1400px;margin:0 auto;padding:24px}
         <h2 class="fn-group-title">미니</h2>
         <div class="fn-kpis3">
           <div class="fn-kpi"><div class="fn-kpi-label">청약 건수</div><span class="fn-kv" data-draw="kv" data-source="kpi" data-field="청약건수" data-where="상품군=미니" data-fmt="count">—</span><div class="fn-kpi-foot"><b data-draw="kv" data-source="kpi" data-field="청약건수_증감률" data-where="상품군=미니" data-fmt="chg" data-tone="1">—</b> 전월 대비 · 예상 달성률 <b data-draw="kv" data-source="kpi" data-field="청약건수_예상달성률" data-where="상품군=미니" data-fmt="pct0">—</b></div></div>
-          <div class="fn-kpi"><div class="fn-kpi-label">랜딩 기준 청약 전환율</div><span class="fn-kv" data-draw="kv" data-source="kpi" data-field="랜딩기준전환율" data-where="상품군=미니" data-fmt="pct">—</span><div class="fn-kpi-foot"><b data-draw="kv" data-source="kpi" data-field="랜딩기준전환율_증감" data-where="상품군=미니" data-fmt="pp" data-tone="1">—</b> 전월 대비</div></div>
+          <div class="fn-kpi"><div class="fn-kpi-label">랜딩 기준 청약 전환율<span class="fn-lab-sub">(랜딩 → 청약완료)</span></div><span class="fn-kv" data-draw="kv" data-source="kpi" data-field="랜딩기준전환율" data-where="상품군=미니" data-fmt="pct">—</span><div class="fn-kpi-foot"><b data-draw="kv" data-source="kpi" data-field="랜딩기준전환율_증감" data-where="상품군=미니" data-fmt="pp" data-tone="1">—</b> 전월 대비</div></div>
           <div class="fn-kpi"><div class="fn-kpi-label">상품랜딩 방문수</div><span class="fn-kv" data-draw="kv" data-source="kpi" data-field="랜딩유저수" data-where="상품군=미니" data-fmt="count">—</span><div class="fn-kpi-foot"><b data-draw="kv" data-source="kpi" data-field="랜딩유저수_증감률" data-where="상품군=미니" data-fmt="chg" data-tone="1">—</b> 전월 대비</div></div>
         </div>
         <div class="fn-card" id="pace-mini">
@@ -231,10 +234,10 @@ main{max-width:1400px;margin:0 auto;padding:24px}
       <p class="fn-sub"><span data-draw="f-period" data-source="funnel period">—</span></p>
       <div class="fn-card" data-source="funnel">
         <div class="fn-chips">
-          <div class="fn-chip"><div class="fn-kpi-label">설계 단계 전환율</div><span class="fn-kv" data-draw="f-chip" data-metric="r1" data-part="val" data-source="funnel period">—</span><div class="fn-kpi-foot"><b data-draw="f-chip" data-metric="r1" data-part="delta" data-source="funnel period">—</b> 전월 대비</div></div>
-          <div class="fn-chip"><div class="fn-kpi-label">청약 단계 전환율</div><span class="fn-kv" data-draw="f-chip" data-metric="r2" data-part="val" data-source="funnel period">—</span><div class="fn-kpi-foot"><b data-draw="f-chip" data-metric="r2" data-part="delta" data-source="funnel period">—</b> 전월 대비</div></div>
-          <div class="fn-chip"><div class="fn-kpi-label">청약 완료율</div><span class="fn-kv" data-draw="f-chip" data-metric="r3" data-part="val" data-source="funnel period">—</span><div class="fn-kpi-foot"><b data-draw="f-chip" data-metric="r3" data-part="delta" data-source="funnel period">—</b> 전월 대비</div></div>
-          <div class="fn-chip"><div class="fn-kpi-label">랜딩 기준 청약 전환율</div><span class="fn-kv" data-draw="f-chip" data-metric="rL" data-part="val" data-source="funnel period">—</span><div class="fn-kpi-foot"><b data-draw="f-chip" data-metric="rL" data-part="delta" data-source="funnel period">—</b> 전월 대비</div></div>
+          <div class="fn-chip"><div class="fn-kpi-label">설계 단계 전환율<span class="fn-lab-sub">(랜딩 → 설계)</span></div><span class="fn-kv" data-draw="f-chip" data-metric="r1" data-part="val" data-source="funnel period">—</span><div class="fn-kpi-foot"><b data-draw="f-chip" data-metric="r1" data-part="delta" data-source="funnel period">—</b> 전월 대비</div></div>
+          <div class="fn-chip"><div class="fn-kpi-label">청약 단계 전환율<span class="fn-lab-sub">(설계 → 청약진입)</span></div><span class="fn-kv" data-draw="f-chip" data-metric="r2" data-part="val" data-source="funnel period">—</span><div class="fn-kpi-foot"><b data-draw="f-chip" data-metric="r2" data-part="delta" data-source="funnel period">—</b> 전월 대비</div></div>
+          <div class="fn-chip"><div class="fn-kpi-label">청약 완료율<span class="fn-lab-sub">(청약진입 → 청약완료)</span></div><span class="fn-kv" data-draw="f-chip" data-metric="r3" data-part="val" data-source="funnel period">—</span><div class="fn-kpi-foot"><b data-draw="f-chip" data-metric="r3" data-part="delta" data-source="funnel period">—</b> 전월 대비</div></div>
+          <div class="fn-chip"><div class="fn-kpi-label">랜딩 기준 청약 전환율<span class="fn-lab-sub">(랜딩 → 청약완료)</span></div><span class="fn-kv" data-draw="f-chip" data-metric="rL" data-part="val" data-source="funnel period">—</span><div class="fn-kpi-foot"><b data-draw="f-chip" data-metric="rL" data-part="delta" data-source="funnel period">—</b> 전월 대비</div></div>
           <div class="fn-chip"><div class="fn-kpi-label">청약 건수</div><span class="fn-kv" data-draw="f-chip" data-metric="N" data-part="val" data-source="funnel period">—</span><div class="fn-kpi-foot"><b data-draw="f-chip" data-metric="N" data-part="delta" data-source="funnel period">—</b> 전월 대비</div></div>
           <div class="fn-chip"><div class="fn-kpi-label">월P</div><span class="fn-kv" data-draw="f-chip" data-metric="P" data-part="val" data-source="funnel period">—</span><div class="fn-kpi-foot"><b data-draw="f-chip" data-metric="P" data-part="delta" data-source="funnel period">—</b> 전월 대비</div></div>
         </div>
@@ -273,10 +276,10 @@ main{max-width:1400px;margin:0 auto;padding:24px}
         </div>
       </div>
       <div class="fn-grid fn-grid2">
-        <div class="fn-card"><div class="fn-card-title">랜딩 기준 청약 전환율</div><div class="fn-chart" data-draw="weekly" data-metric="rL" data-source="funnel period activities" style="min-height:176px"></div></div>
-        <div class="fn-card"><div class="fn-card-title">설계 단계 전환율</div><div class="fn-chart" data-draw="weekly" data-metric="r1" data-source="funnel period activities" style="min-height:176px"></div></div>
-        <div class="fn-card"><div class="fn-card-title">청약 단계 전환율</div><div class="fn-chart" data-draw="weekly" data-metric="r2" data-source="funnel period activities" style="min-height:176px"></div></div>
-        <div class="fn-card"><div class="fn-card-title">청약 완료율</div><div class="fn-chart" data-draw="weekly" data-metric="r3" data-source="funnel period activities" style="min-height:176px"></div></div>
+        <div class="fn-card"><div class="fn-card-title">랜딩 기준 청약 전환율 <span class="fn-title-sub">(랜딩 → 청약완료)</span></div><div class="fn-chart" data-draw="weekly" data-metric="rL" data-source="funnel period activities" style="min-height:176px"></div></div>
+        <div class="fn-card"><div class="fn-card-title">설계 단계 전환율 <span class="fn-title-sub">(랜딩 → 설계)</span></div><div class="fn-chart" data-draw="weekly" data-metric="r1" data-source="funnel period activities" style="min-height:176px"></div></div>
+        <div class="fn-card"><div class="fn-card-title">청약 단계 전환율 <span class="fn-title-sub">(설계 → 청약진입)</span></div><div class="fn-chart" data-draw="weekly" data-metric="r2" data-source="funnel period activities" style="min-height:176px"></div></div>
+        <div class="fn-card"><div class="fn-card-title">청약 완료율 <span class="fn-title-sub">(청약진입 → 청약완료)</span></div><div class="fn-chart" data-draw="weekly" data-metric="r3" data-source="funnel period activities" style="min-height:176px"></div></div>
       </div>
     </div>
     <div class="fn-section fn-grid">
@@ -289,7 +292,7 @@ main{max-width:1400px;margin:0 auto;padding:24px}
         <div class="fn-card-head">
           <div>
             <div class="fn-card-title">단계 전환율 비교</div>
-            <p class="fn-note">색은 전체 대비 편차입니다. 행을 누르면 세그먼트 상세로 이동합니다.</p>
+            <p class="fn-note">색은 전체 대비 편차입니다. 행을 누르면 세그먼트 상세로 이동합니다. GSM 채널은 표시하지 않습니다.</p>
           </div>
           <div class="fn-seg" data-param="hmrow" data-default="채널" role="group" aria-label="행 기준">
             <button type="button" data-value="채널">채널</button><button type="button" data-value="상품">상품</button>
@@ -297,7 +300,7 @@ main{max-width:1400px;margin:0 auto;padding:24px}
         </div>
         <div class="fn-tablebox">
           <table data-source="funnel">
-            <thead><tr><th>구분</th><th>랜딩</th><th>설계 단계</th><th>청약 단계</th><th>청약 완료율</th><th>랜딩 기준</th></tr></thead>
+            <thead><tr><th>구분</th><th>랜딩</th><th>설계 단계<span class="fn-th-sub">(랜딩 → 설계)</span></th><th>청약 단계<span class="fn-th-sub">(설계 → 청약진입)</span></th><th>청약 완료율<span class="fn-th-sub">(청약진입 → 청약완료)</span></th><th>랜딩 기준<span class="fn-th-sub">(랜딩 → 청약완료)</span></th></tr></thead>
             <tbody data-draw="heat-body" data-source="funnel period"></tbody>
           </table>
         </div>
@@ -322,9 +325,9 @@ main{max-width:1400px;margin:0 auto;padding:24px}
             <thead><tr>
               <th data-sort="name"><button type="button">세그먼트</button></th>
               <th data-sort="L"><button type="button">랜딩</button></th>
-              <th data-sort="r1"><button type="button">설계 단계</button></th>
-              <th data-sort="r2"><button type="button">청약 단계</button></th>
-              <th data-sort="rL"><button type="button">랜딩 기준</button></th>
+              <th data-sort="r1"><button type="button">설계 단계<span class="fn-th-sub">(랜딩 → 설계)</span></button></th>
+              <th data-sort="r2"><button type="button">청약 단계<span class="fn-th-sub">(설계 → 청약진입)</span></button></th>
+              <th data-sort="rL"><button type="button">랜딩 기준<span class="fn-th-sub">(랜딩 → 청약완료)</span></button></th>
               <th data-sort="dL"><button type="button">랜딩 기준 증감</button></th>
               <th data-sort="N" aria-sort="descending"><button type="button">청약 건수</button></th>
               <th data-sort="P"><button type="button">월P</button></th>
@@ -348,10 +351,10 @@ main{max-width:1400px;margin:0 auto;padding:24px}
       <h2 class="fn-h2">지표</h2>
       <dl>
         <dt>상품랜딩 방문수</dt><dd>상품 랜딩 페이지에 진입한 유저 수. 원본은 일자·상품·세부채널별 고유 유저 수이고, 대시보드는 이를 더해서 씁니다. 그래서 여러 날·여러 상품·여러 채널로 들어온 같은 사람은 여러 번 셉니다. 유저 수 기반 전환율은 실제보다 조금 낮게 나올 수 있고, 청약 건수와 월P는 영향이 없습니다.</dd>
-        <dt>설계 단계 전환율</dt><dd>설계 단계 진입 유저 ÷ 랜딩 방문자수</dd>
-        <dt>청약 단계 전환율</dt><dd>청약 단계 진입 유저 ÷ 설계 단계 진입 유저</dd>
-        <dt>청약 완료율</dt><dd>청약 완료 유저 ÷ 청약 단계 진입 유저. 퍼널 진단용 보조 지표입니다.</dd>
-        <dt>랜딩 기준 청약 전환율</dt><dd>청약 완료 유저 ÷ 랜딩 방문자수. 설계 단계 × 청약 단계 × 청약 완료율과 같습니다. 보장성 GSM은 제외합니다(아래 표시 규칙 참고).</dd>
+        <dt>설계 단계 전환율 <span class="fn-title-sub">(랜딩 → 설계)</span></dt><dd>설계 단계 진입 유저 ÷ 랜딩 방문자수</dd>
+        <dt>청약 단계 전환율 <span class="fn-title-sub">(설계 → 청약진입)</span></dt><dd>청약 단계 진입 유저 ÷ 설계 단계 진입 유저</dd>
+        <dt>청약 완료율 <span class="fn-title-sub">(청약진입 → 청약완료)</span></dt><dd>청약 완료 유저 ÷ 청약 단계 진입 유저. 퍼널 진단용 보조 지표입니다.</dd>
+        <dt>랜딩 기준 청약 전환율 <span class="fn-title-sub">(랜딩 → 청약완료)</span></dt><dd>청약 완료 유저 ÷ 랜딩 방문자수. 설계 단계 × 청약 단계 × 청약 완료율과 같습니다. 보장성 GSM은 제외합니다(아래 표시 규칙 참고).</dd>
         <dt>청약 건수</dt><dd>청약 완료된 계약 수. 한 유저가 여러 건을 청약할 수 있어 청약 완료 유저 수보다 많을 수 있습니다.</dd>
         <dt>월P</dt><dd>청약 완료 계약의 월납 환산 보험료 합, 원 단위. 보장성과 미니는 합산하지 않습니다.</dd>
         <dt>월말 예상 달성률</dt><dd>이번 달 누적 실적 ÷ 경과 일수 × 월 일수 ÷ 월 목표</dd>
@@ -1175,7 +1178,8 @@ dash.draw('heat-body', (tb) => {
   const st = F.state(), c = F.cut(st, col);
   const order = col === '채널' ? F.CHANNELS : [...F.parents().상품.keys()];
   const total = F.rates(c.tc);
-  const rows = [['전체', c.tc, true], ...order.filter((k) => c.cur.has(k)).map((k) => [k, c.cur.get(k), false])];
+  // 채널 행에서 GSM은 뺍니다(채널 필터로 GSM을 고른 경우만 표시).
+  const rows = [['전체', c.tc, true], ...order.filter((k) => c.cur.has(k) && (k !== 'GSM' || st.channel === 'GSM')).map((k) => [k, c.cur.get(k), false])];
   for (const [name, a, isTotal] of rows) {
     const tr = tb.insertRow();
     tr.dataset.key = name;
@@ -1349,7 +1353,7 @@ dash.draw('weekbars', (el) => {
       const here = acts.filter((q) => F.overlap(q, w.from, w.to));
       const head = `${w.from.slice(5).replace('-', '/')} ~ ${w.to.slice(5).replace('-', '/')}`;
       if (w.empty) { showTip(ev, head, ['데이터 없음']); return; }
-      showTip(ev, head, [`청약 ${d3.format(',')(w.N)}건${w.partial ? ' (일부 날짜만)' : ''}`, `랜딩 기준 전환율 ${w.rL == null ? '—' : F.fmt.pct(w.rL)}`, `활동 ${here.length}건`, ...here.slice(0, 3).map((q) => `· ${q.제목}`), ...(here.length > 3 ? [`· 외 ${here.length - 3}건`] : [])]);
+      showTip(ev, head, [`청약 ${d3.format(',')(w.N)}건${w.partial ? ' (일부 날짜만)' : ''}`, `랜딩 기준 전환율(랜딩 → 청약완료) ${w.rL == null ? '—' : F.fmt.pct(w.rL)}`, `활동 ${here.length}건`, ...here.slice(0, 3).map((q) => `· ${q.제목}`), ...(here.length > 3 ? [`· 외 ${here.length - 3}건`] : [])]);
     })
     .on('pointerleave', () => { tip.hidden = true; })
     .on('click', (_, w) => dash.setParams({ asel: `w:${w.from}~${w.to}` }));
@@ -1550,7 +1554,7 @@ dash.draw('scatter', (el) => {
     .attr('cx', (d) => x(d.L)).attr('cy', (d) => (d.out ? m.t : y(d.r))).attr('r', (d) => (d.out ? 5 : rr(d.P)))
     .attr('fill', (d) => (d.out ? 'var(--color-panel)' : color(d.p))).attr('fill-opacity', (d) => (d.out ? 1 : 0.55)).attr('stroke-width', (d) => (d.out ? 1.5 : 1)).attr('stroke', (d) => color(d.p))
     .on('pointermove', (ev, d) => {
-      F.tipLines(tip, `${F.short(d.k)} · ${d.p}`, ['랜딩 ' + F.fmt.count(d.L) + '명', '랜딩 기준 전환율 ' + F.fmt.pct(d.r), '월P ' + F.fmt.won(d.P), ...(d.out ? ['표본이 작아 축 위쪽 가장자리에 표시'] : [])]);
+      F.tipLines(tip, `${F.short(d.k)} · ${d.p}`, ['랜딩 ' + F.fmt.count(d.L) + '명', '랜딩 기준 전환율(랜딩 → 청약완료) ' + F.fmt.pct(d.r), '월P ' + F.fmt.won(d.P), ...(d.out ? ['표본이 작아 축 위쪽 가장자리에 표시'] : [])]);
       const [px, py] = d3.pointer(ev, el); F.place(el, tip, px, py);
     })
     .on('pointerleave', () => { tip.hidden = true; });
