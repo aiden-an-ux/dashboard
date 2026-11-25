@@ -278,8 +278,8 @@ main{max-width:1400px;margin:0 auto;padding:24px}
       <div class="fn-grid fn-grid2">
         <div class="fn-card"><div class="fn-card-title">랜딩 기준 청약 전환율 <span class="fn-title-sub">(랜딩 → 청약완료)</span></div><div class="fn-chart" data-draw="weekly" data-metric="rL" data-source="funnel period activities" style="min-height:176px"></div></div>
         <div class="fn-card"><div class="fn-card-title">설계 단계 전환율 <span class="fn-title-sub">(랜딩 → 설계)</span></div><div class="fn-chart" data-draw="weekly" data-metric="r1" data-source="funnel period activities" style="min-height:176px"></div></div>
-        <div class="fn-card"><div class="fn-card-title">청약 단계 전환율 <span class="fn-title-sub">(설계 → 청약진입)</span></div><div class="fn-chart" data-draw="weekly" data-metric="r2" data-source="funnel period activities" style="min-height:176px"></div></div>
-        <div class="fn-card"><div class="fn-card-title">청약 완료율 <span class="fn-title-sub">(청약진입 → 청약완료)</span></div><div class="fn-chart" data-draw="weekly" data-metric="r3" data-source="funnel period activities" style="min-height:176px"></div></div>
+                <div class="fn-card"><div class="fn-card-title">랜딩 방문자 수</div><div class="fn-chart" data-draw="weekly" data-metric="L" data-source="funnel period activities" style="min-height:176px"></div></div>
+        <div class="fn-card"><div class="fn-card-title">청약 건수</div><div class="fn-chart" data-draw="weekly" data-metric="N" data-source="funnel period activities" style="min-height:176px"></div></div>
       </div>
     </div>
     <div class="fn-section fn-grid">
@@ -1245,9 +1245,10 @@ dash.draw('weekly', (el) => {
   el.replaceChildren();
   if (!F.ready()) { el.textContent = '—'; return; }
   const k = el.dataset.metric;
+  const isN = k === 'N' || k === 'L'; // 개수 차트(청약 건수·랜딩 방문자 수): 막대, 0부터 시작하는 축, 진행 중인 구간은 흐린 막대
   const st = F.state();
   const unit = ['day', 'week', 'month'].includes(dash.params().tunit) ? dash.params().tunit : 'week';
-  const denKey = { rL: 'L', r1: 'L', r2: 'S', r3: 'A' }[k];
+  const denKey = { rL: 'L', r1: 'L', r2: 'S', r3: 'A', N: 'L', L: 'L' }[k];
   const denLab = { L: '랜딩', S: '설계 진입', A: '청약 진입' }[denKey];
   const series = F.trend(st, unit).map((w) => ({ d: w.d, v: w[k], den: w[denKey], to: w.to, from: w.from, open: w.open, part: w.part }));
   const all = series.filter((s) => s.v != null);
@@ -1260,6 +1261,8 @@ dash.draw('weekly', (el) => {
   series.forEach((s) => { s.n = acts.filter((a) => F.overlap(a, s.from, s.to)).length; });
   const sel = F.sel();
   const W = Math.max(240, el.clientWidth), H = 176, m = { t: 28, r: 52, b: 22, l: 8 };
+  // 청약 건수: 이번 달처럼 아직 진행 중인 월 구간은 값이 작게 나오므로 축 범위에는 넣되 빈 점·점선으로 구분합니다.
+  if (isN) series.forEach((s) => { s.cur = !!s.open; });
   const ext = d3.extent(vals, (s) => s.v);
   // 변화가 작을 때 축을 너무 좁히면 작은 차이가 급변처럼 보이므로, 축 폭을 최고값의 50% 이상으로 둡니다.
   let lo = ext[0] - (ext[1] - ext[0]) * 0.25, hi = ext[1] + (ext[1] - ext[0]) * 0.25;
@@ -1267,13 +1270,16 @@ dash.draw('weekly', (el) => {
   if (hi - lo < minSpan) { const mid = (ext[0] + ext[1]) / 2; lo = mid - minSpan / 2; hi = mid + minSpan / 2; }
   if (hi > 1 && ext[1] <= 1) { lo -= hi - 1; hi = 1; }
   if (lo < 0) { hi = Math.min(ext[1] <= 1 ? 1 : Infinity, hi - lo); lo = 0; }
-  const y =d3.scaleLinear([lo, hi || 0.01], [H - m.b, m.t]);
+  if (isN) { lo = 0; hi = (ext[1] || 1) * 1.12; }
+  const y = isN ? d3.scaleLinear([lo, hi], [H - m.b, m.t]).nice(3) : d3.scaleLinear([lo, hi || 0.01], [H - m.b, m.t]);
+  const fmtV = isN ? (v) => d3.format(',')(v) : F.fmt.pct;
   const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`);
-  const ya = svg.append('g').call(d3.axisLeft(y).ticks(3).tickFormat(F.axisPct(...y.domain(), 3)).tickSize(0)).attr('font-size', null).attr('font-family', null);
+  const ya = svg.append('g').call(d3.axisLeft(y).ticks(3).tickFormat(isN ? d3.format('~s') : F.axisPct(...y.domain(), 3)).tickSize(0)).attr('font-size', null).attr('font-family', null);
   ya.select('.domain').remove();
   let lw = 0; ya.selectAll('text').each(function () { lw = Math.max(lw, this.getComputedTextLength()); });
   m.l = lw + 12; ya.attr('transform', `translate(${m.l - 6},0)`);
-  const x = d3.scaleUtc(d3.extent(series, (s) => s.d), [m.l + 8, W - m.r]);
+  const slot = isN ? (W - m.r - m.l - 8) / Math.max(1, series.length) : 0;
+  const x = d3.scaleUtc(d3.extent(series, (s) => s.d), isN ? [m.l + 8 + slot / 2, W - m.r - slot / 2] : [m.l + 8, W - m.r]);
   const step = series.length > 1 ? x(series[1].d) - x(series[0].d) : 20;
   if (sel.kind === 'w' || sel.kind === 'd') {
     const s = series.find((q) => q.from === sel.from && q.to === sel.to);
@@ -1291,13 +1297,29 @@ dash.draw('weekly', (el) => {
   const [y0, y1] = y.domain();
   const yc = (v) => y(Math.max(y0, Math.min(y1, v)));
   const line = d3.line().defined((s) => s.v != null && !s.thin).x((s) => x(s.d)).y((s) => y(s.v));
+  if (isN) {
+    // 막대: 진행 중인 달·덜 들어온 날은 흐리게
+    const bw = Math.max(2, Math.min(28, slot * 0.66));
+    svg.append('g').selectAll('rect').data(series.filter((s) => s.v != null)).join('rect')
+      .attr('x', (s) => x(s.d) - bw / 2).attr('width', bw).attr('y', (s) => yc(s.v)).attr('height', (s) => Math.max(0, y(0) - yc(s.v))).attr('rx', Math.min(3, bw / 3))
+      .attr('fill', dash.colors[0]).attr('fill-opacity', (s) => (s.cur || s.thin ? 0.35 : 1));
+    const lastB = series.filter((s) => s.v != null).pop();
+    if (lastB) svg.append('text').attr('class', 'fn-strong').attr('x', x(lastB.d) + bw / 2 + 6).attr('y', yc(lastB.v) + 4).text(fmtV(lastB.v));
+  } else {
   svg.append('g').selectAll('circle').data(all.filter((s) => s.thin)).join('circle').attr('cx', (s) => x(s.d)).attr('cy', (s) => yc(s.v)).attr('r', 3.5)
     .attr('fill', 'var(--color-panel)').attr('stroke', 'var(--cds-chart-reference)').attr('stroke-width', 1.5);
-  svg.append('path').attr('d', line(series.filter((s) => !s.thin))).attr('fill', 'none').attr('stroke', dash.colors[0]).attr('stroke-width', 2).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
-  if (series.length <= 16) svg.append('g').selectAll('circle').data(all.filter((s) => !s.thin)).join('circle').attr('cx', (s) => x(s.d)).attr('cy', (s) => y(s.v)).attr('r', 2.5).attr('fill', dash.colors[0]);
+  const solid = isN ? series.filter((s) => !s.thin && !s.cur) : series.filter((s) => !s.thin);
+  if (isN) {
+    const cur = series.filter((s) => s.cur && s.v != null && !s.thin);
+    const prevPt = solid.filter((s) => s.v != null).pop();
+    if (cur.length && prevPt) svg.append('path').attr('d', line([prevPt, ...cur])).attr('fill', 'none').attr('stroke', dash.colors[0]).attr('stroke-width', 2).attr('stroke-dasharray', '5 4');
+  }
+  svg.append('path').attr('d', line(solid)).attr('fill', 'none').attr('stroke', dash.colors[0]).attr('stroke-width', 2).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
+  if (series.length <= 16) svg.append('g').selectAll('circle').data(all.filter((s) => !s.thin && !s.cur)).join('circle').attr('cx', (s) => x(s.d)).attr('cy', (s) => y(s.v)).attr('r', 2.5).attr('fill', dash.colors[0]);
   const lastV = vals[vals.length - 1];
-  svg.append('circle').attr('cx', x(lastV.d)).attr('cy', y(lastV.v)).attr('r', 3.5).attr('fill', dash.colors[0]);
-  svg.append('text').attr('class', 'fn-strong').attr('x', x(lastV.d) + 8).attr('y', y(lastV.v) + 4).text(F.fmt.pct(lastV.v));
+  svg.append('circle').attr('cx', x(lastV.d)).attr('cy', y(lastV.v)).attr('r', 3.5).attr('fill', lastV.cur ? 'var(--color-panel)' : dash.colors[0]).attr('stroke', dash.colors[0]).attr('stroke-width', lastV.cur ? 1.5 : 0);
+  svg.append('text').attr('class', 'fn-strong').attr('x', x(lastV.d) + 8).attr('y', y(lastV.v) + 4).text(fmtV(lastV.v));
+  }
   const tip = F.tip(el);
   const dot = svg.append('circle').attr('r', 4).attr('fill', dash.colors[0]).attr('visibility', 'hidden');
   const near = (mx) => { const t = x.invert(mx); return series.reduce((b, s2) => (Math.abs(s2.d - t) < Math.abs(b.d - t) ? s2 : b)); };
@@ -1305,10 +1327,10 @@ dash.draw('weekly', (el) => {
     .on('pointermove', (ev) => {
       const s = near(d3.pointer(ev)[0]);
       if (s.v == null) { tip.hidden = true; dot.attr('visibility', 'hidden'); return; }
-      dot.attr('cx', x(s.d)).attr('cy', yc(s.v)).attr('visibility', s.thin ? 'hidden' : 'visible');
+      dot.attr('cx', x(s.d)).attr('cy', yc(s.v)).attr('visibility', s.thin || isN ? 'hidden' : 'visible');
       const md = (d) => d.slice(5).replace('-', '/');
       const head = unit === 'day' ? md(s.from) : unit === 'month' ? `${+s.from.slice(5, 7)}월${s.open ? ` (${md(s.to)}까지)` : ''}` : `${md(s.from)} ~ ${md(s.to)}`;
-      F.tipLines(tip, head + (s.part ? ' · 데이터 일부' : ''), [`${F.fmt.pct(s.v)} (${denLab} ${d3.format(',')(s.den)}명)`, ...(s.thin ? ['표본이 평소보다 매우 적어 축 범위에서 뺐습니다'] : []), `활동 ${s.n}건`]);
+      F.tipLines(tip, head + (s.part ? ' · 데이터 일부' : ''), [k === 'L' ? `랜딩 ${d3.format(',')(s.v)}명` : isN ? `청약 ${d3.format(',')(s.v)}건 (${denLab} ${d3.format(',')(s.den)}명)` : `${F.fmt.pct(s.v)} (${denLab} ${d3.format(',')(s.den)}명)`, ...(s.cur ? ['진행 중인 달이라 기준일까지 누적'] : []), ...(s.thin ? [isN ? '평소보다 매우 적은 구간(덜 들어온 날 등)' : '표본이 평소보다 매우 적어 축 범위에서 뺐습니다'] : []), `활동 ${s.n}건`]);
       const [px, py] = d3.pointer(ev, el); F.place(el, tip, px, py);
     })
     .on('pointerleave', () => { tip.hidden = true; dot.attr('visibility', 'hidden'); })
