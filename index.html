@@ -372,7 +372,7 @@ main{max-width:1400px;margin:0 auto;padding:24px}
     <div class="fn-section fn-card">
       <h2 class="fn-h2">활동 기록</h2>
       <dl>
-        <dt>활동유형</dt><dd>활동 파일의 활동유형 값을 그대로 씁니다(예: 내부광고 팝업, 신상품, UI 변경, 안내장). 색은 유형별로 자동 배정합니다. 적용 범위 규칙은 아래와 같습니다.</dd>
+        <dt>활동유형</dt><dd>활동 파일의 활동유형 값을 씁니다(예: 내부광고 팝업, 신상품, UI 변경, 안내장). ‘안내장: T309’처럼 콜론(:) 앞이 같으면 같은 유형으로 묶어 같은 색·같은 필터로 다룹니다. 목록에는 원래 값이 그대로 보입니다. 적용 범위 규칙은 아래와 같습니다.</dd>
         <dt>적용 범위</dt><dd>상품이 ‘공통’인 활동은 어떤 필터에서도 차트와 목록에 표시합니다. 그 밖의 활동은 빈 칸이나 ‘공통’인 칸을 그 항목 전체로 보고, 채워진 칸이 현재 필터와 다르면 빠집니다.</dd>
         <dt>기간</dt><dd>시작일과 종료일 사이에 보는 범위와 하루라도 겹치면 표시합니다. 하루짜리 활동은 종료일을 시작일과 같게 적습니다.</dd>
         <dt>이미지</dt><dd>활동 파일의 이미지 경로(파일명 또는 https 주소)를 씁니다. 썸네일이나 ‘이미지 열기’를 누르면 페이지 안 레이어로 크게 보여 줍니다.</dd>
@@ -693,7 +693,7 @@ F.fmt = {
   won: (v) => d3.format(',')(Math.round(v)) + '원',
   raw: (v) => String(v),
 };
-F.axisPct = (lo, hi) => d3.format(hi - lo < 0.03 ? '.2%' : hi - lo < 0.3 ? '.1%' : '.0%');
+F.axisPct = (lo, hi, n = 5) => { const step = d3.tickStep(lo, hi, n) * 100; return d3.format(`.${Math.min(3, d3.precisionFixed(step))}%`); };
 F.pad = (n) => String(n).padStart(2, '0');
 F.shiftMonth = (s, k) => {
   let y = +s.slice(0, 4), m = +s.slice(5, 7) + k;
@@ -800,7 +800,7 @@ F.trend = (st, unit) => F.memo(`tr|${unit}|${JSON.stringify({ ...st, start: '', 
     else i = 11 - Math.floor((end - Date.parse(r.일자 + 'T00:00:00Z')) / 864e5 / 7);
     if (i >= 0 && i < buckets.length) F.add(acc[i], r, F.keepGsm(st));
   }
-  const out = buckets.map((b, j) => ({ ...b, d: new Date(Date.parse((unit === 'month' ? b.from : b.to) + 'T00:00:00Z')), part: b.from < first, ...F.rates(acc[j]), N: acc[j].N, L: acc[j].L, S: acc[j].S, A: acc[j].A }));
+  const out = buckets.map((b, j) => ({ ...b, d: new Date(Date.parse((unit === 'day' ? b.to : b.from) + 'T00:00:00Z')), part: b.from < first, ...F.rates(acc[j]), N: acc[j].N, L: acc[j].L, S: acc[j].S, A: acc[j].A }));
   return out.filter((b) => b.to >= first);
 });
 F.tip = (el) => {
@@ -822,11 +822,13 @@ F.tipLines = (tip, head, lines) => {
 };
 F.iso = d3.utcFormat('%Y-%m-%d');
 F.ATYPES = ['메시지', 'UI', '내부광고채널1', '내부광고채널2', '내부광고채널3', '내부광고채널4', '기타'];
+// 활동유형 묶음: '안내장: T309'처럼 콜론 앞이 같으면 한 유형으로 보고 같은 색을 씁니다.
+F.atCat = (t) => String(t || '').split(/[:：]/)[0].trim();
+F.atCats = () => { const rows = F.actRows() || []; const found = [...new Set(rows.map((a) => F.atCat(a.활동유형)).filter(Boolean))]; return F.ATYPES.filter((x) => found.includes(x)).concat(found.filter((x) => !F.ATYPES.includes(x))); };
+F.APAL = ['#2F6FD8', '#F2994A', '#8E5BD8', '#E0567A', '#1FA3B8', '#B8860B', '#8C564B', '#C0392B', '#5D7A99', '#B03AA8', '#7A8B1F', '#1F3A93'];
 F.typeColor = (t) => {
-  const rows = F.actRows() || [];
-  const all = F.ATYPES.filter((x) => rows.some((a) => a.활동유형 === x)).concat([...new Set(rows.map((a) => a.활동유형))].filter((x) => x && !F.ATYPES.includes(x)));
-  const i = all.indexOf(t);
-  return i < 0 ? 'var(--cds-chart-muted)' : dash.colors[(i + 1) % dash.colors.length];
+  const i = F.atCats().indexOf(F.atCat(t));
+  return i < 0 ? 'var(--cds-chart-muted)' : F.APAL[i % F.APAL.length];
 };
 F.actRows = () => { const g = dash.data('activities'); return g.status === 'ok' ? g.data : null; };
 F.sameName = (x, y) => x === y || x.replace(/\s*보험$/, '') === y || y.replace(/\s*보험$/, '') === x;
@@ -834,7 +836,7 @@ F.actScope = (a, st) => a.공통 || [['상품군', 'group'], ['상품', 'product
 F.acts = (st) => {
   const rows = F.actRows() || [];
   const t = dash.params().atype || '';
-  return rows.filter((a) => (!t || a.활동유형 === t) && F.actScope(a, st));
+  return rows.filter((a) => (!t || F.atCat(a.활동유형) === t) && F.actScope(a, st));
 };
 F.overlap = (a, from, to) => a.시작일 <= to && (a.종료일 || a.시작일) >= from;
 F.sel = () => {
@@ -1218,10 +1220,15 @@ dash.draw('weekly', (el) => {
   const sel = F.sel();
   const W = Math.max(240, el.clientWidth), H = 176, m = { t: 28, r: 52, b: 22, l: 8 };
   const ext = d3.extent(vals, (s) => s.v);
-  const pad = (ext[1] - ext[0]) * 0.25 || ext[1] * 0.1;
-  const y = d3.scaleLinear([Math.max(0, ext[0] - pad), ext[1] + pad], [H - m.b, m.t]);
+  // 변화가 작을 때 축을 너무 좁히면 작은 차이가 급변처럼 보이므로, 축 폭을 최고값의 50% 이상으로 둡니다.
+  let lo = ext[0] - (ext[1] - ext[0]) * 0.25, hi = ext[1] + (ext[1] - ext[0]) * 0.25;
+  const minSpan = ext[1] * 0.5;
+  if (hi - lo < minSpan) { const mid = (ext[0] + ext[1]) / 2; lo = mid - minSpan / 2; hi = mid + minSpan / 2; }
+  if (hi > 1 && ext[1] <= 1) { lo -= hi - 1; hi = 1; }
+  if (lo < 0) { hi = Math.min(ext[1] <= 1 ? 1 : Infinity, hi - lo); lo = 0; }
+  const y =d3.scaleLinear([lo, hi || 0.01], [H - m.b, m.t]);
   const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`);
-  const ya = svg.append('g').call(d3.axisLeft(y).ticks(3).tickFormat(F.axisPct(...y.domain())).tickSize(0)).attr('font-size', null).attr('font-family', null);
+  const ya = svg.append('g').call(d3.axisLeft(y).ticks(3).tickFormat(F.axisPct(...y.domain(), 3)).tickSize(0)).attr('font-size', null).attr('font-family', null);
   ya.select('.domain').remove();
   let lw = 0; ya.selectAll('text').each(function () { lw = Math.max(lw, this.getComputedTextLength()); });
   m.l = lw + 12; ya.attr('transform', `translate(${m.l - 6},0)`);
@@ -1232,8 +1239,9 @@ dash.draw('weekly', (el) => {
     if (s) svg.append('rect').attr('x', x(s.d) - step / 2).attr('y', 0).attr('width', step).attr('height', H - m.b).attr('rx', 4).attr('fill', 'var(--cds-chart-grid)');
   }
   svg.append('g').selectAll('line').data(y.ticks(3)).join('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', (d) => y(d)).attr('y2', (d) => y(d)).attr('stroke', 'var(--cds-chart-grid)');
-  const xt = unit === 'month' ? series.map((s) => s.d) : null;
-  svg.append('g').attr('transform', `translate(0,${H - m.b})`).call((xt ? d3.axisBottom(x).tickValues(xt.length > 6 ? xt.filter((_, i) => (xt.length - 1 - i) % 2 === 0) : xt) : d3.axisBottom(x).ticks(Math.max(2, Math.floor((W - m.l - m.r) / 72)))).tickFormat(d3.utcFormat(unit === 'month' ? '%y.%m' : '%-m/%-d')).tickSizeOuter(0)).attr('font-size', null).attr('font-family', null).call((g) => F.fitTicks(g, W));
+  const xt = unit === 'day' ? null : series.map((s) => s.d);
+  const every = xt ? Math.max(1, Math.ceil(xt.length / Math.max(2, Math.floor((W - m.l - m.r) / 56)))) : 1;
+  svg.append('g').attr('transform', `translate(0,${H - m.b})`).call((xt ? d3.axisBottom(x).tickValues(xt.filter((_, i) => (xt.length - 1 - i) % every === 0)) : d3.axisBottom(x).ticks(Math.max(2, Math.floor((W - m.l - m.r) / 72)))).tickFormat(d3.utcFormat(unit === 'month' ? '%y.%m' : unit === 'week' ? '%-m/%-d~' : '%-m/%-d')).tickSizeOuter(0)).attr('font-size', null).attr('font-family', null).call((g) => F.fitTicks(g, W));
   const mk = svg.append('g').selectAll('g').data(series.filter((s) => s.n > 0)).join('g').attr('transform', (s) => `translate(${x(s.d)},11)`);
   if (step >= 20) {
     mk.append('rect').attr('x', -9).attr('y', -8).attr('width', 18).attr('height', 16).attr('rx', 8).attr('fill', 'var(--cds-chart-reference)').attr('fill-opacity', 0.25);
@@ -1245,6 +1253,7 @@ dash.draw('weekly', (el) => {
   svg.append('g').selectAll('circle').data(all.filter((s) => s.thin)).join('circle').attr('cx', (s) => x(s.d)).attr('cy', (s) => yc(s.v)).attr('r', 3.5)
     .attr('fill', 'var(--color-panel)').attr('stroke', 'var(--cds-chart-reference)').attr('stroke-width', 1.5);
   svg.append('path').attr('d', line(series.filter((s) => !s.thin))).attr('fill', 'none').attr('stroke', dash.colors[0]).attr('stroke-width', 2).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
+  if (series.length <= 16) svg.append('g').selectAll('circle').data(all.filter((s) => !s.thin)).join('circle').attr('cx', (s) => x(s.d)).attr('cy', (s) => y(s.v)).attr('r', 2.5).attr('fill', dash.colors[0]);
   const lastV = vals[vals.length - 1];
   svg.append('circle').attr('cx', x(lastV.d)).attr('cy', y(lastV.v)).attr('r', 3.5).attr('fill', dash.colors[0]);
   svg.append('text').attr('class', 'fn-strong').attr('x', x(lastV.d) + 8).attr('y', y(lastV.v) + 4).text(F.fmt.pct(lastV.v));
@@ -1292,7 +1301,7 @@ dash.draw('weekbars', (el) => {
   const sel = F.sel();
   const W = Math.max(280, el.clientWidth), laneH = 14, m = { r: 8, b: 24, l: 8 };
   const svg = d3.select(el).append('svg').attr('width', '100%');
-  const types = F.ATYPES.filter((t) => placed.some((p) => p.a.활동유형 === t)).concat([...new Set(placed.map((p) => p.a.활동유형))].filter((t) => !F.ATYPES.includes(t)));
+  const types = F.atCats().filter((t) => placed.some((p) => F.atCat(p.a.활동유형) === t)).concat(placed.some((p) => !F.atCat(p.a.활동유형)) ? [''] : []);
   // 범례: 카드 폭을 넘으면 다음 줄로
   let lx = 0, ly = 8, lrows = types.length ? 1 : 0;
   const legendRight = W - m.r - (overflow ? 130 : 0);
@@ -1367,8 +1376,7 @@ dash.draw('act-sel', (el) => {
 
 dash.draw('act-type', (sel) => {
   const rows = F.actRows() || [];
-  const present = [...new Set(rows.map((a) => a.활동유형).filter(Boolean))];
-  const types = F.ATYPES.filter((t) => present.includes(t)).concat(present.filter((t) => !F.ATYPES.includes(t)));
+  const types = F.atCats();
   sel.replaceChildren(new Option('활동유형 전체', ''), ...types.map((t) => new Option(t, t)));
   const cur = dash.params().atype || '';
   sel.value = types.includes(cur) ? cur : '';
@@ -1512,8 +1520,12 @@ dash.draw('scatter', (el) => {
   const color = (p) => dash.colors[Math.max(0, parents.indexOf(p)) % dash.colors.length];
   const W = Math.max(280, el.clientWidth), H = 340, m = { t: 30, r: 16, b: 34, l: 8 };
   const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`);
-  const y = d3.scaleLinear([0, d3.max(pts, (d) => d.r) * 1.12], [H - m.b, m.t]).nice();
-  const ya = svg.append('g').call(d3.axisLeft(y).ticks(5).tickFormat(F.axisPct(...y.domain())).tickSize(0)).attr('font-size', null).attr('font-family', null);
+  // 랜딩이 아주 적은 점(기준 미만)은 전환율이 0%·100%로 튀기 쉬워 축 범위에서 빼고 위쪽 가장자리에 빈 점으로 둡니다.
+  const big = pts.filter((d) => d.L >= F.CONST.MIN);
+  const yTop = d3.max(big.length ? big : pts, (d) => d.r) * 1.12 || 0.01;
+  pts.forEach((d) => { d.out = d.r > yTop; });
+  const y = d3.scaleLinear([0, yTop], [H - m.b, m.t]).nice();
+  const ya = svg.append('g').call(d3.axisLeft(y).ticks(5).tickFormat(F.axisPct(...y.domain(), 5)).tickSize(0)).attr('font-size', null).attr('font-family', null);
   ya.select('.domain').remove();
   let lw = 0; ya.selectAll('text').each(function () { lw = Math.max(lw, this.getComputedTextLength()); });
   m.l = lw + 12; ya.attr('transform', `translate(${m.l - 6},0)`);
@@ -1535,10 +1547,10 @@ dash.draw('scatter', (el) => {
   });
   const tip = F.tip(el);
   svg.append('g').selectAll('circle').data(pts.sort((a, b) => b.P - a.P)).join('circle')
-    .attr('cx', (d) => x(d.L)).attr('cy', (d) => y(d.r)).attr('r', (d) => rr(d.P))
-    .attr('fill', (d) => color(d.p)).attr('fill-opacity', 0.55).attr('stroke', (d) => color(d.p)).attr('stroke-width', 1)
+    .attr('cx', (d) => x(d.L)).attr('cy', (d) => (d.out ? m.t : y(d.r))).attr('r', (d) => (d.out ? 5 : rr(d.P)))
+    .attr('fill', (d) => (d.out ? 'var(--color-panel)' : color(d.p))).attr('fill-opacity', (d) => (d.out ? 1 : 0.55)).attr('stroke-width', (d) => (d.out ? 1.5 : 1)).attr('stroke', (d) => color(d.p))
     .on('pointermove', (ev, d) => {
-      F.tipLines(tip, `${F.short(d.k)} · ${d.p}`, ['랜딩 ' + F.fmt.count(d.L) + '명', '랜딩 기준 전환율 ' + F.fmt.pct(d.r), '월P ' + F.fmt.won(d.P)]);
+      F.tipLines(tip, `${F.short(d.k)} · ${d.p}`, ['랜딩 ' + F.fmt.count(d.L) + '명', '랜딩 기준 전환율 ' + F.fmt.pct(d.r), '월P ' + F.fmt.won(d.P), ...(d.out ? ['표본이 작아 축 위쪽 가장자리에 표시'] : [])]);
       const [px, py] = d3.pointer(ev, el); F.place(el, tip, px, py);
     })
     .on('pointerleave', () => { tip.hidden = true; });
