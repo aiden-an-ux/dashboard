@@ -176,7 +176,7 @@ main{max-width:1400px;margin:0 auto;padding:24px}
         </div>
         <div class="fn-card" id="pace-cov">
           <div class="fn-card-title">월 누적 월P</div>
-          <p class="fn-note">실선은 실적, 점선은 월P 목표를 일수로 나눈 페이스입니다.</p>
+          <p class="fn-note">실선은 실적, 같은 색 점선은 지금 속도대로 간 월말 예상, 회색 점선은 월P 목표 페이스입니다.</p>
           <div class="fn-chart" data-draw="pace" data-group="보장성" data-metric="P" data-source="pacing" style="min-height:220px"></div>
         </div>
       </section>
@@ -189,7 +189,7 @@ main{max-width:1400px;margin:0 auto;padding:24px}
         </div>
         <div class="fn-card" id="pace-mini">
           <div class="fn-card-title">월 누적 청약 건수</div>
-          <p class="fn-note">실선은 실적, 점선은 월 목표를 일수로 나눈 페이스입니다.</p>
+          <p class="fn-note">실선은 실적, 같은 색 점선은 지금 속도대로 간 월말 예상, 회색 점선은 월 목표 페이스입니다.</p>
           <div class="fn-chart" data-draw="pace" data-group="미니" data-source="pacing" style="min-height:220px"></div>
         </div>
       </section>
@@ -292,7 +292,7 @@ main{max-width:1400px;margin:0 auto;padding:24px}
         <div class="fn-card-head">
           <div>
             <div class="fn-card-title">단계 전환율 비교</div>
-            <p class="fn-note">색은 전체 대비 편차입니다. 행을 누르면 세그먼트 상세로 이동합니다. GSM 채널은 표시하지 않습니다.</p>
+            <p class="fn-note">색은 전체 대비 편차입니다. 행을 누르면 세그먼트 상세로 이동합니다. GSM 채널과 무료미니 상품은 표시하지 않습니다.</p>
           </div>
           <div class="fn-seg" data-param="hmrow" data-default="채널" role="group" aria-label="행 기준">
             <button type="button" data-value="채널">채널</button><button type="button" data-value="상품">상품</button>
@@ -340,7 +340,7 @@ main{max-width:1400px;margin:0 auto;padding:24px}
     <div class="fn-section">
       <div class="fn-card" id="scatter">
         <div class="fn-card-title">규모 × 효율</div>
-        <p class="fn-note">가로축은 랜딩 수(로그), 세로축은 랜딩 기준 청약 전환율, 점 크기는 월P입니다. 점선은 각 축의 중앙값입니다. 상품 축이면 세부상품, 그 외에는 세부채널을 찍습니다.</p>
+        <p class="fn-note">가로축은 랜딩 수(로그), 세로축은 랜딩 기준 청약 전환율, 점 크기는 월P입니다. 점선은 각 축의 중앙값입니다. 상품 축이면 세부상품, 그 외에는 세부채널을 찍습니다. 무료미니와 상품명 없는 미니는 표시하지 않습니다.</p>
         <div class="fn-chart" data-draw="scatter" data-source="funnel period" style="min-height:340px"></div>
       </div>
     </div>
@@ -369,6 +369,7 @@ main{max-width:1400px;margin:0 auto;padding:24px}
         <dt>비교 기간</dt><dd>선택 구간의 시작일과 종료일을 각각 한 달 앞으로 옮긴 구간. 시작일이 종료일보다 늦으면 두 날짜를 바꿔 적용합니다.</dd>
         <dt>상품군 분류</dt><dd>같은 상품명이 보장성과 미니 양쪽에 있으면 랜딩 유저가 더 많은 상품군으로 그 상품의 모든 행을 옮겨 셉니다(예: 정기(순수보장)·암보험(순수보장)의 미니 랜딩 행은 보장성으로 셈). 상품명이 빈 행은 ‘(상품명 없음)’으로 표시합니다.</dd>
         <dt>보장성 GSM</dt><dd>GSM(하이브리드·URL 발송)은 상담을 거쳐 들어오는 채널이라 랜딩 대비 완료율이 다른 채널보다 훨씬 높고, 한 사람이 여러 건을 청약하기도 합니다. 그래서 보장성 GSM은 청약 건수와 월P에는 포함하고, 상품랜딩 방문수·단계별 유저 수·전환율에서는 뺍니다. 채널을 GSM으로 고르거나 채널별 행으로 볼 때는 GSM 자체 수치를 그대로 보여 줍니다. 미니의 GSM은 그대로 포함합니다.</dd>
+        <dt>무료미니</dt><dd>무료로 바로 가입되는 상품이라 랜딩 대비 완료율이 다른 미니 상품과 성격이 다릅니다. 그래서 무료미니는 미니 청약 건수와 월P에는 포함하고, 상품랜딩 방문수·단계별 유저 수·전환율에서는 뺍니다. 상품을 무료미니로 고르거나 상품별 행으로 볼 때는 무료미니 자체 수치를 그대로 보여 줍니다.</dd>
         <dt>채널 구분</dt><dd>랜딩 시점 유입 소스 기준. 앱(내부광고)·디광·오가닉·제휴·GSM·기타로 나눕니다. 중분류(BS·SA·DA)가 있는 채널은 중분류를 거쳐 세부채널로 펼칩니다. 같은 이름의 중분류·세부채널(예: DA, 기타, 메인팝업)도 채널별로 따로 셉니다. 세부채널이 빈 행은 ‘(미지정)’으로 표시합니다.</dd>
       </dl>
     </div>
@@ -536,6 +537,11 @@ dash.loader('activities', {
   },
 });
 
+// 무료미니: 청약 건수·월P에는 넣고, 방문수·단계별 유저 수·전환율에서는 뺍니다(보장성 GSM과 같은 방식).
+function isFreeMini(name) { return /^무료\s*미니(보험)?$/.test(String(name || '').trim()); }
+// 전환율 계산에서 빼는 행의 종류: 'gsm'(보장성 GSM) | 'free'(무료미니) | null
+function rateExKind(r) { return r.채널 === 'GSM' && r.상품군 === '보장성' ? 'gsm' : isFreeMini(r.상품) ? 'free' : null; }
+
 dash.calc('period', {
   inputs: ['funnel'],
   title: '이번 달 기간',
@@ -568,7 +574,7 @@ dash.calc('period', {
 dash.calc('kpi', {
   inputs: ['funnel', 'targets', 'period'],
   title: '이번 달 KPI (상품군별)',
-  description: '이번 달 실적, 전월 동기간 대비 증감, 경과 일수로 환산한 월말 예상 목표 달성률. 보장성 GSM은 청약 건수·월P에는 넣고 방문수·전환율에서는 뺍니다.',
+  description: '이번 달 실적, 전월 동기간 대비 증감, 경과 일수로 환산한 월말 예상 목표 달성률. 보장성 GSM과 무료미니는 청약 건수·월P에는 넣고 방문수·전환율에서는 뺍니다.',
   fn: (funnel, targets, period) => {
     const p = period[0];
     const agg = {};
@@ -577,7 +583,7 @@ dash.calc('kpi', {
       if (!k) continue;
       const a = (agg[r.상품군 + k] ??= { L: 0, C: 0, N: 0, P: 0 });
       a.N += r.청약건수; a.P += r.월P;
-      if (r.채널 === 'GSM' && r.상품군 === '보장성') continue; // 보장성 GSM은 전환율·방문수에서 제외
+      if (rateExKind(r)) continue; // 보장성 GSM·무료미니는 전환율·방문수에서 제외
       a.L += r.랜딩유저수; a.C += r.청약완료유저수;
     }
     const pace = p.월일수 / p.경과일수;
@@ -727,17 +733,24 @@ F.memo = (key, make) => {
 };
 F.short = (k) => String(k).split('|').pop() || '(미지정)';
 F.zero = () => ({ L: 0, S: 0, A: 0, C: 0, N: 0, P: 0 });
-// 보장성 GSM(상담 연계 채널)은 청약 건수·월P에는 넣고, 유저 단계 수와 전환율에서는 뺍니다.
-// keep이 참이면(GSM만 보는 경우·채널별 행) GSM 유저도 셉니다.
-F.gsmEx = (r) => r.채널 === 'GSM' && r.상품군 === '보장성';
-F.keepGsm = (st) => st.channel === 'GSM';
-F.add = (a, r, keep) => { if (!keep && F.gsmEx(r)) { a.N += r.청약건수; a.P += r.월P; return a; } a.L += r.랜딩유저수; a.S += r.설계진입유저수; a.A += r.청약진입유저수; a.C += r.청약완료유저수; a.N += r.청약건수; a.P += r.월P; return a; };
+// 보장성 GSM(상담 연계 채널)과 무료미니는 청약 건수·월P에는 넣고, 유저 단계 수와 전환율에서는 뺍니다.
+// keep = { gsm, free }: 그 대상만 보는 경우(GSM 채널·무료미니 상품 필터)나 자기 행(채널별 GSM 행·상품별 무료미니 행)에서는 유저도 셉니다.
+F.gsmEx = (r) => rateExKind(r) === 'gsm';
+F.isFree = isFreeMini;
+F.keepOf = (st, dim = '') => {
+  const k = { gsm: st.channel === 'GSM', free: isFreeMini(st.product) };
+  if (['채널', '채널세부', '채널중'].includes(dim)) k.gsm = true;
+  if (dim === '상품') k.free = true;
+  return k;
+};
+F.keepGsm = (st) => F.keepOf(st);
+F.add = (a, r, keep) => { const ex = rateExKind(r); if (ex && !(keep && keep[ex])) { a.N += r.청약건수; a.P += r.월P; return a; } a.L += r.랜딩유저수; a.S += r.설계진입유저수; a.A += r.청약진입유저수; a.C += r.청약완료유저수; a.N += r.청약건수; a.P += r.월P; return a; };
 F.rate = (n, d) => (d > 0 ? n / d : null);
 F.rates = (a) => ({ r1: F.rate(a.S, a.L), r2: F.rate(a.A, a.S), r3: F.rate(a.C, a.A), rL: F.rate(a.C, a.L) });
 F.cut = (st, dim) => F.memo(`cut|${dim}|${JSON.stringify(st)}`, (rows) => {
   const ps = F.shiftMonth(st.start, -1), pe = F.shiftMonth(st.end, -1);
   const out = { cur: new Map(), prev: new Map(), tc: F.zero(), tp: F.zero(), ps, pe };
-  const keepT = F.keepGsm(st), keepD = keepT || ['채널', '채널세부', '채널중'].includes(dim);
+  const keepT = F.keepOf(st), keepD = F.keepOf(st, dim);
   for (const r of rows) {
     const d = r.일자;
     const k = d >= st.start && d <= st.end ? 'cur' : d >= ps && d <= pe ? 'prev' : null;
@@ -963,6 +976,10 @@ dash.draw('pace', (el) => {
   const fA = isP ? '누적월P' : '누적청약건수', fT = isP ? '월P목표페이스' : '목표페이스', fG = isP ? '월P목표' : '월목표', unit = isP ? '원' : '건';
   const goal = rows[0][fG];
   const dim = per.월일수;
+  const fmtV = (v) => (isP ? d3.format('.1f')(v / 1e8) + '억' : d3.format(',')(Math.round(v)));
+  const lastRow = rows[rows.length - 1], lastDay = +lastRow.일자.slice(8, 10);
+  // 월말 예상: 지금까지의 하루 평균 속도로 남은 날을 이어 그립니다(월말 예상 달성률과 같은 계산).
+  const proj = lastDay < dim && lastDay > 0 ? (lastRow[fA] / lastDay) * dim : null;
   const W = Math.max(280, el.clientWidth), H = +(el.dataset.h || 220), m = { t: 14, r: 70, b: 24, l: 8 };
   {
     const probe = d3.select(el).append('svg').attr('width', 0).attr('height', 0).style('position', 'absolute');
@@ -970,11 +987,12 @@ dash.draw('pace', (el) => {
     const lastLab = isP ? d3.format('.1f')(rows[rows.length - 1][fA] / 1e8) + '억' : d3.format(',')(rows[rows.length - 1][fA]);
     const w1 = lab ? probe.append('text').text(lab).node().getComputedTextLength() : 0;
     const w2 = probe.append('text').attr('class', 'fn-strong').text(lastLab).node().getComputedTextLength();
+    const w3 = proj != null ? probe.append('text').attr('class', 'fn-strong').text('예상 ' + fmtV(proj)).node().getComputedTextLength() : 0;
     probe.remove();
-    m.r = Math.max(w1 + 12, w2 + 14, 40);
+    m.r = Math.max(w1 + 12, w3 + 12, proj == null ? w2 + 14 : 0, 40);
   }
   const last = rows[rows.length - 1];
-  const yMax = Math.max(goal ?? 0, last[fA]) * 1.08;
+  const yMax = Math.max(goal ?? 0, last[fA], proj ?? 0) * 1.08;
   const y = d3.scaleLinear([0, yMax], [H - m.b, m.t]).nice();
   const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`);
   const yAxis = svg.append('g').call(d3.axisLeft(y).ticks(4).tickFormat(isP ? (v) => (v === 0 ? '0' : d3.format('~')(v / 1e8) + '억') : d3.format('~s')).tickSize(0)).attr('font-size', null).attr('font-family', null);
@@ -986,26 +1004,45 @@ dash.draw('pace', (el) => {
   const x = d3.scaleLinear([1, dim], [m.l, W - m.r]);
   svg.append('g').selectAll('line').data(y.ticks(4)).join('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', (d) => y(d)).attr('y2', (d) => y(d)).attr('stroke', 'var(--cds-chart-grid)');
   svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).tickValues([1, 8, 15, 22, dim]).tickFormat((d) => d + '일').tickSizeOuter(0)).attr('font-size', null).attr('font-family', null).call((g) => F.fitTicks(g, W));
+  // 오른쪽 끝 라벨(목표·예상)이 겹치지 않게 최소 16px 띄웁니다.
+  let yGoalLab = goal ? y(goal) + 4 : null, yProjLab = proj != null ? y(proj) + 4 : null;
+  if (yGoalLab != null && yProjLab != null && Math.abs(yGoalLab - yProjLab) < 16) {
+    const mid = (yGoalLab + yProjLab) / 2, up = yProjLab <= yGoalLab;
+    yProjLab = mid + (up ? -8 : 8); yGoalLab = mid + (up ? 8 : -8);
+  }
   if (goal) {
     svg.append('line').attr('x1', x(1)).attr('y1', y(goal / dim)).attr('x2', x(dim)).attr('y2', y(goal)).attr('stroke', 'var(--cds-chart-reference)').attr('stroke-width', 1.5).attr('stroke-dasharray', '4 4');
-    svg.append('text').attr('x', x(dim) + 6).attr('y', y(goal) + 4).text('목표 ' + (isP ? d3.format('.1f')(goal / 1e8) + '억' : d3.format(',')(goal)));
+    svg.append('text').attr('x', x(dim) + 6).attr('y', yGoalLab).text('목표 ' + (isP ? d3.format('.1f')(goal / 1e8) + '억' : d3.format(',')(goal)));
   }
   const pts = rows.map((r) => [x(+r.일자.slice(8, 10)), y(r[fA])]);
   svg.append('path').attr('d', d3.line()(pts)).attr('fill', 'none').attr('stroke', dash.colors[0]).attr('stroke-width', 2).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
   const lp = pts[pts.length - 1];
+  if (proj != null) {
+    svg.append('line').attr('x1', lp[0]).attr('y1', lp[1]).attr('x2', x(dim)).attr('y2', y(proj)).attr('stroke', dash.colors[0]).attr('stroke-width', 2).attr('stroke-dasharray', '5 4').attr('stroke-linecap', 'round');
+    svg.append('circle').attr('cx', x(dim)).attr('cy', y(proj)).attr('r', 3.5).attr('fill', 'var(--color-panel)').attr('stroke', dash.colors[0]).attr('stroke-width', 1.5);
+    svg.append('text').attr('class', 'fn-strong').attr('x', x(dim) + 6).attr('y', yProjLab).attr('fill', dash.colors[0]).text('예상 ' + fmtV(proj));
+  }
   svg.append('circle').attr('cx', lp[0]).attr('cy', lp[1]).attr('r', 3.5).attr('fill', dash.colors[0]);
-  svg.append('text').attr('class', 'fn-strong').attr('x', lp[0] + 8).attr('y', lp[1] + 4).text(isP ? d3.format('.1f')(last[fA] / 1e8) + '억' : d3.format(',')(last[fA]));
+  svg.append('text').attr('class', 'fn-strong').attr('x', proj != null ? lp[0] - 6 : lp[0] + 8).attr('y', proj != null ? lp[1] - 9 : lp[1] + 4).attr('text-anchor', proj != null ? 'end' : null).text(isP ? d3.format('.1f')(last[fA] / 1e8) + '억' : d3.format(',')(last[fA]));
   const dot = svg.append('circle').attr('r', 4).attr('fill', dash.colors[0]).attr('visibility', 'hidden');
   const tip = F.tip(el);
   svg.append('rect').attr('x', m.l).attr('y', m.t).attr('width', W - m.l - m.r).attr('height', H - m.t - m.b).attr('fill', 'transparent')
     .on('pointermove', (ev) => {
       const [mx] = d3.pointer(ev);
-      const d = Math.max(1, Math.min(rows.length, Math.round(x.invert(mx))));
-      const r = rows[d - 1];
-      dot.attr('cx', x(d)).attr('cy', y(r[fA])).attr('visibility', 'visible');
-      F.tipLines(tip, r.일자, ['누적 ' + d3.format(',')(r[fA]) + unit, '목표 페이스 ' + (r[fT] == null ? '—' : d3.format(',')(r[fT]) + unit)]);
+      const d = Math.max(1, Math.min(proj != null ? dim : rows.length, Math.round(x.invert(mx))));
+      const pace = goal ? (goal / dim) * d : null;
+      let v, head, lines;
+      if (d <= rows.length) {
+        const r = rows[d - 1]; v = r[fA]; head = r.일자;
+        lines = ['누적 ' + d3.format(',')(v) + unit, '목표 페이스 ' + (r[fT] == null ? '—' : d3.format(',')(r[fT]) + unit)];
+      } else {
+        v = (lastRow[fA] / lastDay) * d; head = per.월 + '-' + String(d).padStart(2, '0') + ' (예상)';
+        lines = ['예상 누적 ' + d3.format(',')(Math.round(v)) + unit, '목표 페이스 ' + (pace == null ? '—' : d3.format(',')(Math.round(pace)) + unit)];
+      }
+      dot.attr('cx', x(d)).attr('cy', y(v)).attr('visibility', 'visible');
+      F.tipLines(tip, head, lines);
       const box = el.getBoundingClientRect(), sv = svg.node().getBoundingClientRect();
-      F.place(el, tip, (x(d) / W) * sv.width + sv.left - box.left, (y(r[fA]) / H) * sv.height + sv.top - box.top);
+      F.place(el, tip, (x(d) / W) * sv.width + sv.left - box.left, (y(v) / H) * sv.height + sv.top - box.top);
     })
     .on('pointerleave', () => { tip.hidden = true; dot.attr('visibility', 'hidden'); });
 });
@@ -1178,8 +1215,8 @@ dash.draw('heat-body', (tb) => {
   const st = F.state(), c = F.cut(st, col);
   const order = col === '채널' ? F.CHANNELS : [...F.parents().상품.keys()];
   const total = F.rates(c.tc);
-  // 채널 행에서 GSM은 뺍니다(채널 필터로 GSM을 고른 경우만 표시).
-  const rows = [['전체', c.tc, true], ...order.filter((k) => c.cur.has(k) && (k !== 'GSM' || st.channel === 'GSM')).map((k) => [k, c.cur.get(k), false])];
+  // 채널 행에서 GSM, 상품 행에서 무료미니는 뺍니다(필터로 그 대상을 고른 경우만 표시).
+  const rows = [['전체', c.tc, true], ...order.filter((k) => c.cur.has(k) && (col === '채널' ? k !== 'GSM' || st.channel === 'GSM' : !F.isFree(k) || F.isFree(st.product))).map((k) => [k, c.cur.get(k), false])];
   for (const [name, a, isTotal] of rows) {
     const tr = tb.insertRow();
     tr.dataset.key = name;
@@ -1516,9 +1553,26 @@ dash.draw('scatter', (el) => {
   const axis = dash.params().axis || '상품';
   const cd = axis === '상품' ? '상품' : '채널세부';
   const pd = axis === '상품' ? '상품군' : '채널';
-  const c = F.cut(F.state(), cd);
+  const st = F.state(), c = F.cut(st, cd);
   const parentOf = F.parents()[cd];
-  const pts = [...c.cur].map(([k, a]) => ({ k, p: parentOf.get(k), L: a.L, r: F.rate(a.C, a.L), P: a.P })).filter((d) => d.r != null);
+  // 무료미니와 상품명 없는 미니는 이 차트에서 뺍니다: 상품 점을 없애고, 세부채널 점에서도 그 몫을 뺍니다.
+  // 무료미니는 이미 랜딩·완료 유저에서 빠져 있으므로 월P(점 크기)만, 상품명 없는 미니는 랜딩·완료·월P를 모두 뺍니다.
+  // 상품 필터로 그 상품을 직접 고른 경우만 그대로 보여 줍니다.
+  const par상품 = F.parents().상품;
+  const isBlankMini = (k) => k === '(상품명 없음)' && par상품.get(k) === '미니';
+  const drop = (k) => k !== st.product && (F.isFree(k) || isBlankMini(k));
+  const sub = new Map();
+  for (const dp of [...par상품.keys()].filter(drop)) {
+    const onlyP = F.isFree(dp);
+    for (const [k, a] of F.cut({ ...st, product: dp }, cd).cur) {
+      const t = sub.get(k) ?? { L: 0, C: 0, P: 0 };
+      t.P += a.P; if (!onlyP) { t.L += a.L; t.C += a.C; }
+      sub.set(k, t);
+    }
+  }
+  const pts = [...c.cur].filter(([k]) => !(cd === '상품' && drop(k)))
+    .map(([k, a]) => { const t = sub.get(k) ?? { L: 0, C: 0, P: 0 }; const L = a.L - t.L; return { k, p: parentOf.get(k), L, r: F.rate(a.C - t.C, L), P: Math.max(0, a.P - t.P) }; })
+    .filter((d) => d.r != null);
   if (!pts.length) { el.textContent = '—'; return; }
   const parents = axis === '상품' ? F.GROUPS : F.CHANNELS;
   const color = (p) => dash.colors[Math.max(0, parents.indexOf(p)) % dash.colors.length];
